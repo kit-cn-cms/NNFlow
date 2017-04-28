@@ -45,19 +45,13 @@ def root_to_pandas(save_path,
     if isinstance(treenames, basestring):
         treenames = [treenames]
 
-    if path_to_inputfiles[-1] != '/':
-        path_to_inputfiles += '/'
-
-    if save_path[-1] != '/':
-        save_path += '/'
-
 
     if not os.path.isdir(save_path):
         sys.exit("Directory " + save_path + " doesn't exist." + "\n")
 
     for filename in filenames_inputfiles:
-        if not os.path.isfile(path_to_inputfiles + filename):
-             sys.exit("File " + path_to_inputfiles + filename + " doesn't exist." + "\n")
+        if not os.path.isfile(os.path.join(path_to_inputfiles, filename)):
+             sys.exit("File " + os.path.join(path_to_inputfiles, filename) + " doesn't exist." + "\n")
 
 
     print('Loading and converting data')
@@ -65,7 +59,7 @@ def root_to_pandas(save_path,
     for filename in filenames_inputfiles:
         print('    ' + 'Processing ' + filename)
         for treename in treenames:
-            structured_array = root2array(path_to_inputfiles + filename, treename)
+            structured_array = root2array(os.path.join(path_to_inputfiles, filename), treename)
             df = pd.DataFrame(structured_array)
             df_list.append(df)
 
@@ -74,12 +68,12 @@ def root_to_pandas(save_path,
 
     print('\n' + 'Saving data')
     if not split_data_frame:
-        pd.to_msgpack(save_path + filename_outputfile + '.msg', np.array_split(df, int(np.ceil(df.shape[0]/400000))))
+        pd.to_msgpack(os.path.join(save_path, filename_outputfile) + '.msg', np.array_split(df, int(np.ceil(df.shape[0]/400000))))
 
     else:
         for process in conditions_for_splitting.keys():
             df_process = df.query(conditions_for_splitting[process])
-            pd.to_msgpack(save_path + filename_outputfile + '_' + process + '.msg', np.array_split(df_process, int(np.ceil(df_process.shape[0]/400000))))
+            pd.to_msgpack(os.path.join(save_path, filename_outputfile) + '_' + process + '.msg', np.array_split(df_process, int(np.ceil(df_process.shape[0]/400000))))
 
 
     print('\n' + 'FINISHED' + '\n')
@@ -104,19 +98,12 @@ def create_dataset_for_training(save_path,
     print('\n' + 'CREATE DATA SET FOR TRAINING' + '\n')
 
 
-    if path_to_inputfiles[-1] != '/':
-        path_to_inputfiles += '/'
-
-    if save_path[-1] != '/':
-        save_path += '/'
-
-
     if not os.path.isdir(save_path):
         sys.exit("Directory " + save_path + " doesn't exist." + "\n")
 
     for filename in input_datasets.values():
-        if not os.path.isfile(path_to_inputfiles + filename):
-             sys.exit("File " + path_to_inputfiles + filename + " doesn't exist." + "\n")
+        if not os.path.isfile(os.path.join(path_to_inputfiles, filename)):
+             sys.exit("File " + os.path.join(path_to_inputfiles, filename) + " doesn't exist." + "\n")
 
     if percentage_validation + percentage_test >= 100:
         sys.exit('Values for "percentage_validation" and "percentage_test" are not allowed.' + '\n')
@@ -138,7 +125,7 @@ def create_dataset_for_training(save_path,
     print('Load data:')
     for process in process_categories:
         print('    ' + 'Loading ' + input_datasets[process])
-        df = pd.concat(pd.read_msgpack(path_to_inputfiles + input_datasets[process]))
+        df = pd.concat(pd.read_msgpack(os.path.join(path_to_inputfiles, input_datasets[process])))
 
         columns_old = df.columns
         columns_new = np.concatenate([process_categories, columns_old])
@@ -225,10 +212,10 @@ def create_dataset_for_training(save_path,
     # The functions mean/std ignore np.nan values by default.
     # Mean and standard deviation are saved, so the values can be applied to the data which will be classified.
 
-    df.apply(lambda column: column.mean() if column.name not in exclude_from_normalization else np.nan).dropna().to_msgpack(save_path + 'mean_normalization.msg')
+    df.apply(lambda column: column.mean() if column.name not in exclude_from_normalization else np.nan).dropna().to_msgpack(os.path.join(save_path, 'mean_normalization.msg'))
     df = df.apply(lambda column: column-column.mean() if column.name not in exclude_from_normalization else column)
 
-    df.apply(lambda column: column.std() if column.name not in exclude_from_normalization else np.nan).dropna().to_msgpack(save_path + 'std_normalization.msg')
+    df.apply(lambda column: column.std() if column.name not in exclude_from_normalization else np.nan).dropna().to_msgpack(os.path.join(save_path, 'std_normalization.msg'))
     df = df.apply(lambda column: column/column.std() if column.name not in exclude_from_normalization else column)
 
 
@@ -347,17 +334,17 @@ def create_dataset_for_training(save_path,
     #----------------------------------------------------------------------------------------------------
     # Save data.
 
-    np.save(save_path + 'train', df_train.values)
-    np.save(save_path + 'val', df_val.values)
+    np.save(os.path.join(save_path, 'train'), df_train.values)
+    np.save(os.path.join(save_path, 'val'), df_val.values)
     if percentage_test != 0:
-        np.save(save_path + 'test', df_test.values)
+        np.save(os.path.join(save_path, 'test'), df_test.values)
 
-    with open(save_path + 'variables.txt', 'w') as outputfile_variables:
+    with open(os.path.join(save_path, 'variables.txt'), 'w') as outputfile_variables:
         for variable in df.columns:
             if variable not in process_categories and variable != 'Training_Weight':
                 outputfile_variables.write(variable + '\n')
 
-    with open(save_path + 'process_labels.txt', 'w') as outputfile_process_labels:
+    with open(os.path.join(save_path, 'process_labels.txt'), 'w') as outputfile_process_labels:
         for process in process_categories:
             if process in df.columns:
                 outputfile_process_labels.write(process + '\n')
