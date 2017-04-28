@@ -88,11 +88,11 @@ def create_dataset_for_training(save_path,
                                 number_of_saved_jets=10, 
                                 jet_btag_category='all',
                                 selected_process_categories='all',
-                                binary_classification='no',
+                                binary_classification=False,
+                                binary_classification_signal=None,
                                 select_variables=False,
                                 path_to_variable_list=None,
-                                percentage_validation=30,
-                                percentage_test=0):
+                                percentage_validation=5):
 
 
     print('\n' + 'CREATE DATA SET FOR TRAINING' + '\n')
@@ -194,14 +194,17 @@ def create_dataset_for_training(save_path,
     #----------------------------------------------------------------------------------------------------
     # Remove variables with standard deviation of zero.
 
+    standard_deviation_zero_variables = list()
     for variable in df.columns:
         if variable not in process_categories:
             if df[variable].std() == 0:
-                df.drop(variable, axis=1, inplace=True)
+                standard_deviation_zero_variables.append(variable)
                 display_output.print_variable('The following variables will not be included in the training data set due to a standard deviation of zero:', variable)
             elif np.isnan(df[variable].sum()):
-                df.drop(variable, axis=1, inplace=True)
+                standard_deviation_zero_variables.append(variable)
                 display_output.print_variable('The following variables will not be included in the training data set due to a standard deviation of zero:', variable)
+
+    df.drop(standard_deviation_zero_variables, axis=1, inplace=True)
 
     display_output.end()
 
@@ -232,9 +235,10 @@ def create_dataset_for_training(save_path,
     if jet_btag_category != 'all':
         df.query(definitions.jet_btag_category(jet_btag_category), inplace=True)
 
-        for process in process_categories:
+        for process in process_categories[:]:
             if df[process].sum() == 0:
                 df.drop(process, axis=1, inplace=True)
+                process_categories.remove(process)
                 display_output.print_variable("After dropping events which don't belong to the selected jet btag category, there are no events of the following processes left:", process)
 
         display_output.end()
@@ -252,9 +256,10 @@ def create_dataset_for_training(save_path,
                 condition += ' or ' + selected_process_categories[i] + ' == 1'
         df.query(condition, inplace=True)
 
-        for process in process_categories:
+        for process in process_categories[:]:
             if df[process].sum() == 0:
                 df.drop(process, axis=1, inplace=True)
+                process_categories.remove(process)
                 display_output.print_variable("The following process categories have been dropped:", process)
 
         display_output.end()
@@ -263,21 +268,23 @@ def create_dataset_for_training(save_path,
     #----------------------------------------------------------------------------------------------------
     # Adjust process labels for binary classification if desired.
 
-    if binary_classification != 'no':
-        for process in process_categories:
-            if process != binary_classification:
-                if process in df.columns:
-                    df.drop(process, axis=1, inplace=True)
+    if binary_classification:
+        binary_classification_no_signal = [process for process in process_categories if process != binary_classification_signal]
+        
+        df.drop(binary_classification_no_signal, axis=1, inplace=True)
 
 
     #----------------------------------------------------------------------------------------------------
     # Remove variables which have a standard deviation of zero after dropping events which don't belong to the selected jet btag category.
 
+    standard_deviation_zero_variables_2 = list()
     for variable in df.columns:
         if variable not in process_categories:
             if df[variable].std() == 0:
-                df.drop(variable, axis=1, inplace=True)
+                standard_deviation_zero_variables_2.append(variable)
                 display_output.print_variable("The following variables will be dropped because they have a standard deviation of zero after dropping events which don't belong to the selected jet btag category:", variable)
+
+    df.drop(standard_deviation_zero_variables_2, axis=1, inplace=True)
 
     display_output.end()
 
@@ -304,14 +311,12 @@ def create_dataset_for_training(save_path,
 
 
     if select_variables=='include':
-        for variable in df.columns:
-            if variable not in variable_list:
-                df.drop(variable, axis=1, inplace=True)
+        unwanted_variables = [variable for variable in df.columns if variable not in variable_list]
+        df.drop(unwanted_variables, axis=1, inplace=True)
 
     elif select_variables=='exclude':
-        for variable in df.columns:
-            if variable in variable_list:
-                df.drop(variable, axis=1, inplace=True)
+        unwanted_variables = [variable for variable in df.columns if variable in variable_list]
+        df.drop(unwanted_variables, axis=1, inplace=True)
 
 
     #----------------------------------------------------------------------------------------------------
