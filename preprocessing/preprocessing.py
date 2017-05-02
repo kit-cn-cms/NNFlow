@@ -86,6 +86,7 @@ def create_dataset_for_training(save_path,
                                 input_datasets,
                                 path_to_generator_level_variables,
                                 path_to_weight_variables,
+                                path_to_other_always_excluded_variables,
                                 number_of_saved_jets=10, 
                                 jet_btag_category='all',
                                 selected_process_categories='all',
@@ -152,6 +153,15 @@ def create_dataset_for_training(save_path,
         generator_level_variables = [variable.rstrip() for variable in file_generator_level_variables.readlines() if variable in df.columns]
 
     df.drop(generator_level_variables, axis=1, inplace=True)
+
+
+    #----------------------------------------------------------------------------------------------------
+    # Remove other always excluded variables.
+
+    with open(path_to_other_always_excluded_variables, 'r') as file_other_always_excluded_variables:
+        other_always_excluded_variables = [variable.rstrip() for variable in file_other_always_excluded_variables.readlines() if variable in df.columns]
+
+    df.drop(other_always_excluded_variables, axis=1, inplace=True)
 
 
     #----------------------------------------------------------------------------------------------------
