@@ -148,13 +148,10 @@ def create_dataset_for_training(save_path,
     #----------------------------------------------------------------------------------------------------
     # Remove generator level variables.
 
-    generator_level_variables = list()
     with open(path_to_generator_level_variables, 'r') as file_generator_level_variables:
-        for variable in file_generator_level_variables.readlines():
-            generator_level_variables.append(variable.rstrip())
+        generator_level_variables = [variable.rstrip() for variable in file_generator_level_variables.readlines() if variable in df.columns]
 
-    generator_level_variables_to_drop = [variable for variable in generator_level_variables if variable in df.columns]
-    df.drop(generator_level_variables_to_drop, axis=1, inplace=True)
+    df.drop(generator_level_variables, axis=1, inplace=True)
 
 
     #----------------------------------------------------------------------------------------------------
@@ -316,24 +313,19 @@ def create_dataset_for_training(save_path,
     df_train['Training_Weight'] = 1
 
 
-    weight_variables = list()
     with open(path_to_weight_variables, 'r') as file_weight_variables:
-        for variable in file_weight_variables.readlines():
-            weight_variables.append(variable.rstrip())
+        weight_variables = [variable.rstrip() for variable in file_weight_variables.readlines() if variable.rstrip() in df.columns]
 
-    weight_variables_to_drop = [variable for variable in weight_variables if variable in df.columns]
-    df_train.drop(weight_variables_to_drop, axis=1, inplace=True)
-    df_test.drop(weight_variables_to_drop, axis=1, inplace=True)
+    df_train.drop(weight_variables, axis=1, inplace=True)
+    df_test.drop(weight_variables, axis=1, inplace=True)
 
 
     #----------------------------------------------------------------------------------------------------
     # Only keep a subset of the variables if desired.
 
-    variable_list = list()
     if select_variables=='include' or select_variables=='exclude':
         with open(path_to_variable_list, 'r') as file_variable_list:
-            for variable in file_variable_list.readlines():
-                variable_list.append(variable.rstrip())
+            variable_list = [variable.rstrip() for variable in file_variable_list.readlines()]
 
 
     if select_variables=='include':
