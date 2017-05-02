@@ -210,10 +210,7 @@ def create_dataset_for_training(save_path,
     standard_deviation_zero_variables = list()
     for variable in df_train.columns:
         if variable not in process_categories:
-            if df_train[variable].std() == 0:
-                standard_deviation_zero_variables.append(variable)
-                display_output.print_variable('The following variables will not be included in the training data set due to a standard deviation of zero:', variable)
-            elif np.isnan(df_train[variable].sum()):
+            if (df_train[variable].std() == 0) or (df_train[variable].isnull().all()) or (np.isnan(df_train[variable].std())):
                 standard_deviation_zero_variables.append(variable)
                 display_output.print_variable('The following variables will not be included in the training data set due to a standard deviation of zero:', variable)
 
@@ -224,7 +221,7 @@ def create_dataset_for_training(save_path,
 
 
     #----------------------------------------------------------------------------------------------------
-    # Perform normalization.
+    # Perform normalization. TODO: Train/Test
     # Flags, weights and boolean jet existence variables are excluded.
     # The functions mean/std ignore np.nan values by default.
     # Mean and standard deviation are saved, so the values can be applied to the data which will be classified.
