@@ -87,6 +87,8 @@ def create_dataset_for_training(save_path,
                                 path_to_generator_level_variables,
                                 path_to_weight_variables,
                                 path_to_other_always_excluded_variables,
+                                path_to_vector_variables_first_entry,
+                                path_to_vector_variables_jet,
                                 number_of_saved_jets=10, 
                                 jet_btag_category='all',
                                 selected_process_categories='all',
@@ -175,21 +177,43 @@ def create_dataset_for_training(save_path,
 
 
     #----------------------------------------------------------------------------------------------------
-    # Copy the values from the jet arrays to columns of the data frame.
+    # Copy the values from the arrays to columns of the data frame.
     # Afterwards delete the columns which contain the arrays.
 
-    jet_variables = [variable for variable in df.columns if isinstance(df.iloc[0].loc[variable], np.ndarray)]
+    with open(path_to_vector_variables_first_entry, 'r') as file_vector_variables_first_entry:
+        vector_variables_first_entry = [variable.rstrip() for variable in file_vector_variables_first_entry.readlines() if variable.rstrip() in df.columns]
 
-    for variable in jet_variables:
+    with open(path_to_vector_variables_jet, 'r') as file_vector_variables_jet:
+        vector_variables_jet = [variable.rstrip() for variable in file_vector_variables_jet.readlines() if variable.rstrip() in df.columns]
+
+
+    for variable in vector_variables_first_entry:
+        display_output.print_variable('For the following vector variables only the first entry will be saved:', variable)
+        df[variable + '_' + str(1)] = df[variable].apply(lambda row: row[0])
+
+    df.drop(vector_variables_first_entry, axis=1, inplace=True)
+
+    display_output.end()
+
+
+    for variable in vector_variables_jet:
         display_output.print_variable('The following variables will be treated as jet variables:', variable)
 
         for i in range(number_of_saved_jets):
             df[variable + '_' + str(i+1)] = df[variable].apply(lambda row: row[i] if i<len(row) else np.nan)
 
-    df.drop(jet_variables, axis=1, inplace=True)
+    df.drop(vector_variables_jet, axis=1, inplace=True)
 
     display_output.end()
 
+
+    other_vector_variables = [variable for variable in df.columns if isinstance(df.iloc[0].loc[variable], np.ndarray)]
+    if len(other_vector_variables):
+        for variable in other_vector_variables:
+            display_output.print_variable("You didn't specify what to do with the following vector variables. They will be dropped.", variable)
+        display_output.end()
+
+        df.drop(other_vector_variables, axis=1, inplace=True)
 
     #----------------------------------------------------------------------------------------------------
     # Create a boolean variable for each jet. This variable is 0 if the jet exists and 1 if the jet doesn't exist.
