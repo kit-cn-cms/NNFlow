@@ -85,6 +85,7 @@ def create_dataset_for_training(save_path,
                                 path_to_inputfiles,
                                 input_datasets,
                                 path_to_generator_level_variables,
+                                path_to_weight_variables,
                                 number_of_saved_jets=10, 
                                 jet_btag_category='all',
                                 selected_process_categories='all',
@@ -152,8 +153,8 @@ def create_dataset_for_training(save_path,
         for variable in file_generator_level_variables.readlines():
             generator_level_variables.append(variable.rstrip())
 
-    variables_to_drop = [variable for variable in generator_level_variables if variable in df.columns]
-    df.drop(variables_to_drop, axis=1, inplace=True)
+    generator_level_variables_to_drop = [variable for variable in generator_level_variables if variable in df.columns]
+    df.drop(generator_level_variables_to_drop, axis=1, inplace=True)
 
 
     #----------------------------------------------------------------------------------------------------
@@ -245,7 +246,7 @@ def create_dataset_for_training(save_path,
 
 
     #----------------------------------------------------------------------------------------------------
-    # Only keep of subset the process categories if desired.
+    # Only keep a subset of the process categories if desired.
 
     if selected_process_categories != 'all':
         condition = ''
@@ -295,9 +296,13 @@ def create_dataset_for_training(save_path,
     df['Training_Weight'] = 1
 
 
-    for variable in df.columns:
-        if variable[:6] == 'Weight':
-            df.drop(variable, axis=1, inplace=True)
+    weight_variables = list()
+    with open(path_to_weight_variables, 'r') as file_weight_variables:
+        for variable in file_weight_variables.readlines():
+            weight_variables.append(variable.rstrip())
+
+    weight_variables_to_drop = [variable for variable in weight_variables if variable in df.columns]
+    df.drop(weight_variables_to_drop, axis=1, inplace=True)
 
 
     #----------------------------------------------------------------------------------------------------
