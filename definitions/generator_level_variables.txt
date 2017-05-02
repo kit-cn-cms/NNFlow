@@ -12,7 +12,6 @@ Prescale_HLT_IsoMu24_vX
 Prescale_HLT_IsoTkMu24_vX
 Evt_ID
 Evt_Lumi
-Evt_Odd
 Evt_Run
 GenEvt_I_TTPlusBB
 GenEvt_I_TTPlusCC

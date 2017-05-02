@@ -193,19 +193,32 @@ def create_dataset_for_training(save_path,
 
 
     #----------------------------------------------------------------------------------------------------
+    # Split into training and test data set. TODO: Change 0/1 if necessary
+
+    df_train = df.query('Evt_Odd = 1')
+    df_test  = df.query('Evt_Odd = 0')
+
+    df_train.drop('Evt_Odd', axis=1, inplace=True)
+    df_test.drop('Evt_Odd', axis=1, inplace=True)
+
+    del df
+
+
+    #----------------------------------------------------------------------------------------------------
     # Remove variables with standard deviation of zero.
 
     standard_deviation_zero_variables = list()
-    for variable in df.columns:
+    for variable in df_train.columns:
         if variable not in process_categories:
-            if df[variable].std() == 0:
+            if df_train[variable].std() == 0:
                 standard_deviation_zero_variables.append(variable)
                 display_output.print_variable('The following variables will not be included in the training data set due to a standard deviation of zero:', variable)
-            elif np.isnan(df[variable].sum()):
+            elif np.isnan(df_train[variable].sum()):
                 standard_deviation_zero_variables.append(variable)
                 display_output.print_variable('The following variables will not be included in the training data set due to a standard deviation of zero:', variable)
 
-    df.drop(standard_deviation_zero_variables, axis=1, inplace=True)
+    df_train.drop(standard_deviation_zero_variables, axis=1, inplace=True)
+    df_test.drop(standard_deviation_zero_variables, axis=1, inplace=True)
 
     display_output.end()
 
@@ -234,12 +247,19 @@ def create_dataset_for_training(save_path,
     # Afterwards check if there are still events for each category in the data frame. If not, remove corresponding labels.
 
     if jet_btag_category != 'all':
-        df.query(definitions.jet_btag_category(jet_btag_category), inplace=True)
+        df_train.query(definitions.jet_btag_category(jet_btag_category), inplace=True)
+        df_test.query(definitions.jet_btag_category(jet_btag_category), inplace=True)
 
         for process in process_categories[:]:
-            if df[process].sum() == 0:
-                df.drop(process, axis=1, inplace=True)
+            if df_train[process].sum() == 0:
+                df_train.drop(process, axis=1, inplace=True)
                 process_categories.remove(process)
+
+                if df_test[process].sum != 0:
+                    df_test.query(process + '== 0', inplace=True)
+
+                df_test.drop(process, axis=1, inplace=True)
+
                 display_output.print_variable("After dropping events which don't belong to the selected jet btag category, there are no events of the following processes left:", process)
 
         display_output.end()
@@ -255,7 +275,8 @@ def create_dataset_for_training(save_path,
                 condition += selected_process_categories[i] + ' == 1'
             else:
                 condition += ' or ' + selected_process_categories[i] + ' == 1'
-        df.query(condition, inplace=True)
+        df_train.query(condition, inplace=True)
+        df_test.query(condition, inplace=True)
 
         for process in process_categories[:]:
             if df[process].sum() == 0:
@@ -272,20 +293,22 @@ def create_dataset_for_training(save_path,
     if binary_classification:
         binary_classification_no_signal = [process for process in process_categories if process != binary_classification_signal]
         
-        df.drop(binary_classification_no_signal, axis=1, inplace=True)
+        df_train.drop(binary_classification_no_signal, axis=1, inplace=True)
+        df_test.drop(binary_classification_no_signal, axis=1, inplace=True)
 
 
     #----------------------------------------------------------------------------------------------------
     # Remove variables which have a standard deviation of zero after dropping events which don't belong to the selected jet btag category.
 
     standard_deviation_zero_variables_2 = list()
-    for variable in df.columns:
+    for variable in df_train.columns:
         if variable not in process_categories:
-            if df[variable].std() == 0:
+            if df_train[variable].std() == 0:
                 standard_deviation_zero_variables_2.append(variable)
                 display_output.print_variable("The following variables will be dropped because they have a standard deviation of zero after dropping events which don't belong to the selected jet btag category:", variable)
 
-    df.drop(standard_deviation_zero_variables_2, axis=1, inplace=True)
+    df_train.drop(standard_deviation_zero_variables_2, axis=1, inplace=True)
+    df_test.drop(standard_deviation_zero_variables_2, axis=1, inplace=True)
 
     display_output.end()
 
@@ -293,7 +316,7 @@ def create_dataset_for_training(save_path,
     #----------------------------------------------------------------------------------------------------
     # Calculate weight to be applied for the training (TODO) and remove weight variables afterwards.
 
-    df['Training_Weight'] = 1
+    df_train['Training_Weight'] = 1
 
 
     weight_variables = list()
@@ -302,7 +325,8 @@ def create_dataset_for_training(save_path,
             weight_variables.append(variable.rstrip())
 
     weight_variables_to_drop = [variable for variable in weight_variables if variable in df.columns]
-    df.drop(weight_variables_to_drop, axis=1, inplace=True)
+    df_train.drop(weight_variables_to_drop, axis=1, inplace=True)
+    df_test.drop(weight_variables_to_drop, axis=1, inplace=True)
 
 
     #----------------------------------------------------------------------------------------------------
@@ -317,28 +341,27 @@ def create_dataset_for_training(save_path,
 
     if select_variables=='include':
         unwanted_variables = [variable for variable in df.columns if variable not in variable_list]
-        df.drop(unwanted_variables, axis=1, inplace=True)
+        df_train.drop(unwanted_variables, axis=1, inplace=True)
+        df_test.drop(unwanted_variables, axis=1, inplace=True)
 
     elif select_variables=='exclude':
         unwanted_variables = [variable for variable in df.columns if variable in variable_list]
-        df.drop(unwanted_variables, axis=1, inplace=True)
+        df_train.drop(unwanted_variables, axis=1, inplace=True)
+        df_test.drop(unwanted_variables, axis=1, inplace=True)
 
 
     #----------------------------------------------------------------------------------------------------
     # Shuffle events in the data frame.
     # Afterwards split the data set into subsets for training and validation.
 
-    df.index = np.random.permutation(df.shape[0])
-    df.sort_index(inplace=True)
+    df_train.index = np.random.permutation(df.shape[0])
+    df_train.sort_index(inplace=True)
 
-    number_of_validation_events = int(np.floor(percentage_validation/100*df.shape[0]))
-    number_of_test_events = int(np.floor(percentage_test/100*df.shape[0]))
-    number_of_training_events = df.shape[0] - number_of_validation_events - number_of_test_events
+    number_of_validation_events = int(np.floor(percentage_validation/100*df_train.shape[0]))
+    number_of_training_events = df_train.shape[0] - number_of_validation_events
 
-    df_train = df.head(number_of_training_events)
-    df_val = df.tail(number_of_validation_events)
-    if percentage_test != 0:
-        df_test = df.tail(number_of_validation_events + number_of_test_events).head(number_of_test_events)
+    df_val = df_train.tail(number_of_validation_events)
+    df_train = df_train.head(number_of_training_events)
 
 
     #----------------------------------------------------------------------------------------------------
@@ -346,8 +369,7 @@ def create_dataset_for_training(save_path,
 
     np.save(os.path.join(save_path, 'train'), df_train.values)
     np.save(os.path.join(save_path, 'val'), df_val.values)
-    if percentage_test != 0:
-        np.save(os.path.join(save_path, 'test'), df_test.values)
+    np.save(os.path.join(save_path, 'test'), df_test.values)
 
     with open(os.path.join(save_path, 'variables.txt'), 'w') as outputfile_variables:
         for variable in df.columns:
