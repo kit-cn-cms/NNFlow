@@ -225,10 +225,10 @@ def create_dataset_for_training(save_path,
     df_train = df.query('Evt_Odd == 1')
     df_test  = df.query('Evt_Odd == 0')
 
+    del df
+
     df_train.drop('Evt_Odd', axis=1, inplace=True)
     df_test.drop('Evt_Odd', axis=1, inplace=True)
-
-    del df
 
 
     #----------------------------------------------------------------------------------------------------
