@@ -379,12 +379,12 @@ def create_dataset_for_training(save_path,
 
 
     if select_variables=='include':
-        unwanted_variables = [variable for variable in df.columns if variable not in variable_list]
+        unwanted_variables = [variable for variable in df_train.columns if variable not in variable_list]
         df_train.drop(unwanted_variables, axis=1, inplace=True)
         df_test.drop(unwanted_variables, axis=1, inplace=True)
 
     elif select_variables=='exclude':
-        unwanted_variables = [variable for variable in df.columns if variable in variable_list]
+        unwanted_variables = [variable for variable in df_train.columns if variable in variable_list]
         df_train.drop(unwanted_variables, axis=1, inplace=True)
         df_test.drop(unwanted_variables, axis=1, inplace=True)
 
