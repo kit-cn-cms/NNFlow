@@ -260,11 +260,6 @@ def create_dataset_for_training(save_path,
     df_train = df_train.apply(lambda column: column/column.std() if column.name not in exclude_from_normalization else column)
 
 
-    for process in process_categories[:]:
-        print(df_train[process].sum())
-        print(df_test[process].sum())
-
-
     #----------------------------------------------------------------------------------------------------
     # Replace np.nan with zero for the not existing jets.
 
