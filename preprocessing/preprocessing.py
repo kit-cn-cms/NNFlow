@@ -342,9 +342,21 @@ def create_dataset_for_training(save_path,
 
 
     #----------------------------------------------------------------------------------------------------
-    # Calculate weight to be applied for the training (TODO) and remove weight variables afterwards.
+    # Calculate weight to be applied for the training and remove weight variables afterwards.
+    # TODO: Apply other weights, mechanism for multinomial classification.
 
-    df_train['Training_Weight'] = 1
+    training_weights = dict()
+    if binary_classification:
+        N_signal = df_train.iloc[:, 0].sum()
+        N_background = df_train.shape[0] - N_signal
+        
+        training_weights['signal'] = 1/N_signal
+        training_weights['background'] = 1/N_background
+
+        df_train['Training_Weight'] = df_train.iloc[:, 0].apply(lambda row: training_weights['signal'] if row==1 else training_weights['background'])
+
+    else:
+        df_train['Training_Weight'] = 1
 
 
     with open(path_to_weight_variables, 'r') as file_weight_variables:
