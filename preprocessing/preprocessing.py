@@ -263,7 +263,7 @@ def create_dataset_for_training(save_path,
     #----------------------------------------------------------------------------------------------------
     # Replace np.nan with zero for the not existing jets.
 
-    df.fillna(value=0, inplace=True)
+    df_train.fillna(value=0, inplace=True)
 
 
     #----------------------------------------------------------------------------------------------------
