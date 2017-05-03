@@ -364,7 +364,7 @@ def create_dataset_for_training(save_path,
 
 
     with open(path_to_weight_variables, 'r') as file_weight_variables:
-        weight_variables = [variable.rstrip() for variable in file_weight_variables.readlines() if variable.rstrip() in df.columns]
+        weight_variables = [variable.rstrip() for variable in file_weight_variables.readlines() if variable.rstrip() in df_train.columns]
 
     df_train.drop(weight_variables, axis=1, inplace=True)
     df_test.drop(weight_variables, axis=1, inplace=True)
