@@ -23,13 +23,17 @@ input_datasets =
 
 
 #----------------------------------------------------------------------------------------------------
-path_to_generator_level_variables =
+path_to_generator_level_variables       =
+path_to_weight_variables                =
+path_to_other_always_excluded_variables =
 
 
 #----------------------------------------------------------------------------------------------------
 # The default value for the number of saved jets is 10.
 
-#number_of_saved_jets =
+path_to_vector_variables_first_entry =
+path_to_vector_variables_jet         =
+#number_of_saved_jets                 =
 
 
 #----------------------------------------------------------------------------------------------------
@@ -49,7 +53,8 @@ path_to_generator_level_variables =
 #----------------------------------------------------------------------------------------------------
 # If you want to do a binary classification, specify the process which should be treated as signal.
 
-#binary_classification =
+#binary_classification        =
+#binary_classification_signal =
 
 
 #----------------------------------------------------------------------------------------------------
@@ -71,16 +76,20 @@ path_to_generator_level_variables =
 
 
 #----------------------------------------------------------------------------------------------------
-create_dataset_for_training(save_path                         = save_path
-                          , path_to_inputfiles                = path_to_inputfiles
-                          , input_datasets                    = input_datasets
-                          , path_to_generator_level_variables = path_to_generator_level_variables
-#                          , number_of_saved_jets              = number_of_saved_jets
-#                          , jet_btag_category                 = jet_btag_category
-#                          , selected_process_categories       = selected_process_categories
-#                          , binary_classification             = binary_classification
-#                          , select_variables                  = select_variables
-#                          , path_to_variable_list             = path_to_variable_list
-#                          , percentage_validation             = percentage_validation
-#                          , percentage_test                   = percentage_test
+create_dataset_for_training(save_path                               = save_path
+                          , path_to_inputfiles                      = path_to_inputfiles
+                          , input_datasets                          = input_datasets
+                          , path_to_generator_level_variables       = path_to_generator_level_variables
+                          , path_to_weight_variables                = path_to_weight_variables
+                          , path_to_other_always_excluded_variables = path_to_other_always_excluded_variables
+                          , path_to_vector_variables_first_entry    = path_to_vector_variables_first_entry
+                          , path_to_vector_variables_jet            = path_to_vector_variables_jet
+#                          , number_of_saved_jets                    = number_of_saved_jets
+#                          , jet_btag_category                       = jet_btag_category
+#                          , selected_process_categories             = selected_process_categories
+#                          , binary_classification                   = binary_classification
+#                          , binary_classification_signal            = binary_classification_signal
+#                          , select_variables                        = select_variables
+#                          , path_to_variable_list                   = path_to_variable_list
+#                          , percentage_validation                   = percentage_validation
                             )
