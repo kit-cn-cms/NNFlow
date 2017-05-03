@@ -254,16 +254,16 @@ def create_dataset_for_training(save_path,
     # Mean and standard deviation are saved, so the values can be applied to the data which will be classified.
 
 #    df.apply(lambda column: column.mean() if column.name not in exclude_from_normalization else np.nan).dropna().to_msgpack(os.path.join(save_path, 'mean_normalization.msg'))
-    df_train = df_train.apply(lambda column: column-column.mean() if column.name not in exclude_from_normalization else column)
+#    df_train = df_train.apply(lambda column: column-column.mean() if column.name not in exclude_from_normalization else column)
 
 #    df.apply(lambda column: column.std() if column.name not in exclude_from_normalization else np.nan).dropna().to_msgpack(os.path.join(save_path, 'std_normalization.msg'))
-    df_train = df_train.apply(lambda column: column/column.std() if column.name not in exclude_from_normalization else column)
+#    df_train = df_train.apply(lambda column: column/column.std() if column.name not in exclude_from_normalization else column)
 
 
     #----------------------------------------------------------------------------------------------------
     # Replace np.nan with zero for the not existing jets.
 
-    df_train.fillna(value=0, inplace=True)
+#    df_train.fillna(value=0, inplace=True)
 
 
     #----------------------------------------------------------------------------------------------------
@@ -287,6 +287,14 @@ def create_dataset_for_training(save_path,
                 display_output.print_variable("After dropping events which don't belong to the selected jet btag category, there are no events of the following processes left:", process)
 
         display_output.end()
+
+
+    #----------------------------------------------------------------------------------------------------
+    # Temporary normalization TODO: Remove
+
+    df_train = df_train.apply(lambda column: column-column.mean() if column.name not in exclude_from_normalization else column)
+    df_train = df_train.apply(lambda column: column/column.std() if column.name not in exclude_from_normalization else column)
+    df_train.fillna(value=0, inplace=True)
 
 
     #----------------------------------------------------------------------------------------------------
