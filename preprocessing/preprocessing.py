@@ -109,12 +109,8 @@ def create_dataset_for_training(save_path,
         if not os.path.isfile(os.path.join(path_to_inputfiles, filename)):
              sys.exit("File " + os.path.join(path_to_inputfiles, filename) + " doesn't exist." + "\n")
 
-    if percentage_validation + percentage_test >= 100:
-        sys.exit('Values for "percentage_validation" and "percentage_test" are not allowed.' + '\n')
     if not (percentage_validation > 0 and percentage_validation < 100):
         sys.exit('Value for "percentage_validation" is not allowed.' + '\n')
-    if not (percentage_test >= 0 and percentage_test < 100):
-        sys.exit('Value for "percentage_test" is not allowed.' + '\n')
 
 
     display_output = variable_printer()
@@ -224,7 +220,7 @@ def create_dataset_for_training(save_path,
 
 
     #----------------------------------------------------------------------------------------------------
-    # Split into training and test data set. TODO: Change 0/1 if necessary
+    # Split into training and test data set.
 
     df_train = df.query('Evt_Odd = 1')
     df_test  = df.query('Evt_Odd = 0')
