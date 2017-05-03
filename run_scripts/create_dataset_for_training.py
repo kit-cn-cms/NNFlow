@@ -72,7 +72,6 @@ path_to_vector_variables_jet         =
 # The default value is 30 for the validation set and 0 for the test set.
 
 #percentage_validation =
-#percentage_test =
 
 
 #----------------------------------------------------------------------------------------------------
