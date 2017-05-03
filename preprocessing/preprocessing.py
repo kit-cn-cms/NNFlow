@@ -222,8 +222,8 @@ def create_dataset_for_training(save_path,
     #----------------------------------------------------------------------------------------------------
     # Split into training and test data set.
 
-    df_train = df.query('Evt_Odd == 1')
-    df_test  = df.query('Evt_Odd == 0')
+    df_train = df.query('Evt_Odd == 1').copy()
+    df_test  = df.query('Evt_Odd == 0').copy()
 
     del df
 
