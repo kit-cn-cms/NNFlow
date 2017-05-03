@@ -411,13 +411,13 @@ def create_dataset_for_training(save_path,
     np.save(os.path.join(save_path, 'test'), df_test.values)
 
     with open(os.path.join(save_path, 'variables.txt'), 'w') as outputfile_variables:
-        for variable in df.columns:
+        for variable in df_train.columns:
             if variable not in process_categories and variable != 'Training_Weight':
                 outputfile_variables.write(variable + '\n')
 
     with open(os.path.join(save_path, 'process_labels.txt'), 'w') as outputfile_process_labels:
         for process in process_categories:
-            if process in df.columns:
+            if process in df_train.columns:
                 outputfile_process_labels.write(process + '\n')
 
 
