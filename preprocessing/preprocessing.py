@@ -393,7 +393,7 @@ def create_dataset_for_training(save_path,
     # Shuffle events in the data frame.
     # Afterwards split the data set into subsets for training and validation.
 
-    df_train.index = np.random.permutation(df.shape[0])
+    df_train.index = np.random.permutation(df_train.shape[0])
     df_train.sort_index(inplace=True)
 
     number_of_validation_events = int(np.floor(percentage_validation/100*df_train.shape[0]))
