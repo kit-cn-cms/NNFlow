@@ -3,7 +3,6 @@ Jet_CSV
 Jet_Charge
 Jet_E
 Jet_Eta
-Jet_Flav
 Jet_M
 Jet_Phi
 Jet_Pt
