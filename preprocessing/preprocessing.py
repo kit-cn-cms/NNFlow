@@ -96,7 +96,7 @@ def create_dataset_for_training(save_path,
                                 binary_classification_signal=None,
                                 select_variables=False,
                                 path_to_variable_list=None,
-                                percentage_validation=5):
+                                percentage_validation=20):
 
 
     print('\n' + 'CREATE DATA SET FOR TRAINING' + '\n')
