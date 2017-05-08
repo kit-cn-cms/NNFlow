@@ -11,32 +11,25 @@ from root_numpy import root2array
 from definitions import definitions
 
 
-class variable_printer:
-    def __init__(self):
-        self._printed_heading = False
-
-    def print_variable(self, heading, variable):
-        if not self._printed_heading:
-            print(heading)
-            self._printed_heading = True
-        print('    ' + variable)
-
-    def end(self):
-        if self._printed_heading:
-            print('\n', end='')
-        self._printed_heading = False
 
 
-def root_to_pandas(save_path,
-                   filename_outputfile,
-                   path_to_inputfiles,
-                   filenames_inputfiles,
-                   treenames=[None],
-                   split_data_frame=False,
-                   conditions_for_splitting=None):
+def root_to_HDF5(save_path,
+                 filename_outputfile,
+                 path_to_inputfiles,
+                 filenames_inputfiles,
+                 treenames=[None],
+                 path_to_generator_level_variables,
+                 path_to_other_always_excluded_variables,
+                 path_to_vector_variables_lepton,
+                 path_to_vector_variables_jet,
+                 number_of_saved_jets=4,
+                 number_of_saved_leptons=1,
+                 percentage_validation=20,
+                 split_data_frame=False,
+                 conditions_for_splitting=None):
 
 
-    print('\n' + 'CONVERT ROOT FILES TO PANDAS DATA FRAMES' + '\n')
+    print('\n' + 'CONVERT ROOT FILES HDF5 FILES' + '\n')
 
 
     if isinstance(filenames_inputfiles, basestring):
@@ -52,28 +45,156 @@ def root_to_pandas(save_path,
     for filename in filenames_inputfiles:
         if not os.path.isfile(os.path.join(path_to_inputfiles, filename)):
              sys.exit("File " + os.path.join(path_to_inputfiles, filename) + " doesn't exist." + "\n")
+   
+    if not os.path.isfile(path_to_generator_level_variables):
+        sys.exit("File " + path_to_generator_level_variables + " doesn't exist." + "\n")
 
+    if not os.path.isfile(path_to_other_always_excluded_variables):
+        sys.exit("File " + path_to_other_always_excluded_variables + " doesn't exist." + "\n")
+
+    if not os.path.isfile(path_to_vector_variables_lepton):
+        sys.exit("File " + path_to_vector_variables_lepton + " doesn't exist." + "\n")
+
+    if not os.path.isfile(path_to_vector_variables_jet):
+        sys.exit("File " + path_to_vector_variables_jet + " doesn't exist." + "\n")
+
+
+    if not (percentage_validation > 0 and percentage_validation < 100):
+        sys.exit('Value for "percentage_validation" is not allowed.' + '\n')
+
+
+    #----------------------------------------------------------------------------------------------------
+    # Remove old output files.
+
+    if not split_data_frame:
+        if os.path.isfile(os.path.join(save_path, filename_outputfile + '.hdf')):
+            os.remove(os.path.join(save_path, filename_outputfile + '.hdf'))
+    else:
+        for process in conditions_for_splitting.keys():
+            if os.path.isfile(os.path.join(save_path, filename_outputfile + '_' + process '.hdf')):
+                os.remove(os.path.join(save_path, filename_outputfile + '_' + process '.hdf'))
+
+
+    #----------------------------------------------------------------------------------------------------
+    # Create list of generator level variables, other always excluded variables and vector variables.
+
+    structured_array = root2array(os.path.join(path_to_inputfiles, filenames_inputfiles[0]), treenames[0])
+    df = pd.DataFrame(structured_array)
+
+    with open(path_to_generator_level_variables, 'r') as file_generator_level_variables:
+        generator_level_variables = [variable.rstrip() for variable in file_generator_level_variables.readlines() if variable.rstrip() in df.columns]
+    with open(path_to_other_always_excluded_variables, 'r') as file_other_always_excluded_variables:
+        other_excluded_variables = [variable.rstrip() for variable in file_other_always_excluded_variables.readlines() if variable.rstrip() in df.columns]
+    excluded_variables = generator_level_variables+other_excluded_variables
+
+    with open(path_to_vector_variables_lepton, 'r') as file_vector_variables_lepton:
+        vector_variables_lepton = [variable.rstrip() for variable in file_vector_variables_lepton.readlines() if variable.rstrip() in df.columns]
+    with open(path_to_vector_variables_jet, 'r') as file_vector_variables_jet:
+        vector_variables_jet = [variable.rstrip() for variable in file_vector_variables_jet.readlines() if variable.rstrip() in df.columns]
+
+    other_vector_variables = [variable for variable in df.columns if isinstance(df.iloc[0].loc[variable], np.ndarray) and variable not in vector_variables_lepton + vector_variables_jet + excluded_variables]
+    excluded_variables += other_vector_variables
+
+    del structured_array
+    del df
+
+
+    #----------------------------------------------------------------------------------------------------
+    # Display output.
+
+    print('Generator level variables:')
+    for variable in generator_level_variables:
+        print('    ' + variable)
+    print('\n', end='')
+
+
+    print('Other excluded variables:')
+    for variable in other_excluded_variables:
+        print('    ' + variable)
+    print('\n', end='')
+
+
+    print('Lepton variables:')
+    for variable in vector_variables_lepton:
+        print('    ' + variable)
+    print('\n', end='')
+
+
+    print('Jet variables:')
+    for variable in vector_variables_jet:
+        print('    ' + variable)
+    print('\n', end='')
+
+
+    if len(other_vector_variables) != 0:
+        print('The following vector variables were not specified and will be removed:')
+        for variable in other_vector_variables:
+            print('    ' + variable)
+        print('\n', end='')
+
+
+    #----------------------------------------------------------------------------------------------------
+    # Load and convert data.
 
     print('Loading and converting data')
-    df_list = list()
     for filename in filenames_inputfiles:
         print('    ' + 'Processing ' + filename)
         for treename in treenames:
             structured_array = root2array(os.path.join(path_to_inputfiles, filename), treename)
             df = pd.DataFrame(structured_array)
-            df_list.append(df)
 
-    df = pd.concat(df_list)
+            #--------------------------------------------------------------------------------------------
+            # Remove excluded variables.
+            df.drop(excluded_variables, axis=1, inplace=True)
 
+            #--------------------------------------------------------------------------------------------
+            # Copy the values from the arrays to columns of the data frame.
+            for variable in vector_variables_lepton:
+                for i in range(number_of_saved_leptons):
+                    df[variable + '_' + str(i+1)] = df[variable].apply(lambda row: row[i])
+            df.drop(vector_variables_lepton, axis=1, inplace=True)
 
-    print('\n' + 'Saving data')
-    if not split_data_frame:
-        pd.to_msgpack(os.path.join(save_path, filename_outputfile) + '.msg', np.array_split(df, int(np.ceil(df.shape[0]/400000))))
+            for variable in vector_variables_jet:
+                for i in range(number_of_saved_jets):
+                    df[variable + '_' + str(i+1)] = df[variable].apply(lambda row: row[i])
+            df.drop(vector_variables_jet, axis=1, inplace=True)
 
-    else:
-        for process in conditions_for_splitting.keys():
-            df_process = df.query(conditions_for_splitting[process])
-            pd.to_msgpack(os.path.join(save_path, filename_outputfile) + '_' + process + '.msg', np.array_split(df_process, int(np.ceil(df_process.shape[0]/400000))))
+            #--------------------------------------------------------------------------------------------
+            # Split train, val and test data set.
+            df_train = df.query('Evt_Odd == 1').copy()
+            df_test  = df.query('Evt_Odd == 0').copy()
+
+            df_train.drop('Evt_Odd', axis=1, inplace=True)
+            df_test.drop('Evt_Odd', axis=1, inplace=True)
+
+            df_train.index = np.random.permutation(df_train.shape[0])
+            df_train.sort_index(inplace=True)
+            number_of_validation_events = int(np.floor(percentage_validation/100*df_train.shape[0]))
+            number_of_training_events = df_train.shape[0] - number_of_validation_events
+            df_val = df_train.tail(number_of_validation_events)
+            df_train = df_train.head(number_of_training_events)
+
+            #--------------------------------------------------------------------------------------------
+            # Split process categories and save data.
+            if not split_data_frame:
+                with pd.HDFStore(os.path.join(save_path, filename_outputfile + '.hdf')) as store:
+                    store.append('df_train', df_train, format = 'table', data_columns=True, append=True)
+                    store.append('df_val', df_val, format = 'table', data_columns=True, append=True)
+                    store.append('df_test', df_test, format = 'table', data_columns=True, append=True)
+            else:
+                for process in conditions_for_splitting.keys():
+                    df_train_process = df_train.query(conditions_for_splitting[process]).copy()
+                    df_val_process = df_val.query(conditions_for_splitting[process]).copy()
+                    df_test_process = df_test.query(conditions_for_splitting[process]).copy()
+
+                    df_train_process.drop(['TTBB_GenEvt_I_TTPlusBB', 'TTBB_GenEvt_I_TTPlusCC'], axis=1, inplace=True)
+                    df_val_process.drop(['TTBB_GenEvt_I_TTPlusBB', 'TTBB_GenEvt_I_TTPlusCC'], axis=1, inplace=True)
+                    df_test_process.drop(['TTBB_GenEvt_I_TTPlusBB', 'TTBB_GenEvt_I_TTPlusCC'], axis=1, inplace=True)
+
+                    with pd.HDFStore(os.path.join(save_path, filename_outputfile + '_' + process '.hdf')):
+                        store.append('df_train', df_train_process, format = 'table', data_columns=True, append=True)
+                        store.append('df_val', df_val_process, format = 'table', data_columns=True, append=True)
+                        store.append('df_test', df_test_process, format = 'table', data_columns=True, append=True)
 
 
     print('\n' + 'FINISHED' + '\n')
@@ -83,20 +204,16 @@ def root_to_pandas(save_path,
 
 def create_dataset_for_training(save_path,
                                 path_to_inputfiles,
-                                input_datasets,
-                                path_to_generator_level_variables,
+                                input_data_sets,
+                                path_to_merged_data_set,
                                 path_to_weight_variables,
-                                path_to_other_always_excluded_variables,
-                                path_to_vector_variables_first_entry,
-                                path_to_vector_variables_jet,
-                                number_of_saved_jets=10, 
+                                convert_chunksize=10000,
                                 jet_btag_category='all',
                                 selected_process_categories='all',
                                 binary_classification=False,
                                 binary_classification_signal=None,
                                 select_variables=False,
-                                path_to_variable_list=None,
-                                percentage_validation=20):
+                                path_to_variable_list=None):
 
 
     print('\n' + 'CREATE DATA SET FOR TRAINING' + '\n')
@@ -109,21 +226,39 @@ def create_dataset_for_training(save_path,
         if not os.path.isfile(os.path.join(path_to_inputfiles, filename)):
              sys.exit("File " + os.path.join(path_to_inputfiles, filename) + " doesn't exist." + "\n")
 
-    if not (percentage_validation > 0 and percentage_validation < 100):
-        sys.exit('Value for "percentage_validation" is not allowed.' + '\n')
-
-
-    display_output = variable_printer()
 
 
     #----------------------------------------------------------------------------------------------------
     # Load data, add flags for the different processes and concatenate the data frames.
 
-    df_list = list()
-    process_categories = input_datasets.keys()
+    process_categories = input_data_sets.keys()
 
-    print('Load data:')
+    data_sets_modified = False
+    mtime_merged_set = os.getmtime(path_to_merged_data_set)
     for process in process_categories:
+        if os.getmtime(os.path.join(path_to_inputfiles, input_datasets[process])) > mtime_merged_set:
+            data_sets_modified = True
+
+    if data_sets_modified:
+        os.remove(path_to_merged_data_set)
+        with pd.HDFStore(path_to_merged_data_set) as store_output:
+            for process in process_categories:
+                with pd.HDFStore(os.path.join(path_to_inputfiles, input_datasets[process])) as store_input:
+                    for data_set in ['df_train', 'df_val', 'df_test']:
+                        for df_input in store_input.select(data_set, chunksize=convert_chunksize)
+                            df = df_input.copy()
+                            columns_old = df.columns
+                            columns_new = np.concatenate([process_categories, columns_old])
+
+                            for process_label in process_categories:
+                                df[process_label] = 1 if process_label == process else 0
+
+                            df = df.reindex_axis(columns_new, axis=1)
+
+                            store_output.append(data_set, df, format = 'table', data_columns=True, append=True)
+
+
+
         print('    ' + 'Loading ' + input_datasets[process])
         df = pd.concat(pd.read_msgpack(os.path.join(path_to_inputfiles, input_datasets[process])))
 
@@ -216,7 +351,11 @@ def create_dataset_for_training(save_path,
 
     for i in range(number_of_saved_jets):
         df['Jet_' + str(i+1) + '_does_not_exist'] = df['N_Jets'].apply(lambda row: 0 if i<row else 1)
+        df['additionalTaggedJet_' + str(i+1) + '_does_not_exist'] = df['N_additionalTaggedJets'].apply(lambda row: 0 if i<row else 1)
+        df['additionalUntaggedJet_' + str(i+1) + '_does_not_exist'] = df['N_additionalUntaggedJets'].apply(lambda row: 0 if i<row else 1)
         exclude_from_normalization.append('Jet_' + str(i+1) + '_does_not_exist')
+        exclude_from_normalization.append('additionalTaggedJet_' + str(i+1) + '_does_not_exist')
+        exclude_from_normalization.append('additionalUntaggedJet_' + str(i+1) + '_does_not_exist')
 
 
     #----------------------------------------------------------------------------------------------------
@@ -330,16 +469,31 @@ def create_dataset_for_training(save_path,
 
 
     #----------------------------------------------------------------------------------------------------
+    # Shuffle events in the data frame.
+    # Afterwards split the data set into subsets for training and validation.
+
+    df_train.index = np.random.permutation(df_train.shape[0])
+    df_train.sort_index(inplace=True)
+
+    number_of_validation_events = int(np.floor(percentage_validation/100*df_train.shape[0]))
+    number_of_training_events = df_train.shape[0] - number_of_validation_events
+
+    df_val = df_train.tail(number_of_validation_events)
+    df_train = df_train.head(number_of_training_events)
+
+
+    #----------------------------------------------------------------------------------------------------
     # Remove variables which have a standard deviation of zero after dropping events which don't belong to the selected jet btag category.
 
     standard_deviation_zero_variables_2 = list()
     for variable in df_train.columns:
         if variable not in process_categories:
-            if df_train[variable].std() == 0:
+            if (df_train[variable].std() == 0) or (df_val[variable].std() == 0) or (df_test[variable].std() == 0):
                 standard_deviation_zero_variables_2.append(variable)
                 display_output.print_variable("The following variables will be dropped because they have a standard deviation of zero after dropping events which don't belong to the selected jet btag category:", variable)
 
     df_train.drop(standard_deviation_zero_variables_2, axis=1, inplace=True)
+    df_val.drop(standard_deviation_zero_variables_2, axis=1, inplace=True)
     df_test.drop(standard_deviation_zero_variables_2, axis=1, inplace=True)
 
     display_output.end()
@@ -358,15 +512,20 @@ def create_dataset_for_training(save_path,
         training_weights['background'] = 1/N_background
 
         df_train['Training_Weight'] = df_train.iloc[:, 0].apply(lambda row: training_weights['signal'] if row==1 else training_weights['background'])
+        df_val['Training_Weight'] = df_val.iloc[:, 0].apply(lambda row: training_weights['signal'] if row==1 else training_weights['background'])
+        df_test['Training_Weight'] = df_test.iloc[:, 0].apply(lambda row: training_weights['signal'] if row==1 else training_weights['background'])
 
     else:
         df_train['Training_Weight'] = 1
+        df_val['Training_Weight'] = 1
+        df_test['Training_Weight'] = 1
 
 
     with open(path_to_weight_variables, 'r') as file_weight_variables:
         weight_variables = [variable.rstrip() for variable in file_weight_variables.readlines() if variable.rstrip() in df_train.columns]
 
     df_train.drop(weight_variables, axis=1, inplace=True)
+    df_val.drop(weight_variables, axis=1, inplace=True)
     df_test.drop(weight_variables, axis=1, inplace=True)
 
 
@@ -381,26 +540,14 @@ def create_dataset_for_training(save_path,
     if select_variables=='include':
         unwanted_variables = [variable for variable in df_train.columns if variable not in variable_list]
         df_train.drop(unwanted_variables, axis=1, inplace=True)
+        df_val.drop(unwanted_variables, axis=1, inplace=True)
         df_test.drop(unwanted_variables, axis=1, inplace=True)
 
     elif select_variables=='exclude':
         unwanted_variables = [variable for variable in df_train.columns if variable in variable_list]
         df_train.drop(unwanted_variables, axis=1, inplace=True)
+        df_val.drop(unwanted_variables, axis=1, inplace=True)
         df_test.drop(unwanted_variables, axis=1, inplace=True)
-
-
-    #----------------------------------------------------------------------------------------------------
-    # Shuffle events in the data frame.
-    # Afterwards split the data set into subsets for training and validation.
-
-    df_train.index = np.random.permutation(df_train.shape[0])
-    df_train.sort_index(inplace=True)
-
-    number_of_validation_events = int(np.floor(percentage_validation/100*df_train.shape[0]))
-    number_of_training_events = df_train.shape[0] - number_of_validation_events
-
-    df_val = df_train.tail(number_of_validation_events)
-    df_train = df_train.head(number_of_training_events)
 
 
     #----------------------------------------------------------------------------------------------------
