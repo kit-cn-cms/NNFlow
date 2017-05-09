@@ -16,7 +16,7 @@ def jet_btag_category(category):
     return category_dict[category]
 
 
-def ttbar_processes():
+def ttbar_processes(conditions_variables):
 
     conditions_dict = {'ttbb'   :'GenEvt_I_TTPlusBB == 3 and GenEvt_I_TTPlusCC == 0',
                        'tt2b'   :'GenEvt_I_TTPlusBB == 2 and GenEvt_I_TTPlusCC == 0',
@@ -25,4 +25,10 @@ def ttbar_processes():
                        'ttlight':'GenEvt_I_TTPlusBB == 0 and GenEvt_I_TTPlusCC == 0'
                         }
 
-    return conditions_dict
+    variables = ['GenEvt_I_TTPlusBB', 'GenEvt_I_TTPlusCC']
+
+    if conditions_variables == 'conditions':
+        return conditions_dict
+
+    elif conditions_variables == 'variables':
+        return variables

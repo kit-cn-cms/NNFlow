@@ -61,7 +61,8 @@ path_to_vector_variables_jet            =
 # conditions_for_splitting = {'process_name':'var_a == value_x and var_b != value_y or var_c > value_z'}
 
 #split_data_frame = True
-#conditions_for_splitting = definitions.ttbar_processes()
+#conditions_for_splitting = definitions.ttbar_processes('conditions')
+#variables_for_splitting = definitions.ttbar_processes('variables')
 
 
 #----------------------------------------------------------------------------------------------------
@@ -81,4 +82,5 @@ root_to_HDF5(save_path                               = save_path
 #           , percentage_validation                   = percentage_validation
 #           , split_data_frame                        = split_data_frame
 #           , conditions_for_splitting                = conditions_for_splitting
+#           , variables_for_splitting                 = variables_for_splitting
             )

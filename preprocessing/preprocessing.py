@@ -28,7 +28,8 @@ def root_to_HDF5(save_path,
                  number_of_saved_leptons=1,
                  percentage_validation=20,
                  split_data_frame=False,
-                 conditions_for_splitting=None):
+                 conditions_for_splitting=None
+                 variables_for_splitting=None):
 
 
     print('\n' + 'CONVERT ROOT FILES TO HDF5 FILES' + '\n')
@@ -194,9 +195,9 @@ def root_to_HDF5(save_path,
                     df_val_process = df_val.query(conditions_for_splitting[process]).copy()
                     df_test_process = df_test.query(conditions_for_splitting[process]).copy()
 
-                    df_train_process.drop(['TTBB_GenEvt_I_TTPlusBB', 'TTBB_GenEvt_I_TTPlusCC'], axis=1, inplace=True)
-                    df_val_process.drop(['TTBB_GenEvt_I_TTPlusBB', 'TTBB_GenEvt_I_TTPlusCC'], axis=1, inplace=True)
-                    df_test_process.drop(['TTBB_GenEvt_I_TTPlusBB', 'TTBB_GenEvt_I_TTPlusCC'], axis=1, inplace=True)
+                    df_train_process.drop(variables_for_splitting, axis=1, inplace=True)
+                    df_val_process.drop(variables_for_splitting, axis=1, inplace=True)
+                    df_test_process.drop(variables_for_splitting, axis=1, inplace=True)
 
                     with pd.HDFStore(os.path.join(save_path, filename_outputfile + '_' + process + '.hdf')):
                         store.append('df_train', df_train_process, format = 'table', append=True)
