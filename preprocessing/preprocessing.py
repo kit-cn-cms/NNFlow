@@ -95,9 +95,9 @@ def root_to_HDF5(save_path,
     excluded_variables = generator_level_variables + weight_variables + other_excluded_variables
 
     with open(path_to_vector_variables_lepton, 'r') as file_vector_variables_lepton:
-        vector_variables_lepton = [variable.rstrip() for variable in file_vector_variables_lepton.readlines() if variable.rstrip() in df.columns]
+        vector_variables_lepton = [variable.rstrip() for variable in file_vector_variables_lepton.readlines() if variable.rstrip() in df.columns and variable.rstrip() not in excluded_variables]
     with open(path_to_vector_variables_jet, 'r') as file_vector_variables_jet:
-        vector_variables_jet = [variable.rstrip() for variable in file_vector_variables_jet.readlines() if variable.rstrip() in df.columns]
+        vector_variables_jet = [variable.rstrip() for variable in file_vector_variables_jet.readlines() if variable.rstrip() in df.columns and variable.rstrip() not in excluded_variables]
 
     other_vector_variables = [variable for variable in df.columns if isinstance(df.iloc[0].loc[variable], np.ndarray) and variable not in vector_variables_lepton + vector_variables_jet + excluded_variables]
     excluded_variables += other_vector_variables
