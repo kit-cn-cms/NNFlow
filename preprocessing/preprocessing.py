@@ -251,7 +251,7 @@ def create_dataset_for_training(save_path,
     merge_data_sets = False
     if not os.path.isfile(path_to_merged_data_set):
         merge_data_sets = True
-    elif:
+    else:
         mtime_merged_set = os.path.getmtime(path_to_merged_data_set)
         for process in process_categories:
             if os.path.getmtime(os.path.join(path_to_inputfiles, input_datasets[process])) > mtime_merged_set:
