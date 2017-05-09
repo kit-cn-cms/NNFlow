@@ -17,12 +17,12 @@ def root_to_HDF5(save_path,
                  filename_outputfile,
                  path_to_inputfiles,
                  filenames_inputfiles,
-                 treenames=[None],
                  path_to_generator_level_variables,
                  path_to_other_always_excluded_variables,
                  path_to_vector_variables_lepton,
                  path_to_vector_variables_jet,
-                 number_of_saved_jets=4,
+                 treenames=[None],
+                 number_of_saved_jets=6,
                  number_of_saved_leptons=1,
                  percentage_validation=20,
                  split_data_frame=False,
@@ -85,7 +85,7 @@ def root_to_HDF5(save_path,
         generator_level_variables = [variable.rstrip() for variable in file_generator_level_variables.readlines() if variable.rstrip() in df.columns]
     with open(path_to_other_always_excluded_variables, 'r') as file_other_always_excluded_variables:
         other_excluded_variables = [variable.rstrip() for variable in file_other_always_excluded_variables.readlines() if variable.rstrip() in df.columns]
-    excluded_variables = generator_level_variables+other_excluded_variables
+    excluded_variables = generator_level_variables + other_excluded_variables
 
     with open(path_to_vector_variables_lepton, 'r') as file_vector_variables_lepton:
         vector_variables_lepton = [variable.rstrip() for variable in file_vector_variables_lepton.readlines() if variable.rstrip() in df.columns]
@@ -127,7 +127,7 @@ def root_to_HDF5(save_path,
 
 
     if len(other_vector_variables) != 0:
-        print('The following vector variables were not specified and will be removed:')
+        print('The following vector variables are neither in the lists of jet variables nor in the list of lepton variables. They will be removed:')
         for variable in other_vector_variables:
             print('    ' + variable)
         print('\n', end='')
@@ -151,12 +151,12 @@ def root_to_HDF5(save_path,
             # Copy the values from the arrays to columns of the data frame.
             for variable in vector_variables_lepton:
                 for i in range(number_of_saved_leptons):
-                    df[variable + '_' + str(i+1)] = df[variable].apply(lambda row: row[i])
+                    df[variable + '_' + str(i+1)] = df[variable].apply(lambda row: row[i] if i<len(row) else np.nan)
             df.drop(vector_variables_lepton, axis=1, inplace=True)
 
             for variable in vector_variables_jet:
                 for i in range(number_of_saved_jets):
-                    df[variable + '_' + str(i+1)] = df[variable].apply(lambda row: row[i])
+                    df[variable + '_' + str(i+1)] = df[variable].apply(lambda row: row[i] if i<len(row) else np.nan)
             df.drop(vector_variables_jet, axis=1, inplace=True)
 
             #--------------------------------------------------------------------------------------------
