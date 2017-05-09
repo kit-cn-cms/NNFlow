@@ -71,8 +71,8 @@ def root_to_HDF5(save_path,
             os.remove(os.path.join(save_path, filename_outputfile + '.hdf'))
     else:
         for process in conditions_for_splitting.keys():
-            if os.path.isfile(os.path.join(save_path, filename_outputfile + '_' + process '.hdf')):
-                os.remove(os.path.join(save_path, filename_outputfile + '_' + process '.hdf'))
+            if os.path.isfile(os.path.join(save_path, filename_outputfile + '_' + process + '.hdf')):
+                os.remove(os.path.join(save_path, filename_outputfile + '_' + process + '.hdf'))
 
 
     #----------------------------------------------------------------------------------------------------
