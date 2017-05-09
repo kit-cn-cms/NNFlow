@@ -15,8 +15,6 @@ Evt_Lumi
 Evt_Run
 Evt_Phi_GenMET
 Evt_Pt_GenMET
-GenEvt_I_TTPlusBB
-GenEvt_I_TTPlusCC
 GenEvt_TTxId_FromProducer
 N_GenTopHad
 N_GenTopLep
