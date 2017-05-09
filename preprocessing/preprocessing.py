@@ -220,7 +220,8 @@ def create_dataset_for_training(save_path,
                                 binary_classification=False,
                                 binary_classification_signal=None,
                                 select_variables=False,
-                                path_to_variable_list=None):
+                                path_to_variable_list=None,
+                                weights_to_be_applied=['Weight_PU', 'Weight_CSV']):
 
 
     print('\n' + 'CREATE DATA SET FOR TRAINING' + '\n')
@@ -236,343 +237,160 @@ def create_dataset_for_training(save_path,
 
 
     #----------------------------------------------------------------------------------------------------
-    # Load data, add flags for the different processes and concatenate the data frames.
+    # Merge data sets and add flags for the different processes.
 
     process_categories = input_data_sets.keys()
 
-    data_sets_modified = False
-    mtime_merged_set = os.getmtime(path_to_merged_data_set)
-    for process in process_categories:
-        if os.getmtime(os.path.join(path_to_inputfiles, input_datasets[process])) > mtime_merged_set:
-            data_sets_modified = True
+    with open(path_to_weight_variables, 'r') as file_weight_variables:
+        weight_variables = [variable.rstrip() for variable in file_weight_variables.readlines()]
+    
+    with pd.HDFStore(os.path.join(path_to_inputfiles, input_datasets[process_categories[0]]), mode='r') as store_input:
+        df = store_input.select('df_train', start=0, stop=1)
+        variables_in_data_set = [variable for variable in df.columns if variable not in weight_variables]
 
-    if data_sets_modified:
-        os.remove(path_to_merged_data_set)
+    merge_data_sets = False
+    if not os.path.isfile(path_to_merged_data_set):
+        merge_data_sets = True
+    elif:
+        mtime_merged_set = os.path.getmtime(path_to_merged_data_set)
+        for process in process_categories:
+            if os.path.getmtime(os.path.join(path_to_inputfiles, input_datasets[process])) > mtime_merged_set:
+               merge_data_sets = True
+
+    if merge_data_sets:
+        print('Merge data sets:')
+
+        if os.path.isfile(path_to_merged_data_set):
+            os.remove(path_to_merged_data_set)
+
         with pd.HDFStore(path_to_merged_data_set) as store_output:
             for process in process_categories:
-                with pd.HDFStore(os.path.join(path_to_inputfiles, input_datasets[process])) as store_input:
+                print('    ' + 'Processing ' + input_datasets[process])
+                with pd.HDFStore(os.path.join(path_to_inputfiles, input_datasets[process]), mode='r') as store_input:
                     for data_set in ['df_train', 'df_val', 'df_test']:
                         for df_input in store_input.select(data_set, chunksize=convert_chunksize):
                             df = df_input.copy()
-                            columns_old = df.columns
-                            columns_new = np.concatenate([process_categories, columns_old])
-
+                            
                             for process_label in process_categories:
                                 df[process_label] = 1 if process_label == process else 0
 
-                            df = df.reindex_axis(columns_new, axis=1)
+                            store_output.append(data_set, df, format = 'table', append=True, data_columns=process_categories+['N_Jets'+'N_BTagsM'])
 
-                            store_output.append(data_set, df, format = 'table', data_columns=True, append=True)
-
-
-
-        print('    ' + 'Loading ' + input_datasets[process])
-        df = pd.concat(pd.read_msgpack(os.path.join(path_to_inputfiles, input_datasets[process])))
-
-        columns_old = df.columns
-        columns_new = np.concatenate([process_categories, columns_old])
-
-        for process_label in process_categories:
-            df[process_label] = 1 if process_label == process else 0
-
-        df = df.reindex_axis(columns_new, axis=1)
-
-        df_list.append(df)
-
-    df = pd.concat(df_list)
-    print('\n', end='')
-
-    exclude_from_normalization = list()
-    exclude_from_normalization += process_categories
+        print('\n', end='')
 
 
     #----------------------------------------------------------------------------------------------------
-    # Remove generator level variables.
+    # Where condition.
 
-    with open(path_to_generator_level_variables, 'r') as file_generator_level_variables:
-        generator_level_variables = [variable.rstrip() for variable in file_generator_level_variables.readlines() if variable.rstrip() in df.columns]
-
-    df.drop(generator_level_variables, axis=1, inplace=True)
-
-
-    #----------------------------------------------------------------------------------------------------
-    # Remove other always excluded variables.
-
-    with open(path_to_other_always_excluded_variables, 'r') as file_other_always_excluded_variables:
-        other_always_excluded_variables = [variable.rstrip() for variable in file_other_always_excluded_variables.readlines() if variable.rstrip() in df.columns]
-
-    df.drop(other_always_excluded_variables, axis=1, inplace=True)
-
-
-    #----------------------------------------------------------------------------------------------------
-    # Remove variables which are not provided for all process categories.
-
-    for variable in df.columns:
-        if df[variable].isnull().any():
-            df.drop(variable, axis=1, inplace=True)
-            display_output.print_variable('The following variables will not be included in the training data set because they are not provided for all process categories:', variable)
-    display_output.end()
-
-
-    #----------------------------------------------------------------------------------------------------
-    # Copy the values from the arrays to columns of the data frame.
-    # Afterwards delete the columns which contain the arrays.
-
-    with open(path_to_vector_variables_first_entry, 'r') as file_vector_variables_first_entry:
-        vector_variables_first_entry = [variable.rstrip() for variable in file_vector_variables_first_entry.readlines() if variable.rstrip() in df.columns]
-
-    with open(path_to_vector_variables_jet, 'r') as file_vector_variables_jet:
-        vector_variables_jet = [variable.rstrip() for variable in file_vector_variables_jet.readlines() if variable.rstrip() in df.columns]
-
-
-    for variable in vector_variables_first_entry:
-        display_output.print_variable('For the following vector variables only the first entry will be saved:', variable)
-        df[variable + '_' + str(1)] = df[variable].apply(lambda row: row[0])
-
-    df.drop(vector_variables_first_entry, axis=1, inplace=True)
-
-    display_output.end()
-
-
-    for variable in vector_variables_jet:
-        display_output.print_variable('The following variables will be treated as jet variables:', variable)
-
-        for i in range(number_of_saved_jets):
-            df[variable + '_' + str(i+1)] = df[variable].apply(lambda row: row[i] if i<len(row) else np.nan)
-
-    df.drop(vector_variables_jet, axis=1, inplace=True)
-
-    display_output.end()
-
-
-    other_vector_variables = [variable for variable in df.columns if isinstance(df.iloc[0].loc[variable], np.ndarray)]
-    if len(other_vector_variables):
-        for variable in other_vector_variables:
-            display_output.print_variable("You didn't specify what to do with the following vector variables. They will be dropped.", variable)
-        display_output.end()
-
-        df.drop(other_vector_variables, axis=1, inplace=True)
-
-    #----------------------------------------------------------------------------------------------------
-    # Create a boolean variable for each jet. This variable is 0 if the jet exists and 1 if the jet doesn't exist.
-
-    for i in range(number_of_saved_jets):
-        df['Jet_' + str(i+1) + '_does_not_exist'] = df['N_Jets'].apply(lambda row: 0 if i<row else 1)
-        df['additionalTaggedJet_' + str(i+1) + '_does_not_exist'] = df['N_additionalTaggedJets'].apply(lambda row: 0 if i<row else 1)
-        df['additionalUntaggedJet_' + str(i+1) + '_does_not_exist'] = df['N_additionalUntaggedJets'].apply(lambda row: 0 if i<row else 1)
-        exclude_from_normalization.append('Jet_' + str(i+1) + '_does_not_exist')
-        exclude_from_normalization.append('additionalTaggedJet_' + str(i+1) + '_does_not_exist')
-        exclude_from_normalization.append('additionalUntaggedJet_' + str(i+1) + '_does_not_exist')
-
-
-    #----------------------------------------------------------------------------------------------------
-    # Split into training and test data set.
-
-    df_train = df.query('Evt_Odd == 1').copy()
-    df_test  = df.query('Evt_Odd == 0').copy()
-
-    del df
-
-    df_train.drop('Evt_Odd', axis=1, inplace=True)
-    df_test.drop('Evt_Odd', axis=1, inplace=True)
-
-
-    #----------------------------------------------------------------------------------------------------
-    # Remove variables with standard deviation of zero.
-
-    standard_deviation_zero_variables = list()
-    for variable in df_train.columns:
-        if variable not in process_categories:
-            if (df_train[variable].std() == 0) or (df_train[variable].isnull().all()) or (np.isnan(df_train[variable].std())):
-                standard_deviation_zero_variables.append(variable)
-                display_output.print_variable('The following variables will not be included in the training data set due to a standard deviation of zero:', variable)
-
-    df_train.drop(standard_deviation_zero_variables, axis=1, inplace=True)
-    df_test.drop(standard_deviation_zero_variables, axis=1, inplace=True)
-
-    display_output.end()
-
-
-    #----------------------------------------------------------------------------------------------------
-    # Perform normalization. TODO: Test Sample / Save values / Delete section?
-    # Flags, weights and boolean jet existence variables are excluded.
-    # The functions mean/std ignore np.nan values by default.
-    # Mean and standard deviation are saved, so the values can be applied to the data which will be classified.
-
-#    df.apply(lambda column: column.mean() if column.name not in exclude_from_normalization else np.nan).dropna().to_msgpack(os.path.join(save_path, 'mean_normalization.msg'))
-#    df_train = df_train.apply(lambda column: column-column.mean() if column.name not in exclude_from_normalization else column)
-
-#    df.apply(lambda column: column.std() if column.name not in exclude_from_normalization else np.nan).dropna().to_msgpack(os.path.join(save_path, 'std_normalization.msg'))
-#    df_train = df_train.apply(lambda column: column/column.std() if column.name not in exclude_from_normalization else column)
-
-
-    #----------------------------------------------------------------------------------------------------
-    # Replace np.nan with zero for the not existing jets.
-
-#    df_train.fillna(value=0, inplace=True)
-
-
-    #----------------------------------------------------------------------------------------------------
-    # Remove all events which don't belong to the selected jet btag category.
-    # Afterwards check if there are still events for each category in the data frame. If not, remove corresponding labels.
-
-    if jet_btag_category != 'all':
-        df_train.query(definitions.jet_btag_category(jet_btag_category), inplace=True)
-        df_test.query(definitions.jet_btag_category(jet_btag_category), inplace=True)
-
-        for process in process_categories[:]:
-            if df_train[process].sum() == 0:
-                df_train.drop(process, axis=1, inplace=True)
-                process_categories.remove(process)
-
-                if df_test[process].sum != 0:
-                    df_test.query(process + '== 0', inplace=True)
-
-                df_test.drop(process, axis=1, inplace=True)
-
-                display_output.print_variable("After dropping events which don't belong to the selected jet btag category, there are no events of the following processes left:", process)
-
-        display_output.end()
-
-
-    #----------------------------------------------------------------------------------------------------
-    # Temporary normalization TODO: Remove
-
-    df_train = df_train.apply(lambda column: column-column.mean() if column.name not in exclude_from_normalization else column)
-    df_train = df_train.apply(lambda column: column/column.std() if column.name not in exclude_from_normalization else column)
-    df_train.fillna(value=0, inplace=True)
-
-
-    #----------------------------------------------------------------------------------------------------
-    # Only keep a subset of the process categories if desired.
+    where_condition = None
 
     if selected_process_categories != 'all':
-        condition = ''
-        for i in range(len(selected_process_categories)):
-            if i == 0:
-                condition += selected_process_categories[i] + ' == 1'
-            else:
-                condition += ' or ' + selected_process_categories[i] + ' == 1'
-        df_train.query(condition, inplace=True)
-        df_test.query(condition, inplace=True)
+        process_categories = selected_process_categories
+        select_process_category_condition = '(' + str.join(' or ', [process + ' == 1' for process in selected_process_categories]) + ')'
 
-        for process in process_categories[:]:
-            if df[process].sum() == 0:
-                df.drop(process, axis=1, inplace=True)
-                process_categories.remove(process)
-                display_output.print_variable("The following process categories have been dropped:", process)
+    if jet_btag_category != 'all' and selected_process_categories != 'all':
+        where_condition = str.join(' and ', [definitions.jet_btag_category(jet_btag_category)] + select_process_category_condition)
 
-        display_output.end()
+    elif jet_btag_category != 'all':
+        where_condition = definitions.jet_btag_category(jet_btag_category)
+
+    elif selected_process_categories != 'all':
+        where_condition = select_process_category_condition
 
 
     #----------------------------------------------------------------------------------------------------
-    # Adjust process labels for binary classification if desired.
+    # Make a list of variables with standard deviation of zero and a list of variables which don't exist for all events.
 
-    if binary_classification:
-        binary_classification_no_signal = [process for process in process_categories if process != binary_classification_signal]
-        
-        df_train.drop(binary_classification_no_signal, axis=1, inplace=True)
-        df_test.drop(binary_classification_no_signal, axis=1, inplace=True)
+    standard_deviation_zero_variables = list()
+    not_all_events_variables = list()
+    with pd.HDFStore(path_to_merged_data_set, mode='r') as store:
+        for variable in variables_in_data_set:
+            df_train = store.select('df_train', where=where_condition, columns=[variable])
+            df_val = store.select('df_val', where=where_condition, columns=[variable])
 
+            if df_train[variable].std()==0 or df_val[variable].std()==0:
+                standard_deviation_zero_variables.append(variable)
 
-    #----------------------------------------------------------------------------------------------------
-    # Shuffle events in the data frame.
-    # Afterwards split the data set into subsets for training and validation.
-
-    df_train.index = np.random.permutation(df_train.shape[0])
-    df_train.sort_index(inplace=True)
-
-    number_of_validation_events = int(np.floor(percentage_validation/100*df_train.shape[0]))
-    number_of_training_events = df_train.shape[0] - number_of_validation_events
-
-    df_val = df_train.tail(number_of_validation_events)
-    df_train = df_train.head(number_of_training_events)
+            if df_train[variable].isnull().any() or df_val[variable].isnull().any():
+                not_all_events_variables.append(variable)
 
 
     #----------------------------------------------------------------------------------------------------
-    # Remove variables which have a standard deviation of zero after dropping events which don't belong to the selected jet btag category.
-
-    standard_deviation_zero_variables_2 = list()
-    for variable in df_train.columns:
-        if variable not in process_categories:
-            if (df_train[variable].std() == 0) or (df_val[variable].std() == 0) or (df_test[variable].std() == 0):
-                standard_deviation_zero_variables_2.append(variable)
-                display_output.print_variable("The following variables will be dropped because they have a standard deviation of zero after dropping events which don't belong to the selected jet btag category:", variable)
-
-    df_train.drop(standard_deviation_zero_variables_2, axis=1, inplace=True)
-    df_val.drop(standard_deviation_zero_variables_2, axis=1, inplace=True)
-    df_test.drop(standard_deviation_zero_variables_2, axis=1, inplace=True)
-
-    display_output.end()
-
-
-    #----------------------------------------------------------------------------------------------------
-    # Calculate weight to be applied for the training and remove weight variables afterwards.
-    # TODO: Apply other weights, mechanism for multinomial classification.
-
-    training_weights = dict()
-    if binary_classification:
-        N_signal = df_train.iloc[:, 0].sum()
-        N_background = df_train.shape[0] - N_signal
-        
-        training_weights['signal'] = 1/N_signal
-        training_weights['background'] = 1/N_background
-
-        df_train['Training_Weight'] = df_train.iloc[:, 0].apply(lambda row: training_weights['signal'] if row==1 else training_weights['background'])
-        df_val['Training_Weight'] = df_val.iloc[:, 0].apply(lambda row: training_weights['signal'] if row==1 else training_weights['background'])
-        df_test['Training_Weight'] = df_test.iloc[:, 0].apply(lambda row: training_weights['signal'] if row==1 else training_weights['background'])
-
-    else:
-        df_train['Training_Weight'] = 1
-        df_val['Training_Weight'] = 1
-        df_test['Training_Weight'] = 1
-
-
-    with open(path_to_weight_variables, 'r') as file_weight_variables:
-        weight_variables = [variable.rstrip() for variable in file_weight_variables.readlines() if variable.rstrip() in df_train.columns]
-
-    df_train.drop(weight_variables, axis=1, inplace=True)
-    df_val.drop(weight_variables, axis=1, inplace=True)
-    df_test.drop(weight_variables, axis=1, inplace=True)
-
-
-    #----------------------------------------------------------------------------------------------------
-    # Only keep a subset of the variables if desired.
+    # Make a list of columns to be saved.
 
     if select_variables=='include' or select_variables=='exclude':
         with open(path_to_variable_list, 'r') as file_variable_list:
             variable_list = [variable.rstrip() for variable in file_variable_list.readlines()]
 
 
-    if select_variables=='include':
-        unwanted_variables = [variable for variable in df_train.columns if variable not in variable_list]
-        df_train.drop(unwanted_variables, axis=1, inplace=True)
-        df_val.drop(unwanted_variables, axis=1, inplace=True)
-        df_test.drop(unwanted_variables, axis=1, inplace=True)
 
+    if binary_classification:
+        columns_to_save.append(binary_classification_signal)
+    else:
+        columns_to_save.append(process_categories)
+
+
+    if select_variables=='include':
+        columns_to_save += [variable for variable in variable_list if variable not in standard_deviation_zero_variables + not_all_events_variables]
     elif select_variables=='exclude':
-        unwanted_variables = [variable for variable in df_train.columns if variable in variable_list]
-        df_train.drop(unwanted_variables, axis=1, inplace=True)
-        df_val.drop(unwanted_variables, axis=1, inplace=True)
-        df_test.drop(unwanted_variables, axis=1, inplace=True)
+        columns_to_save += [variable for variable in variables_in_data_set if if variable not in standard_deviation_zero_variables + not_all_events_variables + variable_list]
+    else:
+        columns_to_save += [variable for variable in variables_in_data_set if if variable not in standard_deviation_zero_variables + not_all_events_variables]
 
 
     #----------------------------------------------------------------------------------------------------
-    # Save data.
+    # Calculate weights to be applied for the training and save data sets.
 
-    np.save(os.path.join(save_path, 'train'), df_train.values)
-    np.save(os.path.join(save_path, 'val'), df_val.values)
-    np.save(os.path.join(save_path, 'test'), df_test.values)
+    sum_of_events = dict()
+    with pd.HDFStore(path_to_merged_data_set, mode='r') as store:
+        df_weight = store.select('df_train', where=where_condition, columns=process_categories+weights_to_be_applied)
+        df = store.select('df_train', where=where_condition, columns=columns_to_save)
+        
+        if binary_classification:
+            df_weight = store.select('df_train', where=where_condition, columns=[binary_classification_signal])
+
+            sum_of_events['signal'] = df_weight[binary_classification_signal].sum()
+            sum_of_events['background'] = df_weight.shape[0] - sum_of_events['signal']
+        
+        else:
+            df_weight = store.select('df_train', where=where_condition, columns=process_categories)
+            for process in process_categories:
+                sum_of_events[process] = df_weight[process].sum()
+
+
+        for data_set in ['train', 'val', 'test']:
+            df_weight = store.select('df_'+data_set, where=where_condition, columns=process_categories+weights_to_be_applied)
+            df = store.select('df_'+data_set, where=where_condition, columns=columns_to_save)
+
+            if binary_classification:
+                if weights_to_be_applied=None:
+                    df['Trainig_Weight'] = df_weight.apply(lambda row: (1/sum_of_events['signal'] if row[binary_classification_signal] == 1 else 1/sum_of_events['background']))
+                else:
+                    df['Trainig_Weight'] = df_weight.apply(lambda row: row[weights_to_be_applied].product()*(1/sum_of_events['signal'] if row[binary_classification_signal] == 1 else 1/sum_of_events['background']))
+
+            else:
+                if weights_to_be_applied=None:
+                    df['Trainig_Weight'] = df_weight.apply(lambda row: sum([row[process]/sum_of_events[process] for process in process_categories]))
+                else:
+                    df['Trainig_Weight'] = df_weight.apply(lambda row: row[weights_to_be_applied].product()*sum([row[process]/sum_of_events[process] for process in process_categories]))
+
+
+            np.save(os.path.join(save_path, data_set), df.values)
+
+
+    #----------------------------------------------------------------------------------------------------
+    # Save additional information.
 
     with open(os.path.join(save_path, 'variables.txt'), 'w') as outputfile_variables:
-        for variable in df_train.columns:
-            if variable not in process_categories and variable != 'Training_Weight':
+        for variable in columns_to_save:
+            if variable not in process_categories:
                 outputfile_variables.write(variable + '\n')
 
-    with open(os.path.join(save_path, 'process_labels.txt'), 'w') as outputfile_process_labels:
-        for process in process_categories:
-            if process in df_train.columns:
-                outputfile_process_labels.write(process + '\n')
+    if not binary_classification:
+        with open(os.path.join(save_path, 'process_labels.txt'), 'w') as outputfile_process_labels:
+            for process in process_categories:
+                if process in df_train.columns:
+                    outputfile_process_labels.write(process + '\n')
 
 
     print('FINISHED' + '\n')
