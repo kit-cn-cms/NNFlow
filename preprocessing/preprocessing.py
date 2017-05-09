@@ -245,7 +245,7 @@ def create_dataset_for_training(save_path,
             for process in process_categories:
                 with pd.HDFStore(os.path.join(path_to_inputfiles, input_datasets[process])) as store_input:
                     for data_set in ['df_train', 'df_val', 'df_test']:
-                        for df_input in store_input.select(data_set, chunksize=convert_chunksize)
+                        for df_input in store_input.select(data_set, chunksize=convert_chunksize):
                             df = df_input.copy()
                             columns_old = df.columns
                             columns_new = np.concatenate([process_categories, columns_old])
