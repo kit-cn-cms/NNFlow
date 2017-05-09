@@ -199,7 +199,7 @@ def root_to_HDF5(save_path,
                     df_val_process.drop(variables_for_splitting, axis=1, inplace=True)
                     df_test_process.drop(variables_for_splitting, axis=1, inplace=True)
 
-                    with pd.HDFStore(os.path.join(save_path, filename_outputfile + '_' + process + '.hdf')):
+                    with pd.HDFStore(os.path.join(save_path, filename_outputfile + '_' + process + '.hdf')) as store:
                         store.append('df_train', df_train_process, format = 'table', append=True)
                         store.append('df_val', df_val_process, format = 'table', append=True)
                         store.append('df_test', df_test_process, format = 'table', append=True)
