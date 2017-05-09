@@ -88,7 +88,7 @@ def root_to_HDF5(save_path,
 
     with open(path_to_generator_level_variables, 'r') as file_generator_level_variables:
         generator_level_variables = [variable.rstrip() for variable in file_generator_level_variables.readlines() if variable.rstrip() in df.columns]
-    with open(path_to_weight_variabes, 'r') as file_weight_variabes:
+    with open(path_to_weight_variables, 'r') as file_weight_variables:
         weight_variables = [variable.rstrip() for variable in file_weight_variables.readlines() if variable.rstrip() in df.columns and variable.rstrip() not in weights_to_keep]
     with open(path_to_other_always_excluded_variables, 'r') as file_other_always_excluded_variables:
         other_excluded_variables = [variable.rstrip() for variable in file_other_always_excluded_variables.readlines() if variable.rstrip() in df.columns]
