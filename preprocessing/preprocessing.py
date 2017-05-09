@@ -51,8 +51,8 @@ def root_to_HDF5(save_path,
     if not os.path.isfile(path_to_generator_level_variables):
         sys.exit("File " + path_to_generator_level_variables + " doesn't exist." + "\n")
 
-    if not os.path.isfile(path_to_weight_variabes):
-        sys.exit("File " + path_to_weight_variabes + " doesn't exist." + "\n")
+    if not os.path.isfile(path_to_weight_variables):
+        sys.exit("File " + path_to_weight_variables + " doesn't exist." + "\n")
 
     if not os.path.isfile(path_to_other_always_excluded_variables):
         sys.exit("File " + path_to_other_always_excluded_variables + " doesn't exist." + "\n")
