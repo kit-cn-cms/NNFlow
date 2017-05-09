@@ -32,9 +32,14 @@ filenames_inputfiles =
 
 #----------------------------------------------------------------------------------------------------
 path_to_generator_level_variables       =
+path_to_weight_variables                =
 path_to_other_always_excluded_variables =
 path_to_vector_variables_lepton         =
 path_to_vector_variables_jet            =
+
+
+#----------------------------------------------------------------------------------------------------
+#weights_to_keep =
 
 
 #----------------------------------------------------------------------------------------------------
@@ -65,9 +70,11 @@ root_to_HDF5(save_path                               = save_path
            , path_to_inputfiles                      = path_to_inputfiles
            , filenames_inputfiles                    = filenames_inputfiles
            , path_to_generator_level_variables       = path_to_generator_level_variables
+           , path_to_weight_variables                = path_to_weight_variables
            , path_to_other_always_excluded_variables = path_to_other_always_excluded_variables
            , path_to_vector_variables_lepton         = path_to_vector_variables_lepton
            , path_to_vector_variables_jet            = path_to_vector_variables_jet
+#           , weights_to_keep                        = weights_to_keep
 #           , treenames                               = treenames
 #           , number_of_saved_jets                    = number_of_saved_jets
 #           , number_of_saved_leptons                 = number_of_saved_leptons

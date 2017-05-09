@@ -18,9 +18,11 @@ def root_to_HDF5(save_path,
                  path_to_inputfiles,
                  filenames_inputfiles,
                  path_to_generator_level_variables,
+                 path_to_weight_variables,
                  path_to_other_always_excluded_variables,
                  path_to_vector_variables_lepton,
                  path_to_vector_variables_jet,
+                 weights_to_keep=['Weight', 'Weight_CSV', 'Weight_PU', 'Weight_XS'],
                  treenames=[None],
                  number_of_saved_jets=6,
                  number_of_saved_leptons=1,
@@ -29,7 +31,7 @@ def root_to_HDF5(save_path,
                  conditions_for_splitting=None):
 
 
-    print('\n' + 'CONVERT ROOT FILES HDF5 FILES' + '\n')
+    print('\n' + 'CONVERT ROOT FILES TO HDF5 FILES' + '\n')
 
 
     if isinstance(filenames_inputfiles, basestring):
@@ -48,6 +50,9 @@ def root_to_HDF5(save_path,
    
     if not os.path.isfile(path_to_generator_level_variables):
         sys.exit("File " + path_to_generator_level_variables + " doesn't exist." + "\n")
+
+    if not os.path.isfile(path_to_weight_variabes):
+        sys.exit("File " + path_to_weight_variabes + " doesn't exist." + "\n")
 
     if not os.path.isfile(path_to_other_always_excluded_variables):
         sys.exit("File " + path_to_other_always_excluded_variables + " doesn't exist." + "\n")
@@ -76,16 +81,18 @@ def root_to_HDF5(save_path,
 
 
     #----------------------------------------------------------------------------------------------------
-    # Create list of generator level variables, other always excluded variables and vector variables.
+    # Create list of generator level variables, weight variables, other always excluded variables and vector variables.
 
     structured_array = root2array(os.path.join(path_to_inputfiles, filenames_inputfiles[0]), treenames[0])
     df = pd.DataFrame(structured_array)
 
     with open(path_to_generator_level_variables, 'r') as file_generator_level_variables:
         generator_level_variables = [variable.rstrip() for variable in file_generator_level_variables.readlines() if variable.rstrip() in df.columns]
+    with open(path_to_weight_variabes, 'r') as file_weight_variabes:
+        weight_variables = [variable.rstrip() for variable in file_weight_variables.readlines() if variable.rstrip() in df.columns and variable.rstrip() not in weights_to_keep]
     with open(path_to_other_always_excluded_variables, 'r') as file_other_always_excluded_variables:
         other_excluded_variables = [variable.rstrip() for variable in file_other_always_excluded_variables.readlines() if variable.rstrip() in df.columns]
-    excluded_variables = generator_level_variables + other_excluded_variables
+    excluded_variables = generator_level_variables + weight_variables + other_excluded_variables
 
     with open(path_to_vector_variables_lepton, 'r') as file_vector_variables_lepton:
         vector_variables_lepton = [variable.rstrip() for variable in file_vector_variables_lepton.readlines() if variable.rstrip() in df.columns]
