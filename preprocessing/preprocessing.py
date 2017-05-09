@@ -363,7 +363,7 @@ def create_dataset_for_training(save_path,
             df = store.select('df_'+data_set, where=where_condition, columns=columns_to_save)
 
             if binary_classification:
-                if weights_to_be_applied=None:
+                if weights_to_be_applied==None:
                     df['Trainig_Weight'] = df_weight.apply(lambda row: (1/sum_of_events['signal'] if row[binary_classification_signal] == 1 else 1/sum_of_events['background']))
                 else:
                     df['Trainig_Weight'] = df_weight.apply(lambda row: row[weights_to_be_applied].product()*(1/sum_of_events['signal'] if row[binary_classification_signal] == 1 else 1/sum_of_events['background']))
