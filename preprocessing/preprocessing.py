@@ -185,9 +185,9 @@ def root_to_HDF5(save_path,
             # Split process categories and save data.
             if not split_data_frame:
                 with pd.HDFStore(os.path.join(save_path, filename_outputfile + '.hdf')) as store:
-                    store.append('df_train', df_train, format = 'table', data_columns=True, append=True)
-                    store.append('df_val', df_val, format = 'table', data_columns=True, append=True)
-                    store.append('df_test', df_test, format = 'table', data_columns=True, append=True)
+                    store.append('df_train', df_train, format = 'table', append=True)
+                    store.append('df_val', df_val, format = 'table', append=True)
+                    store.append('df_test', df_test, format = 'table', append=True)
             else:
                 for process in conditions_for_splitting.keys():
                     df_train_process = df_train.query(conditions_for_splitting[process]).copy()
@@ -199,9 +199,9 @@ def root_to_HDF5(save_path,
                     df_test_process.drop(['TTBB_GenEvt_I_TTPlusBB', 'TTBB_GenEvt_I_TTPlusCC'], axis=1, inplace=True)
 
                     with pd.HDFStore(os.path.join(save_path, filename_outputfile + '_' + process + '.hdf')):
-                        store.append('df_train', df_train_process, format = 'table', data_columns=True, append=True)
-                        store.append('df_val', df_val_process, format = 'table', data_columns=True, append=True)
-                        store.append('df_test', df_test_process, format = 'table', data_columns=True, append=True)
+                        store.append('df_train', df_train_process, format = 'table', append=True)
+                        store.append('df_val', df_val_process, format = 'table', append=True)
+                        store.append('df_test', df_test_process, format = 'table', append=True)
 
 
     print('\n' + 'FINISHED' + '\n')
