@@ -333,9 +333,9 @@ def create_dataset_for_training(save_path,
     if select_variables=='include':
         columns_to_save += [variable for variable in variable_list if variable not in standard_deviation_zero_variables + not_all_events_variables]
     elif select_variables=='exclude':
-        columns_to_save += [variable for variable in variables_in_data_set if if variable not in standard_deviation_zero_variables + not_all_events_variables + variable_list]
+        columns_to_save += [variable for variable in variables_in_data_set if variable not in standard_deviation_zero_variables + not_all_events_variables + variable_list]
     else:
-        columns_to_save += [variable for variable in variables_in_data_set if if variable not in standard_deviation_zero_variables + not_all_events_variables]
+        columns_to_save += [variable for variable in variables_in_data_set if variable not in standard_deviation_zero_variables + not_all_events_variables]
 
 
     #----------------------------------------------------------------------------------------------------
