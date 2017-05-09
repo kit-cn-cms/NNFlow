@@ -369,7 +369,7 @@ def create_dataset_for_training(save_path,
                     df['Trainig_Weight'] = df_weight.apply(lambda row: row[weights_to_be_applied].product()*(1/sum_of_events['signal'] if row[binary_classification_signal] == 1 else 1/sum_of_events['background']))
 
             else:
-                if weights_to_be_applied=None:
+                if weights_to_be_applied==None:
                     df['Trainig_Weight'] = df_weight.apply(lambda row: sum([row[process]/sum_of_events[process] for process in process_categories]))
                 else:
                     df['Trainig_Weight'] = df_weight.apply(lambda row: row[weights_to_be_applied].product()*sum([row[process]/sum_of_events[process] for process in process_categories]))
