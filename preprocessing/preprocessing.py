@@ -28,7 +28,7 @@ def root_to_HDF5(save_path,
                  number_of_saved_leptons=1,
                  percentage_validation=20,
                  split_data_frame=False,
-                 conditions_for_splitting=None
+                 conditions_for_splitting=None,
                  variables_for_splitting=None):
 
 
