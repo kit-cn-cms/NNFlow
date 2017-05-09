@@ -23,17 +23,15 @@ input_datasets =
 
 
 #----------------------------------------------------------------------------------------------------
-path_to_generator_level_variables       =
-path_to_weight_variables                =
-path_to_other_always_excluded_variables =
+path_to_merged_data_set =
 
 
 #----------------------------------------------------------------------------------------------------
-# The default value for the number of saved jets is 10.
+path_to_weight_variables =
 
-path_to_vector_variables_first_entry =
-path_to_vector_variables_jet         =
-#number_of_saved_jets                 =
+
+#----------------------------------------------------------------------------------------------------
+# convert_chunksize =
 
 
 #----------------------------------------------------------------------------------------------------
@@ -68,27 +66,21 @@ path_to_vector_variables_jet         =
 
 
 #----------------------------------------------------------------------------------------------------
-# Percentage of the data set which should be used for the validation set and the test set.
-# The default value is 30 for the validation set and 0 for the test set.
-
-#percentage_validation =
+# weights_to_be_applied
 
 
 #----------------------------------------------------------------------------------------------------
 create_dataset_for_training(save_path                               = save_path
                           , path_to_inputfiles                      = path_to_inputfiles
                           , input_datasets                          = input_datasets
-                          , path_to_generator_level_variables       = path_to_generator_level_variables
+                          , path_to_merged_data_set                 = path_to_merged_data_set
                           , path_to_weight_variables                = path_to_weight_variables
-                          , path_to_other_always_excluded_variables = path_to_other_always_excluded_variables
-                          , path_to_vector_variables_first_entry    = path_to_vector_variables_first_entry
-                          , path_to_vector_variables_jet            = path_to_vector_variables_jet
-#                          , number_of_saved_jets                    = number_of_saved_jets
+#                          , convert_chunksize                       = convert_chunksize
 #                          , jet_btag_category                       = jet_btag_category
 #                          , selected_process_categories             = selected_process_categories
 #                          , binary_classification                   = binary_classification
 #                          , binary_classification_signal            = binary_classification_signal
 #                          , select_variables                        = select_variables
 #                          , path_to_variable_list                   = path_to_variable_list
-#                          , percentage_validation                   = percentage_validation
+#                          , weights_to_be_applied                   = weights_to_be_applied
                             )
