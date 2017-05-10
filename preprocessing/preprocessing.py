@@ -245,6 +245,7 @@ def create_data_set_for_training(save_path,
     # Merge data sets and add flags for the different processes.
 
     process_categories = input_data_sets.keys()
+    data_columns=process_categories+['N_Jets', 'N_BTagsM']
 
     with open(path_to_weight_variables, 'r') as file_weight_variables:
         weight_variables = [variable.rstrip() for variable in file_weight_variables.readlines()]
@@ -279,7 +280,7 @@ def create_data_set_for_training(save_path,
                             for process_label in process_categories:
                                 df[process_label] = 1 if process_label == process else 0
 
-                            store_output.append(data_set, df, format = 'table', append=True, data_columns=process_categories+['N_Jets'+'N_BTagsM'])
+                            store_output.append(data_set, df, format = 'table', append=True, data_columns=data_columns)
 
         print('\n', end='')
 
