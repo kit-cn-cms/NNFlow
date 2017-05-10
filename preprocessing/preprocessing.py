@@ -315,6 +315,18 @@ def create_dataset_for_training(save_path,
             if df_train[variable].isnull().any() or df_val[variable].isnull().any():
                 not_all_events_variables.append(variable)
 
+    if len(standard_deviation_zero_variables) != 0:
+        print('The following variables will be removed due to a standard deviation of zero:')
+        for variable in standard_deviation_zero_variables:
+            print('    ' + variable)
+        print('\n', end='')
+
+    if len(not_all_events_variables) != 0:
+        print("The following variables don't exist for all events. They will be removed.")
+        for variable in not_all_events_variables:
+            print('    ' + variable)
+        print('\n', end='')
+
 
     #----------------------------------------------------------------------------------------------------
     # Make a list of columns to be saved.
@@ -322,7 +334,6 @@ def create_dataset_for_training(save_path,
     if select_variables=='include' or select_variables=='exclude':
         with open(path_to_variable_list, 'r') as file_variable_list:
             variable_list = [variable.rstrip() for variable in file_variable_list.readlines()]
-
 
 
     if binary_classification:
