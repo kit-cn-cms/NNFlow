@@ -185,6 +185,10 @@ def root_to_HDF5(save_path,
             #--------------------------------------------------------------------------------------------
             # Split process categories and save data.
             if not split_data_frame:
+                df_train_process.drop(variables_for_splitting, axis=1, inplace=True)
+                df_val_process.drop(variables_for_splitting, axis=1, inplace=True)
+                df_test_process.drop(variables_for_splitting, axis=1, inplace=True)
+               
                 with pd.HDFStore(os.path.join(save_path, filename_outputfile + '.hdf')) as store:
                     store.append('df_train', df_train, format = 'table', append=True)
                     store.append('df_val', df_val, format = 'table', append=True)
