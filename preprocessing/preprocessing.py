@@ -210,19 +210,19 @@ def root_to_HDF5(save_path,
 
 
 
-def create_dataset_for_training(save_path,
-                                path_to_inputfiles,
-                                input_data_sets,
-                                path_to_merged_data_set,
-                                path_to_weight_variables,
-                                convert_chunksize=10000,
-                                jet_btag_category='all',
-                                selected_process_categories='all',
-                                binary_classification=False,
-                                binary_classification_signal=None,
-                                select_variables=False,
-                                path_to_variable_list=None,
-                                weights_to_be_applied=['Weight_PU', 'Weight_CSV']):
+def create_data_set_for_training(save_path,
+                                 path_to_inputfiles,
+                                 input_data_sets,
+                                 path_to_merged_data_set,
+                                 path_to_weight_variables,
+                                 convert_chunksize=10000,
+                                 jet_btag_category='all',
+                                 selected_process_categories='all',
+                                 binary_classification=False,
+                                 binary_classification_signal=None,
+                                 select_variables=False,
+                                 path_to_variable_list=None,
+                                 weights_to_be_applied=['Weight_PU', 'Weight_CSV']):
 
 
     print('\n' + 'CREATE DATA SET FOR TRAINING' + '\n')
@@ -231,7 +231,7 @@ def create_dataset_for_training(save_path,
     if not os.path.isdir(save_path):
         sys.exit("Directory " + save_path + " doesn't exist." + "\n")
 
-    for filename in input_datasets.values():
+    for filename in input_data_sets.values():
         if not os.path.isfile(os.path.join(path_to_inputfiles, filename)):
              sys.exit("File " + os.path.join(path_to_inputfiles, filename) + " doesn't exist." + "\n")
 
@@ -245,7 +245,7 @@ def create_dataset_for_training(save_path,
     with open(path_to_weight_variables, 'r') as file_weight_variables:
         weight_variables = [variable.rstrip() for variable in file_weight_variables.readlines()]
     
-    with pd.HDFStore(os.path.join(path_to_inputfiles, input_datasets[process_categories[0]]), mode='r') as store_input:
+    with pd.HDFStore(os.path.join(path_to_inputfiles, input_data_sets[process_categories[0]]), mode='r') as store_input:
         df = store_input.select('df_train', start=0, stop=1)
         variables_in_data_set = [variable for variable in df.columns if variable not in weight_variables]
 
@@ -255,7 +255,7 @@ def create_dataset_for_training(save_path,
     else:
         mtime_merged_set = os.path.getmtime(path_to_merged_data_set)
         for process in process_categories:
-            if os.path.getmtime(os.path.join(path_to_inputfiles, input_datasets[process])) > mtime_merged_set:
+            if os.path.getmtime(os.path.join(path_to_inputfiles, input_data_sets[process])) > mtime_merged_set:
                merge_data_sets = True
 
     if merge_data_sets:
@@ -266,8 +266,8 @@ def create_dataset_for_training(save_path,
 
         with pd.HDFStore(path_to_merged_data_set) as store_output:
             for process in process_categories:
-                print('    ' + 'Processing ' + input_datasets[process])
-                with pd.HDFStore(os.path.join(path_to_inputfiles, input_datasets[process]), mode='r') as store_input:
+                print('    ' + 'Processing ' + input_data_sets[process])
+                with pd.HDFStore(os.path.join(path_to_inputfiles, input_data_sets[process]), mode='r') as store_input:
                     for data_set in ['df_train', 'df_val', 'df_test']:
                         for df_input in store_input.select(data_set, chunksize=convert_chunksize):
                             df = df_input.copy()

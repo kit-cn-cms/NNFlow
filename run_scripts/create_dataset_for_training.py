@@ -4,7 +4,7 @@
 
 from __future__ import absolute_import, division, print_function
 
-from preprocessing.preprocessing import create_dataset_for_training
+from preprocessing.preprocessing import create_data_set_for_training
 
 
 #----------------------------------------------------------------------------------------------------
@@ -70,17 +70,17 @@ path_to_weight_variables =
 
 
 #----------------------------------------------------------------------------------------------------
-create_dataset_for_training(save_path                               = save_path
-                          , path_to_inputfiles                      = path_to_inputfiles
-                          , input_data_sets                         = input_data_sets
-                          , path_to_merged_data_set                 = path_to_merged_data_set
-                          , path_to_weight_variables                = path_to_weight_variables
-#                          , convert_chunksize                       = convert_chunksize
-#                          , jet_btag_category                       = jet_btag_category
-#                          , selected_process_categories             = selected_process_categories
-#                          , binary_classification                   = binary_classification
-#                          , binary_classification_signal            = binary_classification_signal
-#                          , select_variables                        = select_variables
-#                          , path_to_variable_list                   = path_to_variable_list
-#                          , weights_to_be_applied                   = weights_to_be_applied
+create_data_set_for_training(save_path                               = save_path
+                           , path_to_inputfiles                      = path_to_inputfiles
+                           , input_data_sets                         = input_data_sets
+                           , path_to_merged_data_set                 = path_to_merged_data_set
+                           , path_to_weight_variables                = path_to_weight_variables
+#                           , convert_chunksize                       = convert_chunksize
+#                           , jet_btag_category                       = jet_btag_category
+#                           , selected_process_categories             = selected_process_categories
+#                           , binary_classification                   = binary_classification
+#                           , binary_classification_signal            = binary_classification_signal
+#                           , select_variables                        = select_variables
+#                           , path_to_variable_list                   = path_to_variable_list
+#                           , weights_to_be_applied                   = weights_to_be_applied
                             )
