@@ -179,15 +179,15 @@ def root_to_HDF5(save_path,
             df_train.sort_index(inplace=True)
             number_of_validation_events = int(np.floor(percentage_validation/100*df_train.shape[0]))
             number_of_training_events = df_train.shape[0] - number_of_validation_events
-            df_val = df_train.tail(number_of_validation_events)
-            df_train = df_train.head(number_of_training_events)
+            df_val = df_train.tail(number_of_validation_events).copy()
+            df_train = df_train.head(number_of_training_events).copy()
 
             #--------------------------------------------------------------------------------------------
             # Split process categories and save data.
             if not split_data_frame:
-                df_train_process.drop(variables_for_splitting, axis=1, inplace=True)
-                df_val_process.drop(variables_for_splitting, axis=1, inplace=True)
-                df_test_process.drop(variables_for_splitting, axis=1, inplace=True)
+                df_train.drop(variables_for_splitting, axis=1, inplace=True)
+                df_val.drop(variables_for_splitting, axis=1, inplace=True)
+                df_test.drop(variables_for_splitting, axis=1, inplace=True)
                
                 with pd.HDFStore(os.path.join(save_path, filename_outputfile + '.hdf')) as store:
                     store.append('df_train', df_train, format = 'table', append=True)
