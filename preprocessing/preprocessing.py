@@ -307,6 +307,7 @@ def create_data_set_for_training(save_path,
     #----------------------------------------------------------------------------------------------------
     # Make a list of variables with standard deviation of zero and a list of variables which don't exist for all events.
 
+    print('Calculating standard deviations')
     standard_deviation_zero_variables = list()
     not_all_events_variables = list()
     with pd.HDFStore(path_to_merged_data_set, mode='r') as store:
@@ -319,6 +320,8 @@ def create_data_set_for_training(save_path,
 
             if df_train[variable].isnull().any() or df_val[variable].isnull().any():
                 not_all_events_variables.append(variable)
+    print('\n', end='')
+
 
     if len(standard_deviation_zero_variables) != 0:
         print('The following variables will be removed due to a standard deviation of zero:')
@@ -339,6 +342,9 @@ def create_data_set_for_training(save_path,
     if select_variables=='include' or select_variables=='exclude':
         with open(path_to_variable_list, 'r') as file_variable_list:
             variable_list = [variable.rstrip() for variable in file_variable_list.readlines()]
+
+
+    columns_to_save = list()
 
 
     if binary_classification:
