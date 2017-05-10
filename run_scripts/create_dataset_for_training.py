@@ -19,7 +19,7 @@ path_to_inputfiles =
 # The input data sets have to be provided as a dictionary in the following format:
 # input_datasets = {'process_name':'filename'}
 
-input_datasets =
+input_data_sets =
 
 
 #----------------------------------------------------------------------------------------------------
@@ -72,7 +72,7 @@ path_to_weight_variables =
 #----------------------------------------------------------------------------------------------------
 create_dataset_for_training(save_path                               = save_path
                           , path_to_inputfiles                      = path_to_inputfiles
-                          , input_datasets                          = input_datasets
+                          , input_data_sets                         = input_data_sets
                           , path_to_merged_data_set                 = path_to_merged_data_set
                           , path_to_weight_variables                = path_to_weight_variables
 #                          , convert_chunksize                       = convert_chunksize
