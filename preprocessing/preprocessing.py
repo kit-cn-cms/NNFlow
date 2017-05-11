@@ -311,10 +311,10 @@ def create_data_set_for_training(save_path,
     standard_deviation_zero_variables = list()
     not_all_events_variables = list()
     with pd.HDFStore(path_to_merged_data_set, mode='r') as store:
-        for variable in variables_in_data_set:
-            df_train = store.select('df_train', where=where_condition, columns=[variable])
-            df_val = store.select('df_val', where=where_condition, columns=[variable])
+        df_train = store.select('df_train', where=where_condition, columns=variables_in_data_set)
+        df_val = store.select('df_val', where=where_condition, columns=variables_in_data_set)
 
+        for variable in variables_in_data_set:
             if df_train[variable].std()==0 or df_val[variable].std()==0:
                 standard_deviation_zero_variables.append(variable)
 
