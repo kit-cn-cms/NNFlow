@@ -32,3 +32,10 @@ def ttbar_processes(conditions_variables):
 
     elif conditions_variables == 'variables':
         return variables
+
+
+def weights():
+
+    weight_list = ['Weight_CSV', 'Weight_PU']
+
+    return weight_list
