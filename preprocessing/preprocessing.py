@@ -22,7 +22,7 @@ def root_to_HDF5(save_path,
                  path_to_other_always_excluded_variables,
                  path_to_vector_variables_lepton,
                  path_to_vector_variables_jet,
-                 weights_to_keep=['Weight', 'Weight_CSV', 'Weight_PU', 'Weight_XS'],
+                 weights_to_keep=list(),
                  treenames=[None],
                  number_of_saved_jets=6,
                  number_of_saved_leptons=1,
@@ -320,6 +320,10 @@ def create_data_set_for_training(save_path,
 
             if df_train[variable].isnull().any() or df_val[variable].isnull().any():
                 not_all_events_variables.append(variable)
+        
+        del df_train
+        del df_val
+    
     print('\n', end='')
 
 
@@ -367,35 +371,40 @@ def create_data_set_for_training(save_path,
     sum_of_events = dict()
     with pd.HDFStore(path_to_merged_data_set, mode='r') as store:
         if binary_classification:
-            df_process_categories = store.select('df_train', where=where_condition, columns=[binary_classification_signal])
+            df = store.select('df_train', where=where_condition, columns=[binary_classification_signal])
 
-            sum_of_events['signal'] = df_process_categories[binary_classification_signal].sum()
-            sum_of_events['background'] = df_process_categories.shape[0] - sum_of_events['signal']
+            sum_of_events['signal'] = df[binary_classification_signal].sum()
+            sum_of_events['background'] = df.shape[0] - sum_of_events['signal']
         
         else:
-            df_process_categories = store.select('df_train', where=where_condition, columns=process_categories)
+            df = store.select('df_train', where=where_condition, columns=process_categories)
+
             for process in process_categories:
-                sum_of_events[process] = df_process_categories[process].sum()
+                sum_of_events[process] = df[process].sum()
 
 
         for data_set in ['train', 'val', 'test']:
-            df_weight = store.select('df_'+data_set, where=where_condition, columns=process_categories+weights_to_be_applied)
+            df_weight = store.select('df_'+data_set, where=where_condition, columns=weights_to_be_applied)
             df = store.select('df_'+data_set, where=where_condition, columns=columns_to_save)
 
             if binary_classification:
-                if weights_to_be_applied==None:
-                    df['Trainig_Weight'] = df_weight.apply(lambda row: (1/sum_of_events['signal'] if row[binary_classification_signal] == 1 else 1/sum_of_events['background']), axis=1)
-                else:
-                    df['Trainig_Weight'] = df_weight.apply(lambda row: row[weights_to_be_applied].product()*(1/sum_of_events['signal'] if row[binary_classification_signal] == 1 else 1/sum_of_events['background']), axis=1)
+                df['Trainig_Weight'] = df[binary_classification_signal].apply(lambda row: 1/sum_of_events['signal'] if row==1 else 1/sum_of_events['background'])
+
+                for weight in weights_to_be_applied:
+                    df['Trainig_Weight'] *= df_weight[weight]
 
             else:
-                if weights_to_be_applied==None:
-                    df['Trainig_Weight'] = df_weight.apply(lambda row: sum([row[process]/sum_of_events[process] for process in process_categories]), axis=1)
-                else:
-                    df['Trainig_Weight'] = df_weight.apply(lambda row: row[weights_to_be_applied].product()*sum([row[process]/sum_of_events[process] for process in process_categories]), axis=1)
+                df['Trainig_Weight'] = 0
+                for process in process_categories:
+                    df['Trainig_Weight'] += df[process].apply(lambda row: row/sum_of_events[process])
+                
+                for weight in weights_to_be_applied:
+                    df['Trainig_Weight'] *= df_weight[weight]
 
 
+            del df_weight
             np.save(os.path.join(save_path, data_set), df.values)
+            del df
 
 
     #----------------------------------------------------------------------------------------------------
@@ -409,8 +418,7 @@ def create_data_set_for_training(save_path,
     if not binary_classification:
         with open(os.path.join(save_path, 'process_labels.txt'), 'w') as outputfile_process_labels:
             for process in process_categories:
-                if process in df_train.columns:
-                    outputfile_process_labels.write(process + '\n')
+                outputfile_process_labels.write(process + '\n')
 
 
     print('FINISHED' + '\n')
