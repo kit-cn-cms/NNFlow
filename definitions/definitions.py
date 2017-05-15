@@ -16,7 +16,19 @@ def jet_btag_category(category):
     return category_dict[category]
 
 
-def ttbar_processes(conditions_variables):
+def train_test_data_set():
+
+    conditions_dict = {'train':'Evt_Odd == 1',
+                       'test' :'Evt_Odd == 0'}
+
+    variable_list = ['Evt_Odd']
+
+    train_test_data_set_dict = {'variables':variable_list, 'conditions':conditions_dict}
+
+    return train_test_data_set_dict
+
+
+def ttbar_processes():
 
     conditions_dict = {'ttbb'   :'GenEvt_I_TTPlusBB == 3 and GenEvt_I_TTPlusCC == 0',
                        'tt2b'   :'GenEvt_I_TTPlusBB == 2 and GenEvt_I_TTPlusCC == 0',
@@ -25,16 +37,14 @@ def ttbar_processes(conditions_variables):
                        'ttlight':'GenEvt_I_TTPlusBB == 0 and GenEvt_I_TTPlusCC == 0'
                         }
 
-    variables = ['GenEvt_I_TTPlusBB', 'GenEvt_I_TTPlusCC']
+    variable_list = ['GenEvt_I_TTPlusBB', 'GenEvt_I_TTPlusCC']
 
-    if conditions_variables == 'conditions':
-        return conditions_dict
+    ttbar_processes_dict = {'variables':variable_list, 'conditions':conditions_dict}
 
-    elif conditions_variables == 'variables':
-        return variables
+    return ttbar_processes_dict
 
 
-def weights():
+def default_weight_list():
 
     weight_list = ['Weight_CSV', 'Weight_PU']
 

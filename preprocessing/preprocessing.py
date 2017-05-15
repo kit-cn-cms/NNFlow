@@ -17,19 +17,18 @@ def root_to_HDF5(save_path,
                  filename_outputfile,
                  path_to_inputfiles,
                  filenames_inputfiles,
+                 treenames,
                  path_to_generator_level_variables,
                  path_to_weight_variables,
                  path_to_other_always_excluded_variables,
                  path_to_vector_variables_lepton,
                  path_to_vector_variables_jet,
-                 weights_to_keep=list(),
-                 treenames=[None],
-                 number_of_saved_jets=6,
-                 number_of_saved_leptons=1,
-                 percentage_validation=20,
-                 split_data_frame=False,
-                 conditions_for_splitting=None,
-                 variables_for_splitting=None):
+                 weights_to_keep,
+                 number_of_saved_jets,
+                 number_of_saved_leptons,
+                 percentage_validation,
+                 split_data_frame,
+                 conditions_for_splitting={'variables': list()}):
 
 
     print('\n' + 'CONVERT ROOT FILES TO HDF5 FILES' + '\n')
@@ -41,28 +40,31 @@ def root_to_HDF5(save_path,
     if isinstance(treenames, basestring):
         treenames = [treenames]
 
+    if isinstance(weights_to_keep, basestring):
+        weights_to_keep = [weights_to_keep]
+
 
     if not os.path.isdir(save_path):
-        sys.exit("Directory " + save_path + " doesn't exist." + "\n")
+        sys.exit("Directory '" + save_path + "' doesn't exist." + "\n")
 
     for filename in filenames_inputfiles:
         if not os.path.isfile(os.path.join(path_to_inputfiles, filename)):
-             sys.exit("File " + os.path.join(path_to_inputfiles, filename) + " doesn't exist." + "\n")
+             sys.exit("File '" + os.path.join(path_to_inputfiles, filename) + "' doesn't exist." + "\n")
    
     if not os.path.isfile(path_to_generator_level_variables):
-        sys.exit("File " + path_to_generator_level_variables + " doesn't exist." + "\n")
+        sys.exit("File '" + path_to_generator_level_variables + "' doesn't exist." + "\n")
 
     if not os.path.isfile(path_to_weight_variables):
-        sys.exit("File " + path_to_weight_variables + " doesn't exist." + "\n")
+        sys.exit("File '" + path_to_weight_variables + "' doesn't exist." + "\n")
 
     if not os.path.isfile(path_to_other_always_excluded_variables):
-        sys.exit("File " + path_to_other_always_excluded_variables + " doesn't exist." + "\n")
+        sys.exit("File '" + path_to_other_always_excluded_variables + "' doesn't exist." + "\n")
 
     if not os.path.isfile(path_to_vector_variables_lepton):
-        sys.exit("File " + path_to_vector_variables_lepton + " doesn't exist." + "\n")
+        sys.exit("File '" + path_to_vector_variables_lepton + "' doesn't exist." + "\n")
 
     if not os.path.isfile(path_to_vector_variables_jet):
-        sys.exit("File " + path_to_vector_variables_jet + " doesn't exist." + "\n")
+        sys.exit("File '" + path_to_vector_variables_jet + "' doesn't exist." + "\n")
 
 
     if not (percentage_validation > 0 and percentage_validation < 100):
@@ -93,7 +95,13 @@ def root_to_HDF5(save_path,
         weight_variables = [variable.rstrip() for variable in file_weight_variables.readlines() if variable.rstrip() in df.columns and variable.rstrip() not in weights_to_keep]
     with open(path_to_other_always_excluded_variables, 'r') as file_other_always_excluded_variables:
         other_excluded_variables = [variable.rstrip() for variable in file_other_always_excluded_variables.readlines() if variable.rstrip() in df.columns]
-    excluded_variables = generator_level_variables + weight_variables + other_excluded_variables
+
+    
+    variables_for_splitting = definitions.train_test_data_set()['variables'] + conditions_for_splitting['variables']
+   
+
+    excluded_variables = [variable for variable in (generator_level_variables + weight_variables + other_excluded_variables) if variable not in variables_for_splitting]
+
 
     with open(path_to_vector_variables_lepton, 'r') as file_vector_variables_lepton:
         vector_variables_lepton = [variable.rstrip() for variable in file_vector_variables_lepton.readlines() if variable.rstrip() in df.columns and variable.rstrip() not in excluded_variables]
@@ -169,11 +177,8 @@ def root_to_HDF5(save_path,
 
             #--------------------------------------------------------------------------------------------
             # Split train, val and test data set.
-            df_train = df.query('Evt_Odd == 1').copy()
-            df_test  = df.query('Evt_Odd == 0').copy()
-
-            df_train.drop('Evt_Odd', axis=1, inplace=True)
-            df_test.drop('Evt_Odd', axis=1, inplace=True)
+            df_train = df.query(definitions.train_test_data_set()['conditions']['train']).copy()
+            df_test  = df.query(definitions.train_test_data_set()['conditions']['test']).copy()
 
             df_train.index = np.random.permutation(df_train.shape[0])
             df_train.sort_index(inplace=True)
@@ -183,7 +188,7 @@ def root_to_HDF5(save_path,
             df_train = df_train.head(number_of_training_events).copy()
 
             #--------------------------------------------------------------------------------------------
-            # Split process categories and save data.
+            # Split data set and save data.
             if not split_data_frame:
                 df_train.drop(variables_for_splitting, axis=1, inplace=True)
                 df_val.drop(variables_for_splitting, axis=1, inplace=True)
@@ -195,9 +200,9 @@ def root_to_HDF5(save_path,
                     store.append('df_test', df_test, format = 'table', append=True)
             else:
                 for process in conditions_for_splitting.keys():
-                    df_train_process = df_train.query(conditions_for_splitting[process]).copy()
-                    df_val_process = df_val.query(conditions_for_splitting[process]).copy()
-                    df_test_process = df_test.query(conditions_for_splitting[process]).copy()
+                    df_train_process = df_train.query(conditions_for_splitting['conditions'][process]).copy()
+                    df_val_process = df_val.query(conditions_for_splitting['conditions'][process]).copy()
+                    df_test_process = df_test.query(conditions_for_splitting['conditions'][process]).copy()
 
                     df_train_process.drop(variables_for_splitting, axis=1, inplace=True)
                     df_val_process.drop(variables_for_splitting, axis=1, inplace=True)
@@ -219,38 +224,45 @@ def create_data_set_for_training(save_path,
                                  input_data_sets,
                                  path_to_merged_data_set,
                                  path_to_weight_variables,
-                                 convert_chunksize=10000,
-                                 jet_btag_category='all',
-                                 selected_process_categories='all',
-                                 binary_classification=False,
+                                 weights_to_be_applied,
+                                 jet_btag_category,
+                                 selected_processes,
+                                 binary_classification,
+                                 select_variables,
                                  binary_classification_signal=None,
-                                 select_variables=False,
-                                 path_to_variable_list=None,
-                                 weights_to_be_applied=['Weight_PU', 'Weight_CSV']):
+                                 path_to_variable_list=None):
 
 
     print('\n' + 'CREATE DATA SET FOR TRAINING' + '\n')
 
 
     if not os.path.isdir(save_path):
-        sys.exit("Directory " + save_path + " doesn't exist." + "\n")
+        sys.exit("Directory '" + save_path + "' doesn't exist." + "\n")
 
     for filename in input_data_sets.values():
         if not os.path.isfile(os.path.join(path_to_inputfiles, filename)):
-             sys.exit("File " + os.path.join(path_to_inputfiles, filename) + " doesn't exist." + "\n")
+             sys.exit("File '" + os.path.join(path_to_inputfiles, filename) + "' doesn't exist." + "\n")
 
+    if not os.path.isdir(os.path.dirname(path_to_merged_data_set)):
+        sys.exit("Directory '" + os.path.dirname(path_to_merged_data_set) + "' doesn't exist." + "\n")
+
+    if not os.path.isfile(path_to_weight_variables):
+        sys.exit("File '" + path_to_weight_variables + "' doesn't exist." + "\n")
+
+    if isinstance(weights_to_be_applied, basestring):
+        weights_to_be_applied = [weights_to_be_applied]
 
 
     #----------------------------------------------------------------------------------------------------
     # Merge data sets and add flags for the different processes.
 
-    process_categories = input_data_sets.keys()
-    data_columns=process_categories+['N_Jets', 'N_BTagsM']
+    processes = input_data_sets.keys()
+    data_columns=processes+['N_Jets', 'N_BTagsM']
 
     with open(path_to_weight_variables, 'r') as file_weight_variables:
         weight_variables = [variable.rstrip() for variable in file_weight_variables.readlines()]
     
-    with pd.HDFStore(os.path.join(path_to_inputfiles, input_data_sets[process_categories[0]]), mode='r') as store_input:
+    with pd.HDFStore(os.path.join(path_to_inputfiles, input_data_sets[processes[0]]), mode='r') as store_input:
         df = store_input.select('df_train', start=0, stop=1)
         variables_in_data_set = [variable for variable in df.columns if variable not in weight_variables]
 
@@ -259,7 +271,7 @@ def create_data_set_for_training(save_path,
         merge_data_sets = True
     else:
         mtime_merged_set = os.path.getmtime(path_to_merged_data_set)
-        for process in process_categories:
+        for process in processes:
             if os.path.getmtime(os.path.join(path_to_inputfiles, input_data_sets[process])) > mtime_merged_set:
                merge_data_sets = True
 
@@ -270,14 +282,14 @@ def create_data_set_for_training(save_path,
             os.remove(path_to_merged_data_set)
 
         with pd.HDFStore(path_to_merged_data_set) as store_output:
-            for process in process_categories:
+            for process in processes:
                 print('    ' + 'Processing ' + input_data_sets[process])
                 with pd.HDFStore(os.path.join(path_to_inputfiles, input_data_sets[process]), mode='r') as store_input:
                     for data_set in ['df_train', 'df_val', 'df_test']:
-                        for df_input in store_input.select(data_set, chunksize=convert_chunksize):
+                        for df_input in store_input.select(data_set, chunksize=10000):
                             df = df_input.copy()
                             
-                            for process_label in process_categories:
+                            for process_label in processes:
                                 df[process_label] = 1 if process_label == process else 0
 
                             store_output.append(data_set, df, format = 'table', append=True, data_columns=data_columns)
@@ -290,17 +302,17 @@ def create_data_set_for_training(save_path,
 
     where_condition = None
 
-    if selected_process_categories != 'all':
-        process_categories = selected_process_categories
-        select_process_category_condition = '(' + str.join(' or ', [process + ' == 1' for process in selected_process_categories]) + ')'
+    if selected_processes != 'all':
+        processes = selected_processes
+        select_process_category_condition = '(' + str.join(' or ', [process + ' == 1' for process in selected_processes]) + ')'
 
-    if jet_btag_category != 'all' and selected_process_categories != 'all':
+    if jet_btag_category != 'all' and selected_processes != 'all':
         where_condition = str.join(' and ', [definitions.jet_btag_category(jet_btag_category)] + select_process_category_condition)
 
     elif jet_btag_category != 'all':
         where_condition = definitions.jet_btag_category(jet_btag_category)
 
-    elif selected_process_categories != 'all':
+    elif selected_processes != 'all':
         where_condition = select_process_category_condition
 
 
@@ -354,7 +366,7 @@ def create_data_set_for_training(save_path,
     if binary_classification:
         columns_to_save.append(binary_classification_signal)
     else:
-        columns_to_save.append(process_categories)
+        columns_to_save.append(processes)
 
 
     if select_variables=='include':
@@ -377,9 +389,9 @@ def create_data_set_for_training(save_path,
             sum_of_events['background'] = df.shape[0] - sum_of_events['signal']
         
         else:
-            df = store.select('df_train', where=where_condition, columns=process_categories)
+            df = store.select('df_train', where=where_condition, columns=processes)
 
-            for process in process_categories:
+            for process in processes:
                 sum_of_events[process] = df[process].sum()
 
 
@@ -395,7 +407,7 @@ def create_data_set_for_training(save_path,
 
             else:
                 df['Trainig_Weight'] = 0
-                for process in process_categories:
+                for process in processes:
                     df['Trainig_Weight'] += df[process].apply(lambda row: row/sum_of_events[process])
                 
                 for weight in weights_to_be_applied:
@@ -412,12 +424,12 @@ def create_data_set_for_training(save_path,
 
     with open(os.path.join(save_path, 'variables.txt'), 'w') as outputfile_variables:
         for variable in columns_to_save:
-            if variable not in process_categories:
+            if variable not in processes:
                 outputfile_variables.write(variable + '\n')
 
     if not binary_classification:
         with open(os.path.join(save_path, 'process_labels.txt'), 'w') as outputfile_process_labels:
-            for process in process_categories:
+            for process in processes:
                 outputfile_process_labels.write(process + '\n')
 
 
