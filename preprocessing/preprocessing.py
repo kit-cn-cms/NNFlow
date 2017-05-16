@@ -257,7 +257,7 @@ def create_data_set_for_training(save_path,
     # Merge data sets and add flags for the different processes.
 
     processes = input_data_sets.keys()
-    data_columns=processes+['N_Jets', 'N_BTagsM']
+    data_columns = processes + definitions.jet_btag_category()['variables']
 
     with open(path_to_weight_variables, 'r') as file_weight_variables:
         weight_variables = [variable.rstrip() for variable in file_weight_variables.readlines()]
@@ -304,16 +304,16 @@ def create_data_set_for_training(save_path,
 
     if selected_processes != 'all':
         processes = selected_processes
-        select_process_category_condition = '(' + str.join(' or ', [process + ' == 1' for process in selected_processes]) + ')'
+        select_processes_condition = '(' + str.join(' or ', [process + ' == 1' for process in selected_processes]) + ')'
 
     if jet_btag_category != 'all' and selected_processes != 'all':
-        where_condition = str.join(' and ', [definitions.jet_btag_category(jet_btag_category)] + select_process_category_condition)
+        where_condition = str.join(' and ', [definitions.jet_btag_category()['conditions'][jet_btag_category], select_processes_condition])
 
     elif jet_btag_category != 'all':
-        where_condition = definitions.jet_btag_category(jet_btag_category)
+        where_condition = definitions.jet_btag_category()['conditions'][jet_btag_category]
 
     elif selected_processes != 'all':
-        where_condition = select_process_category_condition
+        where_condition = select_processes_condition
 
 
     #----------------------------------------------------------------------------------------------------
