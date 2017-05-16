@@ -78,7 +78,7 @@ def root_to_HDF5(save_path,
         if os.path.isfile(os.path.join(save_path, filename_outputfile + '.hdf')):
             os.remove(os.path.join(save_path, filename_outputfile + '.hdf'))
     else:
-        for process in conditions_for_splitting.keys():
+        for process in conditions_for_splitting['conditions'].keys():
             if os.path.isfile(os.path.join(save_path, filename_outputfile + '_' + process + '.hdf')):
                 os.remove(os.path.join(save_path, filename_outputfile + '_' + process + '.hdf'))
 
@@ -199,7 +199,7 @@ def root_to_HDF5(save_path,
                     store.append('df_val', df_val, format = 'table', append=True)
                     store.append('df_test', df_test, format = 'table', append=True)
             else:
-                for process in conditions_for_splitting.keys():
+                for process in conditions_for_splitting['conditions'].keys():
                     df_train_process = df_train.query(conditions_for_splitting['conditions'][process]).copy()
                     df_val_process = df_val.query(conditions_for_splitting['conditions'][process]).copy()
                     df_test_process = df_test.query(conditions_for_splitting['conditions'][process]).copy()
