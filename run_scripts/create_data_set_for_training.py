@@ -16,6 +16,7 @@ workdir_base =
 #----------------------------------------------------------------------------------------------------
 sys.path.append(NNFlow_base)
 from preprocessing.preprocessing import create_data_set_for_training
+from definitions import definitions
 #----------------------------------------------------------------------------------------------------
 
 
