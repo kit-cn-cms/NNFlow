@@ -143,7 +143,7 @@ def root_to_HDF5(save_path,
 
 
     if len(other_vector_variables) != 0:
-        print('The following vector variables are neither in the lists of jet variables nor in the list of lepton variables. They will be removed:')
+        print('The following vector variables are neither in the list of jet variables nor in the list of lepton variables. They will be removed:')
         for variable in other_vector_variables:
             print('    ' + variable)
         print('\n', end='')
