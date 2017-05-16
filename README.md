@@ -22,3 +22,23 @@ export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/cuda-7.5-cudNNV5.1/lib64:/us
 export CUDA_HOME=/usr/local/cuda-7.5-cudNNV5.1
 export PYTHONPATH=$PYTHONPATH:/usr/local/lib
 ```
+
+## On ekpbms3
+
+```
+export SCRAM_ARCH="slc6_amd64_gcc530"
+export CMSSW_VERSION="CMSSW_9_0_3"
+export CMSSWINSTALLDIR=$PWD"/"$CMSSW_VERSION
+export PIPTARGETDIR=$CMSSWINSTALLDIR"/lib/"$SCRAM_ARCH
+scram project $CMSSW_VERSION
+cd $CMSSW_VERSION
+cmsenv
+
+wget https://bootstrap.pypa.io/get-pip.py
+python get-pip.py --target=$PIPTARGETDIR
+rm get-pip.py
+
+python -m pip install --target=$PIPTARGETDIR root_numpy
+python -m pip install --target=$PIPTARGETDIR tables
+python -m pip install --target=$PIPTARGETDIR --upgrade pandas
+```
