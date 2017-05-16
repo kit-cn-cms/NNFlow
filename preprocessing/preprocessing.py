@@ -68,7 +68,7 @@ def root_to_HDF5(save_path,
 
 
     if not (percentage_validation > 0 and percentage_validation < 100):
-        sys.exit('Value for "percentage_validation" is not allowed.' + '\n')
+        sys.exit("Value for 'percentage_validation' is not allowed." + '\n')
 
 
     #----------------------------------------------------------------------------------------------------
