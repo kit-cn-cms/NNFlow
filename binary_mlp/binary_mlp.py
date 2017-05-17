@@ -184,7 +184,7 @@ class BinaryMLP:
         activation = self._get_activation(self.activation)
         
         layer = tf.nn.dropout(activation(
-            tf.add(tf.matmul(x, W[0]), B[0])), keep_prob)
+            tf.add(tf.matmul(x, W[0]), B[0])), 1.)
         
         # fancy loop for creating hidden layer
         if len(self.h_layers) > 1:
