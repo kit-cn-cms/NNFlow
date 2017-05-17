@@ -1,4 +1,4 @@
-#NNFlow
+# NNFlow
 
 A framework to train binary and multinomial neural networks for the separation of ttbar subprocesses and ttH.
 
@@ -58,11 +58,11 @@ cmsenv
 ```
 
 
-##Work flow
-###Preprocessing
+## Work flow
+### Preprocessing
 - Convert root files to HDF5 files.
 - Merge HDF5 files to one file.
 - Create a data set (Numpy 2D array) for the training.
 
-###Training
+### Training
 - Train either a binary or a multinomial neural network.
