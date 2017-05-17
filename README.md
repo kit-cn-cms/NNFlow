@@ -1,5 +1,12 @@
-# Install environment
-## On ekpdeepthought
+#NNFlow
+
+A framework to train binary and multinomial neural networks for the separation of ttbar subprocesses and ttH.
+
+The framework is based on a framework for binary classification by Max Welsch and a framework for multinomial classification by Martin Lang.
+
+
+## Install environment
+### On ekpdeepthought
 
 ```
 export WORKDIR="/passender/pfad"
@@ -15,7 +22,7 @@ pip install pandas
 pip install tables
 ```
 
-Script to activate virtual environment:
+Script to activate virtual environment in a new shell:
 ```
 source $WORKDIR/bin/activate
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/cuda-7.5-cudNNV5.1/lib64:/usr/local/cuda-7.5-cudNNV5.1/extras/CUPTI/lib64"
@@ -23,7 +30,8 @@ export CUDA_HOME=/usr/local/cuda-7.5-cudNNV5.1
 export PYTHONPATH=$PYTHONPATH:/usr/local/lib
 ```
 
-## On ekpbms3
+
+### On ekpbms3
 
 ```
 export SCRAM_ARCH="slc6_amd64_gcc530"
@@ -42,3 +50,19 @@ python -m pip install --target=$PIPTARGETDIR root_numpy
 python -m pip install --target=$PIPTARGETDIR tables
 python -m pip install --target=$PIPTARGETDIR --upgrade pandas
 ```
+
+Activate environment in a new shell:
+```
+cd /path/to/CMSSW_9_0_3
+cmsenv
+```
+
+
+##Work flow
+###Preprocessing
+- Convert root files to HDF5 files.
+- Merge HDF5 files to one file.
+- Create a data set (Numpy 2D array) for the training.
+
+###Training
+- Train either a binary or a multinomial neural network.
