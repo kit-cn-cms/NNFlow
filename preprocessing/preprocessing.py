@@ -198,6 +198,7 @@ def root_to_HDF5(save_path,
                     store.append('df_train', df_train, format = 'table', append=True)
                     store.append('df_val', df_val, format = 'table', append=True)
                     store.append('df_test', df_test, format = 'table', append=True)
+
             else:
                 for process in conditions_for_splitting['conditions'].keys():
                     df_train_process = df_train.query(conditions_for_splitting['conditions'][process]).copy()
@@ -214,16 +215,79 @@ def root_to_HDF5(save_path,
                         store.append('df_test', df_test_process, format = 'table', append=True)
 
 
+    #----------------------------------------------------------------------------------------------------
+    # Save a list of saved weights.
+
+    if not split_data_frame:
+        with pd.HDFStore(os.path.join(save_path, filename_outputfile + '.hdf')) as store:
+            store.put('weights_in_data_set', pd.Series(weights_to_keep), format='fixed')
+    
+    else:
+        for process in conditions_for_splitting['conditions'].keys():
+            with pd.HDFStore(os.path.join(save_path, filename_outputfile + '_' + process + '.hdf')) as store:
+                store.put('weights_in_data_set', pd.Series(weights_to_keep), format='fixed')
+
+
+    print('\n' + 'FINISHED' + '\n')
+
+
+
+
+def merge_data_sets(path_to_inputfiles,
+                    input_data_sets,
+                    path_to_merged_data_set):
+
+
+    print('\n' + 'MERGE DATA SETS' + '\n')
+
+
+    for filename in input_data_sets.values():
+        if not os.path.isfile(os.path.join(path_to_inputfiles, filename)):
+             sys.exit("File '" + os.path.join(path_to_inputfiles, filename) + "' doesn't exist." + "\n")
+
+    if not os.path.isdir(os.path.dirname(path_to_merged_data_set)):
+        sys.exit("Directory '" + os.path.dirname(path_to_merged_data_set) + "' doesn't exist." + "\n")
+
+
+    #----------------------------------------------------------------------------------------------------
+    # Merge data sets and add flags for the different processes.
+
+    processes = input_data_sets.keys()
+    data_columns = processes + definitions.jet_btag_category()['variables']
+
+
+    if os.path.isfile(path_to_merged_data_set):
+        os.remove(path_to_merged_data_set)
+
+    with pd.HDFStore(path_to_merged_data_set) as store_output:
+        for process in processes:
+            print('    ' + 'Processing ' + input_data_sets[process])
+            with pd.HDFStore(os.path.join(path_to_inputfiles, input_data_sets[process]), mode='r') as store_input:
+                for data_set in ['df_train', 'df_val', 'df_test']:
+                    for df_input in store_input.select(data_set, chunksize=10000):
+                        df = df_input.copy()
+                            
+                        for process_label in processes:
+                            df[process_label] = 1 if process_label == process else 0
+
+                        store_output.append(data_set, df, format = 'table', append=True, data_columns=data_columns)
+
+        with pd.HDFStore(os.path.join(path_to_inputfiles, input_data_sets[processes[0]]), mode='r') as store_input:
+            weights_in_data_set = store_input.get('weights_in_data_set')
+            store_output.put('weights_in_data_set', weights_in_data_set, format='fixed')
+
+        store_output.put('processes_in_data_set', processes, format='fixed')
+
+    print('\n', end='')
+
+
     print('\n' + 'FINISHED' + '\n')
 
 
 
 
 def create_data_set_for_training(save_path,
-                                 path_to_inputfiles,
-                                 input_data_sets,
                                  path_to_merged_data_set,
-                                 path_to_weight_variables,
                                  weights_to_be_applied,
                                  jet_btag_category,
                                  selected_processes,
@@ -234,67 +298,27 @@ def create_data_set_for_training(save_path,
 
 
     print('\n' + 'CREATE DATA SET FOR TRAINING' + '\n')
-
-
+    
+    
     if not os.path.isdir(save_path):
         sys.exit("Directory '" + save_path + "' doesn't exist." + "\n")
 
-    for filename in input_data_sets.values():
-        if not os.path.isfile(os.path.join(path_to_inputfiles, filename)):
-             sys.exit("File '" + os.path.join(path_to_inputfiles, filename) + "' doesn't exist." + "\n")
-
     if not os.path.isdir(os.path.dirname(path_to_merged_data_set)):
         sys.exit("Directory '" + os.path.dirname(path_to_merged_data_set) + "' doesn't exist." + "\n")
-
-    if not os.path.isfile(path_to_weight_variables):
-        sys.exit("File '" + path_to_weight_variables + "' doesn't exist." + "\n")
-
+    
     if isinstance(weights_to_be_applied, basestring):
         weights_to_be_applied = [weights_to_be_applied]
 
 
     #----------------------------------------------------------------------------------------------------
-    # Merge data sets and add flags for the different processes.
-
-    processes = input_data_sets.keys()
-    data_columns = processes + definitions.jet_btag_category()['variables']
-
-    with open(path_to_weight_variables, 'r') as file_weight_variables:
-        weight_variables = [variable.rstrip() for variable in file_weight_variables.readlines()]
-    
-    with pd.HDFStore(os.path.join(path_to_inputfiles, input_data_sets[processes[0]]), mode='r') as store_input:
-        df = store_input.select('df_train', start=0, stop=1)
-        variables_in_data_set = [variable for variable in df.columns if variable not in weight_variables]
-
-    merge_data_sets = False
-    if not os.path.isfile(path_to_merged_data_set):
-        merge_data_sets = True
-    else:
-        mtime_merged_set = os.path.getmtime(path_to_merged_data_set)
-        for process in processes:
-            if os.path.getmtime(os.path.join(path_to_inputfiles, input_data_sets[process])) > mtime_merged_set:
-               merge_data_sets = True
-
-    if merge_data_sets:
-        print('Merge data sets:')
-
-        if os.path.isfile(path_to_merged_data_set):
-            os.remove(path_to_merged_data_set)
-
-        with pd.HDFStore(path_to_merged_data_set) as store_output:
-            for process in processes:
-                print('    ' + 'Processing ' + input_data_sets[process])
-                with pd.HDFStore(os.path.join(path_to_inputfiles, input_data_sets[process]), mode='r') as store_input:
-                    for data_set in ['df_train', 'df_val', 'df_test']:
-                        for df_input in store_input.select(data_set, chunksize=10000):
-                            df = df_input.copy()
-                            
-                            for process_label in processes:
-                                df[process_label] = 1 if process_label == process else 0
-
-                            store_output.append(data_set, df, format = 'table', append=True, data_columns=data_columns)
-
-        print('\n', end='')
+    # Get processes, weights and variables in data set.
+  
+    with pd.HDFStore(path_to_merged_data_set, mode='r') as store:
+        processes = store.get('processes_in_data_set').values
+        weights_in_data_set = store.get('weights_in_data_set').values
+        df = store.select('df_train', start=0, stop=1)
+        variables_in_data_set = [variable for variable in df.columns if variable not in weights_in_data_set]
+    del df
 
 
     #----------------------------------------------------------------------------------------------------
