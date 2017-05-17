@@ -24,7 +24,7 @@ from binary_mlp.data_frame import DataFrame
 
 n_hidden_layers =
 n_neuron_per_layer =
-hlayers = [n_neuron_per_layer for i in range(n_layers)]
+hlayers = [n_neuron_per_layer for i in range(n_hidden_layers)]
 
 
 ### Available activation functions: 'elu', 'relu', 'tanh', 'sigmoid'
