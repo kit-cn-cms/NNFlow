@@ -3,14 +3,14 @@ from __future__ import absolute_import, division, print_function
 
 def jet_btag_category():
 
-    conditions_dict = {'43' : 'N_Jets == 4 and N_BTagsM == 3',
-                       '44' : 'N_Jets == 4 and N_BTagsM == 4',
-                       '53' : 'N_Jets == 5 and N_BTagsM == 3',
-                       '54' : 'N_Jets == 5 and N_BTagsM >= 4',
-                       '62' : 'N_Jets >= 6 and N_BTagsM == 2',
-                       '63' : 'N_Jets >= 6 and N_BTagsM == 3',
-                       '63+': 'N_Jets >= 6 and N_BTagsM >= 3',
-                       '64' : 'N_Jets >= 6 and N_BTagsM >= 4',
+    conditions_dict = {'43' : '(N_Jets == 4 and N_BTagsM == 3)',
+                       '44' : '(N_Jets == 4 and N_BTagsM == 4)',
+                       '53' : '(N_Jets == 5 and N_BTagsM == 3)',
+                       '54' : '(N_Jets == 5 and N_BTagsM >= 4)',
+                       '62' : '(N_Jets >= 6 and N_BTagsM == 2)',
+                       '63' : '(N_Jets >= 6 and N_BTagsM == 3)',
+                       '63+': '(N_Jets >= 6 and N_BTagsM >= 3)',
+                       '64' : '(N_Jets >= 6 and N_BTagsM >= 4)',
                        }
 
     variable_list = ['N_Jets', 'N_BTagsM']

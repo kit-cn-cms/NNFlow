@@ -276,7 +276,7 @@ def merge_data_sets(path_to_inputfiles,
             weights_in_data_set = store_input.get('weights_in_data_set')
             store_output.put('weights_in_data_set', weights_in_data_set, format='fixed')
 
-        store_output.put('processes_in_data_set', processes, format='fixed')
+        store_output.put('processes_in_data_set', pd.Series(processes), format='fixed')
 
     print('\n', end='')
 
@@ -303,8 +303,8 @@ def create_data_set_for_training(save_path,
     if not os.path.isdir(save_path):
         sys.exit("Directory '" + save_path + "' doesn't exist." + "\n")
 
-    if not os.path.isdir(os.path.dirname(path_to_merged_data_set)):
-        sys.exit("Directory '" + os.path.dirname(path_to_merged_data_set) + "' doesn't exist." + "\n")
+    if not os.path.isfile(path_to_merged_data_set):
+        sys.exit("File '" + path_to_merged_data_set + "' doesn't exist." + "\n")
     
     if isinstance(weights_to_be_applied, basestring):
         weights_to_be_applied = [weights_to_be_applied]
@@ -317,7 +317,7 @@ def create_data_set_for_training(save_path,
         processes = store.get('processes_in_data_set').values
         weights_in_data_set = store.get('weights_in_data_set').values
         df = store.select('df_train', start=0, stop=1)
-        variables_in_data_set = [variable for variable in df.columns if variable not in weights_in_data_set]
+        variables_in_data_set = [variable for variable in df.columns if variable not in (processes + weights_in_data_set)]
     del df
 
 
@@ -354,7 +354,7 @@ def create_data_set_for_training(save_path,
             if df_train[variable].std()==0 or df_val[variable].std()==0:
                 standard_deviation_zero_variables.append(variable)
 
-            if df_train[variable].isnull().any() or df_val[variable].isnull().any():
+            elif df_train[variable].isnull().any() or df_val[variable].isnull().any():
                 not_all_events_variables.append(variable)
         
         del df_train
