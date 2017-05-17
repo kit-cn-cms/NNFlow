@@ -314,8 +314,8 @@ def create_data_set_for_training(save_path,
     # Get processes, weights and variables in data set.
   
     with pd.HDFStore(path_to_merged_data_set, mode='r') as store:
-        processes = store.get('processes_in_data_set').values
-        weights_in_data_set = store.get('weights_in_data_set').values
+        processes = list(store.get('processes_in_data_set').values)
+        weights_in_data_set = list(store.get('weights_in_data_set').values)
         df = store.select('df_train', start=0, stop=1)
         variables_in_data_set = [variable for variable in df.columns if variable not in (processes + weights_in_data_set)]
     del df
