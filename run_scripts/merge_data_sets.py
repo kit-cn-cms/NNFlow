@@ -21,7 +21,7 @@ from preprocessing.preprocessing import merge_data_sets
 
 
 ### The input data sets have to be provided as a dictionary in the following format:
-### input_datasets = {'process_name':'filename'}
+### input_datasets = {'process_name':['filename1', 'filename2', ...]}
 input_data_sets =
 
 

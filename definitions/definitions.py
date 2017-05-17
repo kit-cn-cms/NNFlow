@@ -48,6 +48,20 @@ def ttbar_processes():
     return ttbar_processes_dict
 
 
+def ttbb_processes():
+
+    conditions_dict = {'ttbb'   :'GenEvt_I_TTPlusBB == 3 and GenEvt_I_TTPlusCC == 0',
+                       'tt2b'   :'GenEvt_I_TTPlusBB == 2 and GenEvt_I_TTPlusCC == 0',
+                       'ttb'    :'GenEvt_I_TTPlusBB == 1 and GenEvt_I_TTPlusCC == 0',
+                        }
+
+    variable_list = ['GenEvt_I_TTPlusBB', 'GenEvt_I_TTPlusCC']
+
+    ttbb_processes_dict = {'variables':variable_list, 'conditions':conditions_dict}
+
+    return ttbb_processes_dict
+
+
 def default_weight_list():
 
     weight_list = ['Weight_CSV', 'Weight_PU']

@@ -241,7 +241,7 @@ def merge_data_sets(path_to_inputfiles,
     print('\n' + 'MERGE DATA SETS' + '\n')
 
 
-    for filename in input_data_sets.values():
+    for filename in np.concatenate(input_data_sets.values()):
         if not os.path.isfile(os.path.join(path_to_inputfiles, filename)):
              sys.exit("File '" + os.path.join(path_to_inputfiles, filename) + "' doesn't exist." + "\n")
 
@@ -261,18 +261,19 @@ def merge_data_sets(path_to_inputfiles,
 
     with pd.HDFStore(path_to_merged_data_set) as store_output:
         for process in processes:
-            print('    ' + 'Processing ' + input_data_sets[process])
-            with pd.HDFStore(os.path.join(path_to_inputfiles, input_data_sets[process]), mode='r') as store_input:
-                for data_set in ['df_train', 'df_val', 'df_test']:
-                    for df_input in store_input.select(data_set, chunksize=10000):
-                        df = df_input.copy()
+            for input_file in input_data_sets[process]:
+                print('    ' + 'Processing ' + input_file)
+                with pd.HDFStore(os.path.join(path_to_inputfiles, input_file), mode='r') as store_input:
+                    for data_set in ['df_train', 'df_val', 'df_test']:
+                        for df_input in store_input.select(data_set, chunksize=10000):
+                            df = df_input.copy()
                             
-                        for process_label in processes:
-                            df[process_label] = 1 if process_label == process else 0
+                            for process_label in processes:
+                                df[process_label] = 1 if process_label == process else 0
 
-                        store_output.append(data_set, df, format = 'table', append=True, data_columns=data_columns)
+                            store_output.append(data_set, df, format = 'table', append=True, data_columns=data_columns)
 
-        with pd.HDFStore(os.path.join(path_to_inputfiles, input_data_sets[processes[0]]), mode='r') as store_input:
+        with pd.HDFStore(os.path.join(path_to_inputfiles, input_data_sets[processes[0]][0]), mode='r') as store_input:
             weights_in_data_set = store_input.get('weights_in_data_set')
             store_output.put('weights_in_data_set', weights_in_data_set, format='fixed')
 
