@@ -75,7 +75,6 @@ batch_size=128
 #----------------------------------------------------------------------------------------------------
 train = DataFrame(np.load(train))
 val = DataFrame(np.load(val))
-test = DataFrame(np.load(test))
 
 with open(path_to_variablelist, 'r') as file_variablelist:
     variablelist = [variable.rstrip() for variable in file_variablelist.readlines()]
