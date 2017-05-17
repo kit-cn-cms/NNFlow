@@ -412,12 +412,10 @@ def create_data_set_for_training(save_path,
 
             sum_of_events['signal'] = df[binary_classification_signal].sum()
             sum_of_events['background'] = df.shape[0] - sum_of_events['signal']
-            sum_of_events['all'] = df.shape[0]
         
         else:
             df = store.select('df_train', where=where_condition, columns=processes)
             
-            sum_of_events['all'] = df.shape[0]
             for process in processes:
                 sum_of_events[process] = df[process].sum()
 
@@ -427,18 +425,22 @@ def create_data_set_for_training(save_path,
             df = store.select('df_'+data_set, where=where_condition, columns=columns_to_save)
 
             if binary_classification:
-                df['Trainig_Weight'] = df[binary_classification_signal].apply(lambda row: sum_of_events['all']/sum_of_events['signal'] if row==1 else sum_of_events['all']/sum_of_events['background'])
+                df['Training_Weight'] = df[binary_classification_signal].apply(lambda row: 1/sum_of_events['signal'] if row==1 else 1/sum_of_events['background'])
 
                 for weight in weights_to_be_applied:
-                    df['Trainig_Weight'] *= df_weight[weight]
+                    df['Training_Weight'] *= df_weight[weight]
+                
+                df['Training_Weight'] /= df['Training_Weight'].sum()
 
             else:
-                df['Trainig_Weight'] = 0
+                df['Training_Weight'] = 0
                 for process in processes:
-                    df['Trainig_Weight'] += df[process].apply(lambda row: row*sum_of_events['all']/sum_of_events[process])
+                    df['Training_Weight'] += df[process].apply(lambda row: row/sum_of_events[process])
                 
                 for weight in weights_to_be_applied:
-                    df['Trainig_Weight'] *= df_weight[weight]
+                    df['Training_Weight'] *= df_weight[weight]
+
+                df['Training_Weight'] /= df['Training_Weight'].sum()
 
 
             del df_weight
