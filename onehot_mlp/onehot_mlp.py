@@ -27,7 +27,7 @@ class OneHotMLP:
 
 
     def __init__(self, n_features, h_layers, out_size, savedir, labels_text,
-            branchlist, sig_weight, bg_weight, act_func='tanh'):
+            branchlist, act_func='tanh'):
         """Initializes the Classifier.
 
         Arguments:
@@ -64,8 +64,8 @@ class OneHotMLP:
         self.savedir = savedir
         self.labels_text = labels_text
         self.branchlist = branchlist
-        self.sig_weight = sig_weight
-        self.bg_weight = bg_weight
+#        self.sig_weight = sig_weight
+#        self.bg_weight = bg_weight
         self.act_func = act_func
 
         # check whether the model file exists
@@ -678,20 +678,20 @@ class OneHotMLP:
                 row_sum += arr_train[i][j]
             for j in range(arr_train.shape[1]):
                 arr_train_float[i][j] = arr_train[i][j] / row_sum
-                if (i == 0):
-                    arr_train_w_weights[i][j] = 1.0 * arr_train[i][j] * self.sig_weight
-                else:
-                    arr_train_w_weights[i][j] = 1.0 * arr_train[i][j] * self.bg_weight
+#                if (i == 0):
+#                    arr_train_w_weights[i][j] = 1.0 * arr_train[i][j] * self.sig_weight
+#                else:
+#                    arr_train_w_weights[i][j] = 1.0 * arr_train[i][j] * self.bg_weight
         for i in range(arr_val.shape[0]):
             row_sum = 0
             for j in range(arr_val.shape[1]):
                 row_sum += arr_val[i][j]
             for j in range(arr_val.shape[1]):
                 arr_val_float[i][j] = arr_val[i][j] / row_sum
-                if (i == 0):
-                    arr_val_w_weights[i][j] = 1.0 * arr_val[i][j] * self.sig_weight
-                else:
-                    arr_val_w_weights[i][j] = 1.0 * arr_val[i][j] * self.bg_weight
+#                if (i == 0):
+#                    arr_val_w_weights[i][j] = 1.0 * arr_val[i][j] * self.sig_weight
+#                else:
+#                    arr_val_w_weights[i][j] = 1.0 * arr_val[i][j] * self.bg_weight
         if (early == 'yes'):
             epoch += 1
         print(arr_train)
@@ -836,58 +836,58 @@ class OneHotMLP:
         plt.clf()
 
         # Draw again with absolute numbers and weights
-        cmap = matplotlib.cm.RdYlBu_r
-        cmap.set_bad(color='white')
-        minimum, maximum = find_limits(arr_train_w_weights)
-        plt.pcolormesh(xn, yn, arr_train_w_weights, cmap=cmap, norm=colors.LogNorm(
-            vmin=max(minimum, 1e-6), vmax=maximum))
-        plt.colorbar()
-        plt.xlim(0, self.out_size)
-        plt.ylim(0, self.out_size)
-        
-        plt.xlabel("Predicted")
-        plt.ylabel("True")
-        for yit in range(arr_train_w_weights.shape[0]):
-            for xit in range(arr_train_w_weights.shape[1]):
-                plt.text(xit + 0.5, yit + 0.5, '%.2f' % arr_train_w_weights[yit, xit], 
-                        horizontalalignment='center', verticalalignment='center',)
-        ax = plt.gca()
-        ax.set_xticks(np.arange((x.shape[0] - 1)) + 0.5, minor=False)
-        ax.set_yticks(np.arange((y.shape[0] - 1)) + 0.5, minor=False)
-        ax.set_xticklabels(self.labels_text)
-        ax.set_yticklabels(self.labels_text)
-        if (early=='yes'):
-            plt.title('Heatmap: Training after early stopping in epoch {}'.format(epoch))
-        else:
-            plt.title("Heatmap: Training after epoch {}".format(epoch))
-        plt.savefig(self.cross_savedir + '/{}_train_colorlog_absolute_weights.pdf'.format(epoch))
-        plt.clf()
-        cmap = matplotlib.cm.RdYlBu_r
-        cmap.set_bad(color='white')
-        minimum, maximum = find_limits(arr_val_w_weights)
-        plt.pcolormesh(xn, yn, arr_val_w_weights, cmap=cmap, norm=colors.LogNorm(
-            vmin=max(minimum, 1e-6), vmax=maximum))
-        plt.colorbar()
-        plt.xlim(0, self.out_size)
-        plt.ylim(0, self.out_size)
-        
-        plt.xlabel("Predicted")
-        plt.ylabel("True")
-        for yit in range(arr_val_w_weights.shape[0]):
-            for xit in range(arr_val_w_weights.shape[1]):
-                plt.text(xit + 0.5, yit + 0.5, '%.2f' % arr_val_w_weights[yit, xit], 
-                        horizontalalignment='center', verticalalignment='center',)
-        ax = plt.gca()
-        ax.set_xticks(np.arange((x.shape[0] - 1)) + 0.5, minor=False)
-        ax.set_yticks(np.arange((y.shape[0] - 1)) + 0.5, minor=False)
-        ax.set_xticklabels(self.labels_text)
-        ax.set_yticklabels(self.labels_text)
-        if (early=='yes'):
-            plt.title('Heatmap: Validation after early stopping in epoch {}'.format(epoch))
-        else:
-            plt.title("Heatmap: Validation after epoch {}".format(epoch))
-        plt.savefig(self.cross_savedir + '/{}_validation_colorlog_absolute_weights.pdf'.format(epoch))
-        plt.clf()
+#        cmap = matplotlib.cm.RdYlBu_r
+#        cmap.set_bad(color='white')
+#        minimum, maximum = find_limits(arr_train_w_weights)
+#        plt.pcolormesh(xn, yn, arr_train_w_weights, cmap=cmap, norm=colors.LogNorm(
+#            vmin=max(minimum, 1e-6), vmax=maximum))
+#        plt.colorbar()
+#        plt.xlim(0, self.out_size)
+#        plt.ylim(0, self.out_size)
+#        
+#        plt.xlabel("Predicted")
+#        plt.ylabel("True")
+#        for yit in range(arr_train_w_weights.shape[0]):
+#            for xit in range(arr_train_w_weights.shape[1]):
+#                plt.text(xit + 0.5, yit + 0.5, '%.2f' % arr_train_w_weights[yit, xit], 
+#                        horizontalalignment='center', verticalalignment='center',)
+#        ax = plt.gca()
+#        ax.set_xticks(np.arange((x.shape[0] - 1)) + 0.5, minor=False)
+#        ax.set_yticks(np.arange((y.shape[0] - 1)) + 0.5, minor=False)
+#        ax.set_xticklabels(self.labels_text)
+#        ax.set_yticklabels(self.labels_text)
+#        if (early=='yes'):
+#            plt.title('Heatmap: Training after early stopping in epoch {}'.format(epoch))
+#        else:
+#            plt.title("Heatmap: Training after epoch {}".format(epoch))
+#        plt.savefig(self.cross_savedir + '/{}_train_colorlog_absolute_weights.pdf'.format(epoch))
+#        plt.clf()
+#        cmap = matplotlib.cm.RdYlBu_r
+#        cmap.set_bad(color='white')
+#        minimum, maximum = find_limits(arr_val_w_weights)
+#        plt.pcolormesh(xn, yn, arr_val_w_weights, cmap=cmap, norm=colors.LogNorm(
+#            vmin=max(minimum, 1e-6), vmax=maximum))
+#        plt.colorbar()
+#        plt.xlim(0, self.out_size)
+#        plt.ylim(0, self.out_size)
+#        
+#        plt.xlabel("Predicted")
+#        plt.ylabel("True")
+#        for yit in range(arr_val_w_weights.shape[0]):
+#            for xit in range(arr_val_w_weights.shape[1]):
+#                plt.text(xit + 0.5, yit + 0.5, '%.2f' % arr_val_w_weights[yit, xit], 
+#                        horizontalalignment='center', verticalalignment='center',)
+#        ax = plt.gca()
+#        ax.set_xticks(np.arange((x.shape[0] - 1)) + 0.5, minor=False)
+#        ax.set_yticks(np.arange((y.shape[0] - 1)) + 0.5, minor=False)
+#        ax.set_xticklabels(self.labels_text)
+#        ax.set_yticklabels(self.labels_text)
+#        if (early=='yes'):
+#            plt.title('Heatmap: Validation after early stopping in epoch {}'.format(epoch))
+#        else:
+#            plt.title("Heatmap: Validation after epoch {}".format(epoch))
+#        plt.savefig(self.cross_savedir + '/{}_validation_colorlog_absolute_weights.pdf'.format(epoch))
+#        plt.clf()
 
 
 

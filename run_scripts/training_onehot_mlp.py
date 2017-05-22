@@ -67,9 +67,6 @@ with open(labels_path, 'r') as file_labels:
 
 outsize = len(labels)
 
-sig_weight = np.float32(1) #TODO
-bg_weight = np.float32(1)  #TODO
-
 train = DataFrame(np.load(train_path), out_size=outsize)
 val   = DataFrame(np.load(val_path), out_size=outsize)
 
@@ -78,8 +75,8 @@ val   = DataFrame(np.load(val_path), out_size=outsize)
 
 
 cl = OneHotMLP(train.nfeatures, hidden_layers, outsize, model_location, 
-        labels_text=labels, branchlist=branchlist, sig_weight=sig_weight,
-        bg_weight=bg_weight, act_func=act_func)
+        labels_text=labels, branchlist=branchlist,
+        act_func=act_func)
 cl.train(train, val, optimizer=optname, epochs=N_EPOCHS, batch_size=batch_size, 
         learning_rate=learning_rate, keep_prob=keep_prob, beta=beta, 
         out_size=outsize, optimizer_options=optimizer_options,
