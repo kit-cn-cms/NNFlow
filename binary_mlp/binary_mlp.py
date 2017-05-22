@@ -197,8 +197,8 @@ class BinaryMLP:
         return logit
 
     def train(self, train_data, val_data, epochs, batch_size,
-              lr, optimizer, early_stop, keep_prob, beta,
-              momentum=None, lr_decay=None, gpu_usage=None):
+              lr, optimizer, early_stop, keep_prob, beta, gpu_usage
+              momentum=None, lr_decay=None):
         """Train Neural Network with given training data set.
 
         Arguments:
@@ -277,10 +277,8 @@ class BinaryMLP:
 
         
 
-        # dont allocate all available gpu memory, remove if you can dont share a
-        # machine with others
         config = tf.ConfigProto()
-        if gpu_usage!=None:
+        if gpu_usage['shared_machine']:
             if gpu_usage['restrict_visible_devices']:
                 os.environ['CUDA_VISIBLE_DEVICES'] = gpu_usage['CUDA_VISIBLE_DEVICES']
             
