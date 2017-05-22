@@ -5,7 +5,7 @@ import sys
 
 class DataFrame:
 
-    def __init__(self, array, out_size, normalization):
+    def __init__(self, array, out_size):
         """Initializes the DataFrame.
 
         Arguments: 
@@ -14,12 +14,9 @@ class DataFrame:
             Array containing labels, data, and weights.
         out_size (int):
             Dimension of the output (i.e. label).
-        normalization (string):
-            String indicating whether to use Gaussian or min-max norm.
         """
 
         self.out_size = out_size
-        self.normalization = normalization
         self.y = array[:, :self.out_size]
         self.x = array[:, self.out_size:-1]
         self.w = array[:, -1:]
@@ -34,27 +31,6 @@ class DataFrame:
         self.shuffle()
         print('done.')
         # print(self.w[0:100])
-
-    def normalize(self):
-        """Normalizes the training data.
-        """
-        print('Now normalizing; this may take some minutes.')
-        if (self.normalization == 'minmax'):
-            print('Normalizing using Min-Max normalization.')
-            x_max = np.amax(self.x, axis=0).astype(np.float32)
-            x_min = np.amin(self.x, axis=0).astype(np.float32)
-            self.x = 2.0*np.nan_to_num((self.x - x_min) / (x_max - x_min))-1.0
-
-
-        elif (self.normalization == 'gaussian'):
-            print('Normalizing using Gaussian normalization.')
-            x_mean = np.mean(self.x, axis=0).astype(np.float32)
-            x_std = np.std(self.x, axis=0).astype(np.float32)
-            self.x = np.nan_to_num((self.x - x_mean) / x_std)
-
-        else:
-            sys.exit('Only minmax and gaussian normalization are available.')
-
 
     
     def shuffle(self):

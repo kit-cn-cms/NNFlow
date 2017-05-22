@@ -38,7 +38,6 @@ batch_decay = 'no'
 batch_decay_options = []
 
 hidden_layers = [200, 200, 200, 200]
-normalization = 'gaussian'
 
 
 #----------------------------------------------------------------------------------------------------
@@ -71,8 +70,8 @@ outsize = len(labels)
 sig_weight = np.float32(1) #TODO
 bg_weight = np.float32(1)  #TODO
 
-train = DataFrame(np.load(train_path), out_size=outsize, normalization=normalization)
-val   = DataFrame(np.load(val_path), out_size=outsize, normalization=normalization)
+train = DataFrame(np.load(train_path), out_size=outsize)
+val   = DataFrame(np.load(val_path), out_size=outsize)
 
 
 #----------------------------------------------------------------------------------------------------

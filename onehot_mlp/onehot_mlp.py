@@ -233,12 +233,16 @@ class OneHotMLP:
             y = tf.placeholder(tf.float32, [None, out_size])
             w = tf.placeholder(tf.float32, [None, 1])
 
+            x_mean = tf.Variable(np.mean(train_data.x, axis=0).astype(np.float32), trainable=False,  name='x_mean')
+            x_std = tf.Variable(np.std(train_data.x, axis=0).astype(np.float32), trainable=False,  name='x_std')
+            x_scaled = tf.div(tf.subtract(x, x_mean), x_std, name='x_scaled')
+
             weights, biases = self._get_parameters()
 
             # prediction
-            y_ = self._model(x, weights, biases, keep_prob)
+            y_ = self._model(x_scaled, weights, biases, keep_prob)
             # prediction for validation
-            yy_ = tf.nn.softmax(self._model(x, weights, biases))
+            yy_ = tf.nn.softmax(self._model(x_scaled, weights, biases))
             # Cross entropy
             xentropy = tf.nn.softmax_cross_entropy_with_logits(labels=y,logits=y_)
             l2_reg = beta * self._l2_regularization(weights)
@@ -277,8 +281,6 @@ class OneHotMLP:
             train_losses = []
             train_cats = []
             val_cats = []
-            train_data.normalize()
-            val_data.normalize()
             early_stopping = {'val_acc': -1.0, 'epoch': 0}
 
             print(110*'-')
