@@ -15,7 +15,6 @@ import datetime
 import sys
 import time
 import pickle
-os.environ['CUDA_VISIBLE_DEVICES'] = "2"
 
 from sklearn.metrics import roc_auc_score, roc_curve
 
@@ -167,7 +166,7 @@ class OneHotMLP:
             learning_rate = 1e-3, keep_prob = 0.9, beta = 0.0, out_size=6, 
             optimizer_options=[], enable_early='no', early_stop=10, 
             decay_learning_rate='no', dlrate_options=[], batch_decay='no', 
-            batch_decay_options=[], ttH_penalty=1e-5):
+            batch_decay_options=[], ttH_penalty=1e-5, gpu_usage=None):
         """Trains the classifier
 
         Arguments:
@@ -272,11 +271,18 @@ class OneHotMLP:
             init = tf.global_variables_initializer()
             saver = tf.train.Saver(weights + biases)
         
-        # Non-static memory management; memory can be allocated on the fly.
-        sess_config = tf.ConfigProto()
-        sess_config.gpu_options.per_process_gpu_memory_fraction = 0.28
-        # sess_config.gpu_options.allow_growth = True
         
+        sess_config = tf.ConfigProto()
+        if gpu_usage['shared_machine']:
+            if gpu_usage['restrict_visible_devices']:
+                os.environ['CUDA_VISIBLE_DEVICES'] = gpu_usage['CUDA_VISIBLE_DEVICES']
+
+            if gpu_usage['allow_growth']:
+                sess_config.gpu_options.allow_growth = True
+
+            if gpu_usage['restrict_per_process_gpu_memory_fraction']:
+                sess_config.gpu_options.per_process_gpu_memory_fraction = gpu_usage['per_process_gpu_memory_fraction']
+
         with tf.Session(config=sess_config, graph=train_graph) as sess:
             self.model_loc = self.savedir + '/{}.ckpt'.format(self.name)
             sess.run(init)
