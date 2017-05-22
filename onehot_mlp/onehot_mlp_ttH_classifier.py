@@ -152,7 +152,7 @@ class OneHotMLP:
         """
 
         self.act = self._build_activation_function()
-        layer = tf.nn.dropout(self.act(tf.matmul(data, W[0]) + B[0]), 0.95)
+        layer = tf.nn.dropout(self.act(tf.matmul(data, W[0]) + B[0]), 1)
         # if more the 1 hidden layer -> generate output via multiple weight
         # matrices 
         if len(self.h_layers) > 1:
