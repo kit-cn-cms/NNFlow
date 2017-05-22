@@ -150,7 +150,7 @@ class OneHotMLP:
         """
 
         self.act = self._build_activation_function()
-        layer = tf.nn.dropout(self.act(tf.matmul(data, W[0]) + B[0]), 0.95)
+        layer = tf.nn.dropout(self.act(tf.matmul(data, W[0]) + B[0]), 1)
         # if more the 1 hidden layer -> generate output via multiple weight
         # matrices 
         if len(self.h_layers) > 1:
@@ -262,10 +262,10 @@ class OneHotMLP:
                 os.environ['CUDA_VISIBLE_DEVICES'] = gpu_usage['CUDA_VISIBLE_DEVICES']
 
             if gpu_usage['allow_growth']:
-                config.gpu_options.allow_growth = True
+                sess_config.gpu_options.allow_growth = True
 
             if gpu_usage['restrict_per_process_gpu_memory_fraction']:
-                config.gpu_options.per_process_gpu_memory_fraction = gpu_usage['per_process_gpu_memory_fraction']
+                sess_config.gpu_options.per_process_gpu_memory_fraction = gpu_usage['per_process_gpu_memory_fraction']
 
         with tf.Session(config=sess_config, graph=train_graph) as sess:
             self.model_loc = self.savedir + '/{}.ckpt'.format(self.name)

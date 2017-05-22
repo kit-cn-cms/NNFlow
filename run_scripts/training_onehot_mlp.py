@@ -70,11 +70,9 @@ outsize = len(labels)
 
 sig_weight = np.float32(1) #TODO
 bg_weight = np.float32(1)  #TODO
-train = np.load(trainpath)
-val = np.load(valpath)
 
 train = DataFrame(np.load(train_path), out_size=outsize, normalization=normalization)
-val   = DataFrame(np.load(val=path), out_size=outsize, normalization=normalization)
+val   = DataFrame(np.load(val_path), out_size=outsize, normalization=normalization)
 
 
 #----------------------------------------------------------------------------------------------------
@@ -89,7 +87,7 @@ cl.train(train, val, optimizer=optname, epochs=N_EPOCHS, batch_size=batch_size,
         enable_early=enable_early, early_stop=early_stop,
         decay_learning_rate=decay_learning_rate,
         dlrate_options=lrate_decay_options, batch_decay=batch_decay,
-        batch_decay_options=batch_decay_options, gpu_usage_gpu_usage)
+        batch_decay_options=batch_decay_options, gpu_usage=gpu_usage)
 
 
 # implemented Optimizers: 
