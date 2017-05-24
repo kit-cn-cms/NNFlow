@@ -97,7 +97,7 @@ train_dict = {'train_data' : train,
               'optimizer'  : optimizer,
               'early_stop' : early_stop,
               'keep_prob'  : keep_prob,
-              'beta'       : beta
+              'beta'       : beta,
               'gpu_usage'  : gpu_usage
               }
 
