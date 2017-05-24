@@ -285,7 +285,7 @@ def merge_data_sets(path_to_inputfiles,
     with pd.HDFStore(path_to_merged_data_set) as store_output:
         for process in processes:
             for input_file in input_data_sets[process]:
-                print('    ' + 'Processing ' + input_file)
+                print('Processing ' + input_file)
                 with pd.HDFStore(os.path.join(path_to_inputfiles, input_file), mode='r') as store_input:
                     for data_set in ['df_train', 'df_val', 'df_test']:
                         for df_input in store_input.select(data_set, chunksize=10000):
