@@ -258,7 +258,7 @@ def merge_data_sets(path_to_inputfiles,
     for process in processes:
         for input_file in input_data_sets[process]:
             with pd.HDFStore(os.path.join(path_to_inputfiles, input_file), mode='r') as store_input:
-                df = store_input.select('df_train', stop=1):
+                df = store_input.select('df_train', stop=1)
                 variables_in_input_files[input_file] = set(df.columns)
 
     common_variables = set.intersection(*variables_in_input_files.values())
