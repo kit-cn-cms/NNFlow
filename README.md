@@ -21,6 +21,7 @@ pip install rootpy
 NOTMVA=1 pip2 install --upgrade  root_numpy
 pip install pandas
 pip install tables
+pip install scikit-learn
 ```
 
 Activate virtual environment in a new shell:
