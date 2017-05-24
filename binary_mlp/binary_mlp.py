@@ -197,7 +197,7 @@ class BinaryMLP:
         return logit
 
     def train(self, train_data, val_data, epochs, batch_size,
-              lr, optimizer, early_stop, keep_prob, beta, gpu_usage
+              lr, optimizer, early_stop, keep_prob, beta, gpu_usage,
               momentum=None, lr_decay=None):
         """Train Neural Network with given training data set.
 
