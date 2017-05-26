@@ -27,7 +27,7 @@ def root_to_HDF5(save_path,
                  number_of_saved_jets,
                  number_of_saved_leptons,
                  percentage_validation,
-                 split_data_frame,
+                 split_data_set,
                  conditions_for_splitting={'variables': list()}):
 
 
@@ -74,7 +74,7 @@ def root_to_HDF5(save_path,
     #----------------------------------------------------------------------------------------------------
     # Remove old output files.
 
-    if not split_data_frame:
+    if not split_data_set:
         if os.path.isfile(os.path.join(save_path, filename_outputfile + '.hdf')):
             os.remove(os.path.join(save_path, filename_outputfile + '.hdf'))
     else:
@@ -189,7 +189,7 @@ def root_to_HDF5(save_path,
 
             #--------------------------------------------------------------------------------------------
             # Split data set and save data.
-            if not split_data_frame:
+            if not split_data_set:
                 df_train.drop(variables_for_splitting, axis=1, inplace=True)
                 df_val.drop(variables_for_splitting, axis=1, inplace=True)
                 df_test.drop(variables_for_splitting, axis=1, inplace=True)
@@ -218,7 +218,7 @@ def root_to_HDF5(save_path,
     #----------------------------------------------------------------------------------------------------
     # Save a list of saved weights.
 
-    if not split_data_frame:
+    if not split_data_set:
         with pd.HDFStore(os.path.join(save_path, filename_outputfile + '.hdf')) as store:
             store.put('weights_in_data_set', pd.Series(weights_to_keep), format='fixed')
     

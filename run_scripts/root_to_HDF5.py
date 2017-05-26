@@ -37,7 +37,7 @@ treenames =
 
 ### Here you can specify the conditions to split the data set into subprocesses.
 ### The conditions for splitting have to be provided as a dictionary (see example in definitions.definitions.ttbar_processes()).
-split_data_frame = False
+split_data_set = False
 #conditions_for_splitting = definitions.ttbar_processes()
 
 
@@ -66,7 +66,7 @@ function_call_dict = {'filename_outputfile'                     : filename_outpu
                       'path_to_inputfiles'                      : path_to_inputfiles,
                       'filenames_inputfiles'                    : filenames_inputfiles,
                       'treenames'                               : treenames,
-                      'split_data_frame'                        : split_data_frame,
+                      'split_data_set'                          : split_data_set,
                       'save_path'                               : save_path,
                       'path_to_generator_level_variables'       : path_to_generator_level_variables,
                       'path_to_weight_variables'                : path_to_weight_variables,
@@ -80,7 +80,7 @@ function_call_dict = {'filename_outputfile'                     : filename_outpu
                       }
 
 
-if split_data_frame:
+if split_data_set:
     function_call_dict['conditions_for_splitting'] = conditions_for_splitting
 
 
