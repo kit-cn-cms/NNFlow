@@ -38,12 +38,16 @@ export PYTHONPATH=$PYTHONPATH:/usr/local/lib
 ### On ekpbms3
 
 ```
+export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
+source $VO_CMS_SW_DIR/cmsset_default.sh
+
+
 export SCRAM_ARCH="slc6_amd64_gcc530"
 export CMSSW_VERSION="CMSSW_9_0_3"
 export CMSSWINSTALLDIR=$PWD"/"$CMSSW_VERSION
 export PIPTARGETDIR=$CMSSWINSTALLDIR"/lib/"$SCRAM_ARCH
 scram project $CMSSW_VERSION
-cd $CMSSW_VERSION
+cd $CMSSW_VERSION/src
 cmsenv
 
 wget https://bootstrap.pypa.io/get-pip.py
