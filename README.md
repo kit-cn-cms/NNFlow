@@ -46,7 +46,7 @@ export CMSSW_VERSION="CMSSW_9_0_3"
 export CMSSWINSTALLDIR=$PWD"/"$CMSSW_VERSION
 export PIPTARGETDIR=$CMSSWINSTALLDIR"/lib/"$SCRAM_ARCH
 scram project $CMSSW_VERSION
-cd $CMSSW_VERSION/src
+cd $CMSSW_VERSION"/src"
 cmsenv
 
 wget https://bootstrap.pypa.io/get-pip.py
