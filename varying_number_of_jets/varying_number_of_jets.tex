@@ -9,6 +9,7 @@
 \usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage{tabularx}
+\usepackage{url}
 \usepackage[a4paper, left=2.5cm, right=2.5cm, top=2.5cm, bottom=2cm]{geometry}
 \parskip 12pt
 \parindent 0pt
@@ -49,7 +50,7 @@ In the case of particle physics the input objects can be events in a collider ex
 \end{center}
 \end{figure}
 
-A possible solution for this problem is to add input node for each jet, which tells the network wheater the jet exists. The input of these additional nodes is $x_i = 0$ if the corresponding jet~$i$ exists and $x_i = 1$ if the corresponding jet~$i$ does not exist. If the jet does not exist, the nodes that would take the properties of the jet (e.g.\ $p_\text{T}$) as their input get an arbitrary but fixed value. Equation~\eqref{eq::input_hidden_layer} is a part of the input of the neuron in the first hidden layer (see figure~\ref{fig::NN_picture_2}).
+A possible solution for this problem is an additional input node for each jet that tells the network wheather the jet exists. The input of these additional nodes is $x_i = 0$ if the corresponding jet~$i$ exists and $x_i = 1$ if the corresponding jet~$i$ does not exist. If the jet does not exist, the nodes that would take the properties of the jet (e.g.\ $p_\text{T}$) as their input get an arbitrary but fixed value. Equation~\eqref{eq::input_hidden_layer} is a part of the input of the neuron in the first hidden layer (see figure~\ref{fig::NN_picture_2}).
 \begin{align}
 \dots + p_\text{T}(\text{Jet }i) \cdot w_{p_\text{T}(\text{Jet }i)} + x_i \cdot w_{x_i} + \dotsb \label{eq::input_hidden_layer}
 \end{align}
@@ -78,7 +79,7 @@ The procedure described in section~\ref{sec::Possible_solution} was tested with 
 
 \section{Code Fragment}
 
-The code fragment in the file \texttt{preprocessing\_additional\_jets.py} shows how the procedure described in section~\ref{sec::Possible_solution} can be implemented using the Pandas DataFrame.
+The code fragment in the file \url{preprocessing_fragment.py} shows how the procedure described in section~\ref{sec::Possible_solution} can be implemented using the Pandas DataFrame.
 
 
 \end{document}
