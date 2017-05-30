@@ -49,28 +49,32 @@ In the case of particle physics the input objects can be events in a collider ex
 \end{center}
 \end{figure}
 
-A possible solution for this problem is to add another input node for each jet. The input of these additional nodes is $x_i = 0$ if the corresponding jet $i$ exists and $x_i = 1$ if the corresponding jet $i$ does not exist. If the jet does not exist, the nodes that would take the properties of the jet (e.g.\ $p_\text{T}$) as their input get an arbitrary but fixed value. Equation~\eqref{eq::input_hidden_layer} is a part of the input of the neuron in the first hidden layer (see figure~\ref{fig::NN_picture_2}).
+A possible solution for this problem is to add input node for each jet, which tells the network wheater the jet exists. The input of these additional nodes is $x_i = 0$ if the corresponding jet~$i$ exists and $x_i = 1$ if the corresponding jet~$i$ does not exist. If the jet does not exist, the nodes that would take the properties of the jet (e.g.\ $p_\text{T}$) as their input get an arbitrary but fixed value. Equation~\eqref{eq::input_hidden_layer} is a part of the input of the neuron in the first hidden layer (see figure~\ref{fig::NN_picture_2}).
 \begin{align}
 \dots + p_\text{T}(\text{Jet }i) \cdot w_{p_\text{T}(\text{Jet }i)} + x_i \cdot w_{x_i} + \dotsb \label{eq::input_hidden_layer}
 \end{align}
 
-If jet $i$ exists, the second summand of equation~\eqref{eq::input_hidden_layer} is zero and the input for the hidden neuron is not influenced by the additional input node. If jet $i$ does not exist, the weight $w_{x_i}$ can be used to push the result into the direction of the wanted output for this case.
+If jet~$i$ exists, the second summand of equation~\eqref{eq::input_hidden_layer} is zero and the input for the hidden neuron is not influenced by the additional input node. If jet~$i$ does not exist, the weight $w_{x_i}$ can be used to push the result into the direction of the wanted output for this case.
 
 
 \section{Results}
 
-The procedure described in section~\ref{sec::Possible_solution} was tested with a network that separates a t$\bar{\text{t}}$H(b$\bar{\text{b}}$) signal from t$\bar{\text{t}}$ + jets (including t$\bar{\text{t}}$b$\bar{\text{b}}$) background. For comparison, a second network was trained where the jets that do not exist for all events were not used as input at all. The network with the additional jets did not perform better than the other one.
+The procedure described in section~\ref{sec::Possible_solution} was tested with a network that separates a t$\overline{\text{t}}$H(b$\overline{\text{b}}$) signal from t$\overline{\text{t}}$ + jets (including t$\overline{\text{t}}$b$\overline{\text{b}}$) background. For comparison, a second network was trained where the jets that do not exist for all events were not used as input at all. The network with the additional jets did not perform better than the other one.
 
 
 \section{Open Questions}
 
 \begin{itemize}
 \item Is there a case where the procedure described in section~\ref{sec::Possible_solution} improves the performance of a neural network?
-\item Is it important, that the additional variable is $x_i = 0$ if the corresponding jet $i$ exists and $x_i = 1$ if the corresponding jet $i$ does not exist? Or can you also use the usual system (which is the other way round)?
+\item If there is such a case:
+\begin{itemize}
+\item Is it important, that the additional variable is $x_i = 0$ if the corresponding jet~$i$ exists and $x_i = 1$ if the corresponding jet~$i$ does not exist? Or can you also use the usual system (which is the other way round)?
 \item Is it a problem to include the additional variables in the feature scaling?
 \item Should the feature scaling happen before or after the not existing variables are set to a fixed value?
+\item A possible alternative to the procedure described in section~\ref{sec::Possible_solution} is to introduce more jet btag categories (with 7~jets, 8~jets, ...). Which solution performs better?
 \end{itemize}
-\undetaruindeatnuidareniutdrn Kategorien 7 Jets, 8 Jets, ...
+\end{itemize}
+
 
 \section{Code Fragment}
 
