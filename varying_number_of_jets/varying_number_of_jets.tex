@@ -27,7 +27,7 @@
 
 In a feed forward neural network, each feature of the input objects corresponds to an input neuron of the neural network. But it is unclear what to do if the number of features of the input objects varies.
 
-In the case of particle physics the input objects can be events in a collider experiment and the purpose of the neural network can be to distinguish between different processes. Figure~\ref{fig::NN_picture_1} shows a part of such a network. Here, the fourth input neuron takes $p_\text{T}$ of jet number seven. The question is what to do if there are events with fewer than seven jets.
+In the case of particle physics the input objects can be events in a collider experiment and the purpose of the neural network can be to distinguish between signal and background. Figure~\ref{fig::NN_picture_1} shows a part of such a network. In this example, the fourth input neuron takes $p_\text{T}$ of jet number seven. The question is what to do if there are events with fewer than seven jets.
 
 
 \begin{figure}
@@ -50,17 +50,17 @@ In the case of particle physics the input objects can be events in a collider ex
 \end{center}
 \end{figure}
 
-A possible solution for this problem is an additional input node for each jet that tells the network wheather the jet exists. The input of these additional nodes is $x_i = 0$ if the corresponding jet~$i$ exists and $x_i = 1$ if the corresponding jet~$i$ does not exist. If the jet does not exist, the nodes that would take the properties of the jet (e.g.\ $p_\text{T}$) as their input get an arbitrary but fixed value. Equation~\eqref{eq::input_hidden_layer} is a part of the input of the neuron in the first hidden layer (see figure~\ref{fig::NN_picture_2}).
+A possible solution for this problem is an additional input neuron for each jet. The input of these additional neurons is $x_i = 0$ if the corresponding jet~$i$ exists and $x_i = 1$ if the corresponding jet~$i$ does not exist. If the jet does not exist, the neurons that would take the properties of the jet (e.g.\ $p_\text{T}$) as their input get an arbitrary but fixed value. Equation~\eqref{eq::input_hidden_layer} is a part of the input of the neuron in the first hidden layer (see figure~\ref{fig::NN_picture_2}).
 \begin{align}
 \dots + p_\text{T}(\text{Jet }i) \cdot w_{p_\text{T}(\text{Jet }i)} + x_i \cdot w_{x_i} + \dotsb \label{eq::input_hidden_layer}
 \end{align}
 
-If jet~$i$ exists, the second summand of equation~\eqref{eq::input_hidden_layer} is zero and the input for the hidden neuron is not influenced by the additional input node. If jet~$i$ does not exist, the weight $w_{x_i}$ can be used to push the result into the direction of the wanted output for this case.
+If jet~$i$ exists, the second summand of equation~\eqref{eq::input_hidden_layer} is zero and the input for the hidden neuron is not influenced by the additional input neuron. If jet~$i$ does not exist, the weight $w_{x_i}$ can be used to push the result into the direction of the wanted output for this case.
 
 
 \section{Results}
 
-The procedure described in section~\ref{sec::Possible_solution} was tested with a network that separates a t$\overline{\text{t}}$H(b$\overline{\text{b}}$) signal from t$\overline{\text{t}}$ + jets (including t$\overline{\text{t}}$b$\overline{\text{b}}$) background. For comparison, a second network was trained where the jets that do not exist for all events were not used as input at all. The network with the additional jets did not perform better than the other one.
+The procedure described in section~\ref{sec::Possible_solution} was tested with a network that separates t$\overline{\text{t}}$H(b$\overline{\text{b}}$) signal events from t$\overline{\text{t}}$ + jets (including t$\overline{\text{t}}$b$\overline{\text{b}}$) background events. For comparison, a second network was trained where the jets that do not exist for all events were not used as input at all. The network with the additional jets did not perform better than the other one.
 
 
 \section{Open Questions}
@@ -70,9 +70,12 @@ The procedure described in section~\ref{sec::Possible_solution} was tested with 
 \item If there is such a case:
 \begin{itemize}
 \item Is it important, that the additional variable is $x_i = 0$ if the corresponding jet~$i$ exists and $x_i = 1$ if the corresponding jet~$i$ does not exist? Or can you also use the usual system (which is the other way round)?
-\item Is it a problem to include the additional variables in the feature scaling?
+\item What is the best way to do the feature scaling?
+\begin{itemize}
+\item Is it a problem when the variables that show wheather a jet exists are included in the feature scaling?
 \item Should the feature scaling happen before or after the not existing variables are set to a fixed value?
-\item A possible alternative to the procedure described in section~\ref{sec::Possible_solution} is to introduce more jet btag categories (with 7~jets, 8~jets, ...). Which solution performs better?
+\end{itemize}
+\item A possible alternative to the procedure described in section~\ref{sec::Possible_solution} is to introduce more jet btag categories (with 7~jets, 8~jets, \textellipsis\unkern). This is a simpler procedure, but there are fewer training events per category available. Which solution performs better?
 \end{itemize}
 \end{itemize}
 
