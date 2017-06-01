@@ -431,40 +431,38 @@ def create_data_set_for_training(save_path,
     #----------------------------------------------------------------------------------------------------
     # Calculate weights to be applied for the training and save data sets.
 
-    sum_of_events = dict()
+    sum_of_weights = dict()
     with pd.HDFStore(path_to_merged_data_set, mode='r') as store:
-        if binary_classification:
-            df = store.select('df_train', where=where_condition, columns=[binary_classification_signal])
-
-            sum_of_events['signal'] = df[binary_classification_signal].sum()
-            sum_of_events['background'] = df.shape[0] - sum_of_events['signal']
-        
-        else:
-            df = store.select('df_train', where=where_condition, columns=processes)
-            
-            for process in processes:
-                sum_of_events[process] = df[process].sum()
-
-
         for data_set in ['train', 'val', 'test']:
             df_weight = store.select('df_'+data_set, where=where_condition, columns=weights_to_be_applied)
             df = store.select('df_'+data_set, where=where_condition, columns=columns_to_save)
 
             if binary_classification:
-                df['Training_Weight'] = df[binary_classification_signal].apply(lambda row: 1/sum_of_events['signal'] if row==1 else 1/sum_of_events['background'])
+                df['Training_Weight'] = 1
 
                 for weight in weights_to_be_applied:
                     df['Training_Weight'] *= df_weight[weight]
+
+                if data_set == 'train':
+                    sum_of_weights['signal'] = df.query(binary_classification_signal + '==1')['Training_Weight'].sum()
+                    sum_of_weights['background'] = df.query(binary_classification_signal + '!=1')['Training_Weight'].sum()
+
+                df['Training_Weight'] /= df[binary_classification_signal].apply(lambda row: sum_of_weights['signal'] if row==1 else sum_of_weights['background'])
                 
                 df['Training_Weight'] /= df['Training_Weight'].sum()
 
             else:
-                df['Training_Weight'] = 0
-                for process in processes:
-                    df['Training_Weight'] += df[process].apply(lambda row: row/sum_of_events[process])
-                
+                df['Training_Weight'] = 1
+
                 for weight in weights_to_be_applied:
                     df['Training_Weight'] *= df_weight[weight]
+                
+                if data_set == 'train':
+                    for process in processes:
+                        sum_of_weights[process] = df.query(process + '==1')['Training_Weight'].sum()
+
+                for process in processes:
+                    df['Training_Weight'] /= df[process].apply(lambda row: sum_of_weights[process] if row==1 else 1)
 
                 df['Training_Weight'] /= df['Training_Weight'].sum()
 
