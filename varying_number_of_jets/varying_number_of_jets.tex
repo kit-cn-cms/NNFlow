@@ -27,7 +27,7 @@
 
 In a feed forward neural network, each feature of the input objects corresponds to an input neuron of the neural network. But it is unclear what to do if the number of features of the input objects varies.
 
-In the case of particle physics the input objects can be events in a collider experiment and the purpose of the neural network can be to distinguish between signal and background. Figure~\ref{fig::NN_picture_1} shows a part of such a network. In this example, the fourth input neuron takes $p_\text{T}$ of jet number seven. The question is what to do if there are events with fewer than seven jets.
+In the case of particle physics, the input objects can be events in a collider experiment and the purpose of the neural network can be to distinguish between signal and background. Figure~\ref{fig::NN_picture_1} shows a part of such a network. In this example, the fourth input neuron takes $p_\text{T}$ of jet number seven. The question is what to do if there are events with fewer than seven jets.
 
 
 \begin{figure}
@@ -72,7 +72,7 @@ The procedure described in section~\ref{sec::Possible_solution} was tested with 
 \item Is it important, that the additional variable is $x_i = 0$ if the corresponding jet~$i$ exists and $x_i = 1$ if the corresponding jet~$i$ does not exist? Or can you also use the usual system (which is the other way round)?
 \item What is the best way to do the feature scaling?
 \begin{itemize}
-\item Is it a problem when the variables that show wheather a jet exists are included in the feature scaling?
+\item Is it a problem if the variables that show whether a jet exists are included in the feature scaling?
 \item Should the feature scaling happen before or after the not existing variables are set to a fixed value?
 \end{itemize}
 \item A possible alternative to the procedure described in section~\ref{sec::Possible_solution} is to introduce more jet btag categories (with 7~jets, 8~jets, \textellipsis\unkern). This is a simpler procedure, but there are fewer training events per category available. Which solution performs better?
