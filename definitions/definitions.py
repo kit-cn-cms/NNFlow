@@ -64,6 +64,6 @@ def ttbb_processes():
 
 def default_weight_list():
 
-    weight_list = ['Weight_CSV', 'Weight_PU']
+    weight_list = ['Weight', 'Weight_CSV', 'Weight_PU']
 
     return weight_list
