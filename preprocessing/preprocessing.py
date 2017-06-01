@@ -320,8 +320,10 @@ def create_data_set_for_training(save_path,
                                  selected_processes,
                                  binary_classification,
                                  select_variables,
+                                 cutbased_event_selection,
                                  binary_classification_signal=None,
-                                 path_to_variable_list=None):
+                                 path_to_variable_list=None,
+                                 cutbased_event_selection_condition=None):
 
 
     print('\n' + 'CREATE DATA SET FOR TRAINING' + '\n')
@@ -351,20 +353,30 @@ def create_data_set_for_training(save_path,
     #----------------------------------------------------------------------------------------------------
     # Where condition.
 
-    where_condition = None
+    where_condition_list = list()
 
     if selected_processes != 'all':
         processes = selected_processes
         select_processes_condition = '(' + str.join(' or ', [process + ' == 1' for process in selected_processes]) + ')'
+        where_condition_list.append(select_processes_condition)
 
-    if jet_btag_category != 'all' and selected_processes != 'all':
-        where_condition = str.join(' and ', [definitions.jet_btag_category()['conditions'][jet_btag_category], select_processes_condition])
+    if jet_btag_category != 'all':
+        jet_btag_category_condition = definitions.jet_btag_category()['conditions'][jet_btag_category]
+        if not (jet_btag_category_condition[0]=='(' and jet_btag_category_condition[-1]==')'):
+            jet_btag_category_condition = '(' + jet_btag_category_condition + ')'
+        where_condition_list.append(jet_btag_category_condition)
 
-    elif jet_btag_category != 'all':
-        where_condition = definitions.jet_btag_category()['conditions'][jet_btag_category]
+    if cutbased_event_selection:
+        if not (cutbased_event_selection_condition[0]=='(' and cutbased_event_selection_condition[-1]==')'):
+            cutbased_event_selection_condition = '(' + cutbased_event_selection_condition + ')'
+        where_condition_list.append(cutbased_event_selection_condition)
 
-    elif selected_processes != 'all':
-        where_condition = select_processes_condition
+
+    if len(where_condition_list) == 0:
+        where_condition = None
+
+    else:
+        where_condition = str.join(' and ', where_condition_list)
 
 
     #----------------------------------------------------------------------------------------------------

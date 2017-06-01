@@ -45,6 +45,10 @@ select_variables =
 #path_to_variable_list =
 
 
+cutbased_event_selection =
+#cutbased_event_selection_condition =
+
+
 #----------------------------------------------------------------------------------------------------
 save_path = os.path.join(workdir_base, name_subdir, 'training_data')
 
@@ -60,6 +64,7 @@ function_call_dict = {'jet_btag_category'            : jet_btag_category,
                       'selected_processes'           : selected_processes,
                       'binary_classification'        : binary_classification,
                       'select_variables'             : select_variables,
+                      'cutbased_event_selection'     : cutbased_event_selection,
                       'save_path'                    : save_path,
                       'path_to_merged_data_set'      : path_to_merged_data_set,
                       'weights_to_be_applied'        : weights_to_be_applied,
@@ -71,6 +76,9 @@ if binary_classification:
 
 if select_variables != False:
     function_call_dict['path_to_variable_list'] = path_to_variable_list
+
+if cutbased_event_selection:
+    function_call_dict['cutbased_event_selection_condition'] = cutbased_event_selection_condition
 
 
 create_data_set_for_training(**function_call_dict)
