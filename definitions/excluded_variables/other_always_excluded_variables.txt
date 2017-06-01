@@ -33,12 +33,10 @@ Electron_Phi
 Electron_Pt
 Electron_RelIso
 BDT_common5_input_avg_btag_disc_btags
-BDT_common5_input_dEta_fn
 BDT_common5_input_dev_from_avg_disc_btags
 BDT_common5_input_maxeta_jet_tag
 BDT_common5_input_maxeta_tag_tag
 BDT_common5_input_maxeta_jet_jet
-BDT_common5_input_avg_dr_tagged_jets
 BDT_common5_input_blr_transformed
 BDT_common5_input_min_dr_tagged_jets
 BDT_common5_input_MET
@@ -60,3 +58,4 @@ BDT_common5_input_second_jet_pt
 BDT_common5_input_third_jet_pt
 BDT_common5_input_fourth_jet_pt
 BDT_common5_output
+Evt_Dr_TaggedJetsAverage
