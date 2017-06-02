@@ -45,7 +45,6 @@ split_data_set = False
 save_path = os.path.join(workdir_base, 'HDF5_files')
 
 path_to_generator_level_variables       = os.path.join(NNFlow_base, 'definitions/excluded_variables/generator_level_variables.txt')
-path_to_weight_variables                = os.path.join(NNFlow_base, 'definitions/excluded_variables/weight_variables.txt')
 path_to_other_always_excluded_variables = os.path.join(NNFlow_base, 'definitions/excluded_variables/other_always_excluded_variables.txt')
 path_to_vector_variables_lepton         = os.path.join(NNFlow_base, 'definitions/vector_variables/lepton.txt')
 path_to_vector_variables_jet            = os.path.join(NNFlow_base, 'definitions/vector_variables/jet.txt')
@@ -69,7 +68,6 @@ function_call_dict = {'filename_outputfile'                     : filename_outpu
                       'split_data_set'                          : split_data_set,
                       'save_path'                               : save_path,
                       'path_to_generator_level_variables'       : path_to_generator_level_variables,
-                      'path_to_weight_variables'                : path_to_weight_variables,
                       'path_to_other_always_excluded_variables' : path_to_other_always_excluded_variables,
                       'path_to_vector_variables_lepton'         : path_to_vector_variables_lepton,
                       'path_to_vector_variables_jet'            : path_to_vector_variables_jet,

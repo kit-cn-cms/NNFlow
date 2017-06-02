@@ -19,7 +19,6 @@ def root_to_HDF5(save_path,
                  filenames_inputfiles,
                  treenames,
                  path_to_generator_level_variables,
-                 path_to_weight_variables,
                  path_to_other_always_excluded_variables,
                  path_to_vector_variables_lepton,
                  path_to_vector_variables_jet,
@@ -91,10 +90,11 @@ def root_to_HDF5(save_path,
 
     with open(path_to_generator_level_variables, 'r') as file_generator_level_variables:
         generator_level_variables = [variable.rstrip() for variable in file_generator_level_variables.readlines() if variable.rstrip() in df.columns]
-    with open(path_to_weight_variables, 'r') as file_weight_variables:
-        weight_variables = [variable.rstrip() for variable in file_weight_variables.readlines() if variable.rstrip() in df.columns and variable.rstrip() not in weights_to_keep]
+    
     with open(path_to_other_always_excluded_variables, 'r') as file_other_always_excluded_variables:
         other_excluded_variables = [variable.rstrip() for variable in file_other_always_excluded_variables.readlines() if variable.rstrip() in df.columns]
+
+    weight_variables = [variable for variable in df.columns if variable[:6]=='Weight' and variable not in weights_to_keep]
 
     
     variables_for_splitting = definitions.train_test_data_set()['variables'] + conditions_for_splitting['variables']
@@ -120,6 +120,12 @@ def root_to_HDF5(save_path,
 
     print('Generator level variables:')
     for variable in generator_level_variables:
+        print('    ' + variable)
+    print('\n', end='')
+
+
+    print('Dropped weight variables')
+    for variable in weight_variables:
         print('    ' + variable)
     print('\n', end='')
 
