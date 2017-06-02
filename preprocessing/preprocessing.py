@@ -121,7 +121,7 @@ def root_to_HDF5(save_path,
     print('\n', end='')
 
 
-    print('Dropped weight variables')
+    print('Dropped weight variables:')
     for variable in weight_variables:
         print('    ' + variable)
     print('\n', end='')
