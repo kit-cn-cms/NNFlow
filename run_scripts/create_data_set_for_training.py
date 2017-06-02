@@ -69,7 +69,7 @@ function_call_dict = {'jet_btag_category'            : jet_btag_category,
                       'binary_classification'        : binary_classification,
                       'select_variables'             : select_variables,
                       'cutbased_event_selection'     : cutbased_event_selection,
-                      'create_new_process_labels'    : create_new_process_labels
+                      'create_new_process_labels'    : create_new_process_labels,
                       'save_path'                    : save_path,
                       'path_to_merged_data_set'      : path_to_merged_data_set,
                       'weights_to_be_applied'        : weights_to_be_applied,
