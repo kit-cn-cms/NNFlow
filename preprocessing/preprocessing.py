@@ -324,9 +324,11 @@ def create_data_set_for_training(save_path,
                                  binary_classification,
                                  select_variables,
                                  cutbased_event_selection,
+                                 create_new_process_labels,
                                  binary_classification_signal=None,
                                  path_to_variable_list=None,
-                                 cutbased_event_selection_condition=None):
+                                 cutbased_event_selection_condition=None,
+                                 new_process_labels=None):
 
 
     print('\n' + 'CREATE DATA SET FOR TRAINING' + '\n')
@@ -451,6 +453,18 @@ def create_data_set_for_training(save_path,
         for data_set in ['train', 'val', 'test']:
             df_weight = store.select('df_'+data_set, where=where_condition, columns=weights_to_be_applied)
             df = store.select('df_'+data_set, where=where_condition, columns=columns_to_save)
+
+
+            if create_new_process_labels:
+                for new_label in new_process_labels.keys():
+                    df[new_label] = df[new_process_labels[new_label]].sum(axis=1)
+                    df.drop(new_process_labels[new_label], axis=1, inplace=True)
+
+                    processes = [new_label] + [process for process in processes if process not in new_process_labels[new_label]]
+                    columns_to_save = [new_label] + [column for column in columns_to_save if column not in new_process_labels[new_label]]
+
+                    df = df.reindex_axis(columns_to_save, axis=1)
+
 
             if binary_classification:
                 df['Training_Weight'] = 1
