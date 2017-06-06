@@ -301,15 +301,18 @@ def merge_data_sets(path_to_inputfiles,
                             for process_label in processes:
                                 df[process_label] = 1 if process_label == process else 0
 
-                            store_output.append(data_set, df, format = 'table', append=True, data_columns=data_columns)
+                            store_output.append(data_set, df, format = 'table', append=True, data_columns=data_columns, index=False)
+
+        print('\n', end='')
+        
+        for data_set in ['df_train', 'df_val', 'df_test']:
+            store_output.create_table_index(data_set)
 
         with pd.HDFStore(os.path.join(path_to_inputfiles, input_data_sets[processes[0]][0]), mode='r') as store_input:
             weights_in_data_set = store_input.get('weights_in_data_set')
             store_output.put('weights_in_data_set', weights_in_data_set, format='fixed')
 
         store_output.put('processes_in_data_set', pd.Series(processes), format='fixed')
-
-    print('\n', end='')
 
 
     print('\n' + 'FINISHED' + '\n')
