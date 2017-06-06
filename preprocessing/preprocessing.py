@@ -436,7 +436,10 @@ def create_data_set_for_training(save_path,
 
 
     if binary_classification:
-        columns_to_save.append(binary_classification_signal)
+        if create_new_process_labels:
+            columns_to_save += new_process_labels[binary_classification_signal]
+        else:
+            columns_to_save.append(binary_classification_signal)
     else:
         columns_to_save += processes
 
