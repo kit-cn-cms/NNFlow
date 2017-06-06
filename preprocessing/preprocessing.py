@@ -452,20 +452,24 @@ def create_data_set_for_training(save_path,
     #----------------------------------------------------------------------------------------------------
     # Calculate weights to be applied for the training and save data sets.
 
+    columns_to_save_old = columns_to_save
+    if create_new_process_labels:
+        for new_label in new_process_labels.keys():
+            processes = [new_label] + [process for process in processes if process not in new_process_labels[new_label]]
+            columns_to_save = [new_label] + [column for column in columns_to_save if column not in new_process_labels[new_label]]
+    
     sum_of_weights = dict()
+
     with pd.HDFStore(path_to_merged_data_set, mode='r') as store:
         for data_set in ['train', 'val', 'test']:
             df_weight = store.select('df_'+data_set, where=where_condition, columns=weights_to_be_applied)
-            df = store.select('df_'+data_set, where=where_condition, columns=columns_to_save)
+            df = store.select('df_'+data_set, where=where_condition, columns=columns_to_save_old)
 
 
             if create_new_process_labels:
                 for new_label in new_process_labels.keys():
                     df[new_label] = df[new_process_labels[new_label]].sum(axis=1)
                     df.drop(new_process_labels[new_label], axis=1, inplace=True)
-
-                    processes = [new_label] + [process for process in processes if process not in new_process_labels[new_label]]
-                    columns_to_save = [new_label] + [column for column in columns_to_save if column not in new_process_labels[new_label]]
 
                     df = df.reindex_axis(columns_to_save, axis=1)
 
