@@ -238,7 +238,8 @@ def root_to_HDF5(save_path,
 
 def merge_data_sets(path_to_inputfiles,
                     input_data_sets,
-                    path_to_merged_data_set):
+                    path_to_merged_data_set,
+                    columns_for_cutbased_event_selection=list()):
 
 
     print('\n' + 'MERGE DATA SETS' + '\n')
@@ -280,7 +281,7 @@ def merge_data_sets(path_to_inputfiles,
     #----------------------------------------------------------------------------------------------------
     # Merge data sets and add flags for the different processes.
 
-    data_columns = processes + definitions.jet_btag_category()['variables']
+    data_columns = processes + definitions.jet_btag_category()['variables'] + columns_for_cutbased_event_selection
 
     if os.path.isfile(path_to_merged_data_set):
         os.remove(path_to_merged_data_set)
