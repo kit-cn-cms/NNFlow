@@ -60,6 +60,8 @@ gpu_usage['per_process_gpu_memory_fraction']          = 0.1
 
 
 #----------------------------------------------------------------------------------------------------
+
+
 modeldir             = os.path.join(workdir_base, name_subdir, 'model')
 train_path           = os.path.join(workdir_base, name_subdir, 'training_data/train.npy')
 val_path             = os.path.join(workdir_base, name_subdir, 'training_data/val.npy')
@@ -74,13 +76,15 @@ batch_size=128
 
 
 #----------------------------------------------------------------------------------------------------
+if not os.path.isdir(modeldir):
+    if os.path.isdir(os.path.dirname(modeldir)):
+        os.mkdir(modeldir)
+#----------------------------------------------------------------------------------------------------
 train = DataFrame(np.load(train_path))
 val = DataFrame(np.load(val_path))
 
 with open(path_to_variablelist, 'r') as file_variablelist:
     variablelist = [variable.rstrip() for variable in file_variablelist.readlines()]
-
-
 #----------------------------------------------------------------------------------------------------
 init_dict = {'n_variables' : train.nvariables,
              'h_layers'    : hlayers,

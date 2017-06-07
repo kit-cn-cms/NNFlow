@@ -42,6 +42,8 @@ split_data_set = False
 
 
 #----------------------------------------------------------------------------------------------------
+
+
 save_path = os.path.join(workdir_base, 'HDF5_files')
 
 path_to_generator_level_variables       = os.path.join(NNFlow_base, 'definitions/excluded_variables/generator_level_variables.txt')
@@ -60,6 +62,10 @@ number_of_saved_leptons = 1
 percentage_validation = 20
 
 
+#----------------------------------------------------------------------------------------------------
+if not os.path.isdir(save_path):
+    if os.path.isdir(os.path.dirname(save_path)):
+        os.mkdir(save_path)
 #----------------------------------------------------------------------------------------------------
 function_call_dict = {'filename_outputfile'                     : filename_outputfile,
                       'path_to_inputfiles'                      : path_to_inputfiles,

@@ -54,6 +54,8 @@ create_new_process_labels =
 
 
 #----------------------------------------------------------------------------------------------------
+
+
 save_path = os.path.join(workdir_base, name_subdir, 'training_data')
 
 
@@ -63,6 +65,10 @@ path_to_merged_data_set = os.path.join(workdir_base, 'HDF5_files/data_set_merged
 weights_to_be_applied = definitions.default_weight_list()
 
 
+#----------------------------------------------------------------------------------------------------
+if not os.path.isdir(save_path):
+    if os.path.isdir(os.path.dirname(save_path)):
+        os.mkdir(save_path)
 #----------------------------------------------------------------------------------------------------
 function_call_dict = {'jet_btag_category'            : jet_btag_category,
                       'selected_processes'           : selected_processes,
