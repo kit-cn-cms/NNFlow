@@ -244,7 +244,7 @@ class BinaryMLP:
         
         train_graph = tf.Graph()
         with train_graph.as_default():
-            x = tf.placeholder(tf.float32, [None, self.n_variables])
+            x = tf.placeholder(tf.float32, [None, self.n_variables], name='input')
             y = tf.placeholder(tf.float32, [None, 1])
             w = tf.placeholder(tf.float32, [None, 1])
 
@@ -259,7 +259,7 @@ class BinaryMLP:
             # prediction, y_ is used for training, yy_ used for makin new
             # predictions
             y_ = self._model(x_scaled, weights, biases, keep_prob)
-            yy_ = tf.nn.sigmoid(self._model(x_scaled, weights, biases))
+            yy_ = tf.nn.sigmoid(self._model(x_scaled, weights, biases), name='output')
 
             # loss function
             xentropy = tf.nn.sigmoid_cross_entropy_with_logits(logits=y_, labels=y)
