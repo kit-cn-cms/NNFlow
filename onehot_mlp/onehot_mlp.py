@@ -231,7 +231,7 @@ class OneHotMLP:
         with train_graph.as_default():
             x = tf.placeholder(tf.float32, [None, self.n_features], name='input')
             y = tf.placeholder(tf.float32, [None, out_size])
-            w = tf.placeholder(tf.float32, [None, 1])
+            w = tf.placeholder(tf.float32, [None])
 
             x_mean = tf.Variable(np.mean(train_data.x, axis=0).astype(np.float32), trainable=False,  name='x_mean')
             x_std = tf.Variable(np.std(train_data.x, axis=0).astype(np.float32), trainable=False,  name='x_std')
