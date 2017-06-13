@@ -248,7 +248,7 @@ class OneHotMLP:
             l2_reg = beta * self._l2_regularization(weights)
             # loss = tf.add(tf.reduce_mean(tf.reduce_sum(tf.mul(w, xentropy))), l2_reg, 
             #         name='loss')
-            loss = tf.add(tf.reduce_sum(tf.multiply(w, xentropy)), l2_reg, 
+            loss = tf.add(tf.reduce_mean(tf.multiply(w, xentropy)), l2_reg, 
                     name='loss')
             
             # optimizer
@@ -327,7 +327,7 @@ class OneHotMLP:
                 val_accuracy.append(val_corr / (val_corr + val_mistag))
                 
                 
-                print('{:^25} | {:^25.4f} | {:^25.4f} | {:^25.4f}'.format(epoch + 1, 
+                print('{:^25} | {:^25.4e} | {:^25.4f} | {:^25.4f}'.format(epoch + 1, 
                     train_losses[-1], train_accuracy[-1], val_accuracy[-1]))
                 saver.save(sess, self.model_loc)
                 cross_train_list.append(train_cross)
