@@ -53,6 +53,9 @@ create_new_process_labels =
 #new_process_labels =
 
 
+drop_events_negative_weights = True
+
+
 #----------------------------------------------------------------------------------------------------
 
 
@@ -79,6 +82,7 @@ function_call_dict = {'jet_btag_category'            : jet_btag_category,
                       'save_path'                    : save_path,
                       'path_to_merged_data_set'      : path_to_merged_data_set,
                       'weights_to_be_applied'        : weights_to_be_applied,
+                      'drop_events_negative_weights' : drop_events_negative_weights
                       }
 
 

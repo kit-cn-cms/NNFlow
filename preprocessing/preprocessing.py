@@ -281,7 +281,7 @@ def merge_data_sets(path_to_inputfiles,
     #----------------------------------------------------------------------------------------------------
     # Merge data sets and add flags for the different processes.
 
-    data_columns = processes + definitions.jet_btag_category()['variables'] + columns_for_cutbased_event_selection
+    data_columns = processes + definitions.jet_btag_category()['variables'] + columns_for_cutbased_event_selection + ['Weight']
 
     if os.path.isfile(path_to_merged_data_set):
         os.remove(path_to_merged_data_set)
@@ -325,6 +325,7 @@ def create_data_set_for_training(save_path,
                                  weights_to_be_applied,
                                  jet_btag_category,
                                  selected_processes,
+                                 drop_events_negative_weights,
                                  binary_classification,
                                  select_variables,
                                  cutbased_event_selection,
@@ -380,12 +381,25 @@ def create_data_set_for_training(save_path,
             cutbased_event_selection_condition = '(' + cutbased_event_selection_condition + ')'
         where_condition_list.append(cutbased_event_selection_condition)
 
+    if drop_events_negative_weights:
+        where_condition_list_train = where_condition_list + ['(Weight > 0)']
+    else:
+        where_condition_list_train = where_condition_list
+
+
+    where_condition = dict()
+
+    if len(where_condition_list_train) == 0:
+        where_condition['train'] = None
+    else:
+        where_condition['train'] = str.join(' and ', where_condition_list_train)
 
     if len(where_condition_list) == 0:
-        where_condition = None
-
+        where_condition['val'] = None
+        where_condition['test'] = None
     else:
-        where_condition = str.join(' and ', where_condition_list)
+        where_condition['val'] = str.join(' and ', where_condition_list)
+        where_condition['test'] = str.join(' and ', where_condition_list)
 
 
     #----------------------------------------------------------------------------------------------------
@@ -395,8 +409,8 @@ def create_data_set_for_training(save_path,
     standard_deviation_zero_variables = list()
     not_all_events_variables = list()
     with pd.HDFStore(path_to_merged_data_set, mode='r') as store:
-        df_train = store.select('df_train', where=where_condition, columns=variables_in_data_set)
-        df_val = store.select('df_val', where=where_condition, columns=variables_in_data_set)
+        df_train = store.select('df_train', where=where_condition['train'], columns=variables_in_data_set)
+        df_val = store.select('df_val', where=where_condition['val'], columns=variables_in_data_set)
 
         for variable in variables_in_data_set:
             if df_train[variable].std()==0 or df_val[variable].std()==0:
@@ -465,8 +479,8 @@ def create_data_set_for_training(save_path,
 
     with pd.HDFStore(path_to_merged_data_set, mode='r') as store:
         for data_set in ['train', 'val', 'test']:
-            df_weight = store.select('df_'+data_set, where=where_condition, columns=weights_to_be_applied)
-            df = store.select('df_'+data_set, where=where_condition, columns=columns_to_save_old)
+            df_weight = store.select('df_'+data_set, where=where_condition[data_set], columns=weights_to_be_applied)
+            df = store.select('df_'+data_set, where=where_condition[data_set], columns=columns_to_save_old)
 
 
             if create_new_process_labels:
