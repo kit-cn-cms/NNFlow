@@ -316,13 +316,13 @@ class OneHotMLP:
                 # monitor training
                 train_pre = sess.run(yy_, {x:train_data.x})
                 train_corr, train_mistag, train_cross, train_cat = self._validate_epoch( 
-                        train_pre, train_data.y, epoch)
+                        train_pre, train_data.y, train_data.w, epoch)
                 print('train: {}'.format((train_corr, train_mistag)))
                 train_accuracy.append(train_corr / (train_corr + train_mistag))
                 
                 val_pre = sess.run(yy_, {x:val_data.x})
                 val_corr, val_mistag, val_cross, val_cat = self._validate_epoch(val_pre,
-                        val_data.y, epoch)
+                        val_data.y, val_data.w, epoch)
                 print('validation: {}'.format((val_corr, val_mistag)))
                 val_accuracy.append(val_corr / (val_corr + val_mistag))
                 
@@ -437,7 +437,7 @@ class OneHotMLP:
         return tf.add_n(losses)
 
 
-    def _validate_epoch(self, pred, labels, epoch):
+    def _validate_epoch(self, pred, labels, weights, epoch):
         """Evaluates the training process.
 
         Arguments:
@@ -453,14 +453,13 @@ class OneHotMLP:
 
         """
 
-        arr_cross = np.zeros((self.out_size, self.out_size),dtype=np.int)
+        arr_cross = np.zeros((self.out_size, self.out_size),dtype=np.float32)
         index_true = np.argmax(labels, axis=1)
         index_pred = np.argmax(pred, axis=1)
         for i in range(index_true.shape[0]):
-            arr_cross[index_true[i]][index_pred[i]] += 1
-        equal = (index_true == index_pred)
-        correct = np.count_nonzero(equal)
-        mistag = equal.shape[0] - correct
+            arr_cross[index_true[i]][index_pred[i]] += weights[i]
+        correct = np.diagonal(arr_cross).sum()
+        mistag = arr_cross.sum() - correct
         cat_acc = np.zeros((self.out_size), dtype=np.float32)
         for i in range(self.out_size): 
             cat_acc[i] = arr_cross[i][i] / (np.sum(arr_cross, axis=1)[i])
