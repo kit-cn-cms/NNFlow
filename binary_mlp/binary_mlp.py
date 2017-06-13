@@ -326,11 +326,9 @@ class BinaryMLP:
                     pred = sess.run(yy_, {x: train_x})
                     train_pre.append(pred)
                 train_pre = np.concatenate(train_pre, axis=0)
-                train_auc.append(
-                    roc_auc_score(train_data.y[:total_batches*batch_size],
-                                  train_pre))
+                train_auc.append(roc_auc_score(y_true = train_data.y[:total_batches*batch_size], y_score = train_pre, sample_weight = train_data.w[:total_batches*batch_size]))
                 val_pre = sess.run(yy_, {x : val_data.x})
-                val_auc.append(roc_auc_score(val_data.y, val_pre))
+                val_auc.append(roc_auc_score(y_true = val_data.y, y_score = val_pre, sample_weight = val_data.w))
                 
                 print('{:^20} | {:^20.4e} | {:^20.4f} | {:^25.4f}'
                       .format(epoch, train_loss[-1],
