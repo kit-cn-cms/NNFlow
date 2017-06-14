@@ -65,7 +65,6 @@ gpu_usage['per_process_gpu_memory_fraction']          = 0.1
 modeldir             = os.path.join(workdir_base, name_subdir, 'model')
 train_path           = os.path.join(workdir_base, name_subdir, 'training_data/train.npy')
 val_path             = os.path.join(workdir_base, name_subdir, 'training_data/val.npy')
-path_to_variablelist = os.path.join(workdir_base, name_subdir, 'training_data/variables.txt')
 
 
 optimizer='adam'
@@ -82,9 +81,6 @@ if not os.path.isdir(modeldir):
 #----------------------------------------------------------------------------------------------------
 train = DataFrame(np.load(train_path))
 val = DataFrame(np.load(val_path))
-
-with open(path_to_variablelist, 'r') as file_variablelist:
-    variablelist = [variable.rstrip() for variable in file_variablelist.readlines()]
 #----------------------------------------------------------------------------------------------------
 init_dict = {'n_variables' : train.nvariables,
              'h_layers'    : hlayers,
@@ -115,5 +111,3 @@ if optimizer=='momentum' or optimizer=='gradientdescent':
 
 nn = BinaryMLP(**init_dict) 
 nn.train(**train_dict)
-
-nn.analyse_weights(variablelist)

@@ -618,35 +618,3 @@ class BinaryMLP:
         plt.savefig(self.savedir + '/' + plt_name + '.png')
         plt.savefig(self.savedir + '/' + plt_name + '.eps')
         plt.clf()
-
-    def analyse_weights(self, variablelist):
-        """Output of weights
-        """
-        weight_graph = tf.Graph()
-        with weight_graph.as_default():
-            weights, biases = self._get_parameters()
-            saver = tf.train.Saver()
-        config = tf.ConfigProto()
-        config.gpu_options.allow_growth = True
-        with tf.Session(config=config, graph=weight_graph) as sess:
-            saver.restore(sess, self.savedir + '/{}.ckpt'.format(self.name))
-            w = []
-            b = []
-            for weight, bias in zip(weights, biases):
-                w.append(sess.run(weight))
-                b.append(sess.run(bias))
-
-        if len(w[0]) != len(variablelist):
-            sys.exit('Length of variablelist and length of weightlist do not match')
-
-        list_of_variables_and_weights = [(variablelist[i], sum(np.absolute(w[0][i]))) for i in range(len(variablelist))]
-
-        with open(self.savedir+'/sum_of_weights.txt', 'w') as outfile:
-            for i in range(len(list_of_variables_and_weights)):
-                outfile.write(list_of_variables_and_weights[i][0] + (60-len(list_of_variables_and_weights[i][0]) if len(list_of_variables_and_weights[i][0])<60 else 1)*' ' + str(list_of_variables_and_weights[i][1]) + '\n')
-
-        list_of_variables_and_weights_sorted = sorted(list_of_variables_and_weights, key=lambda a: a[1])
-
-        with open(self.savedir+'/sum_of_weights_sorted.txt', 'w') as outfile:
-            for i in range(len(list_of_variables_and_weights_sorted)):
-                outfile.write(list_of_variables_and_weights_sorted[i][0] + (60-len(list_of_variables_and_weights_sorted[i][0]) if len(list_of_variables_and_weights_sorted[i][0])<60 else 1)*' ' + str(list_of_variables_and_weights_sorted[i][1]) + '\n')

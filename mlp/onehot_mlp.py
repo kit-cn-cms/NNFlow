@@ -382,8 +382,6 @@ class OneHotMLP:
                                 early='yes')
                         self._plot_hists(best_train_pred, best_val_pred,
                                 best_train_true, best_val_true, best_epoch+1)
-                        self._find_most_important_weights(weights_list[best_epoch],
-                                n=30)
                         self._write_list(best_train_pred, 'train_pred' + app)
                         self._write_list(best_train_true, 'train_true' + app)
                         self._write_list(best_val_pred, 'val_pred' + app)
@@ -419,8 +417,6 @@ class OneHotMLP:
             self._write_list(train_data.y, 'train_true' + app)
             self._write_list(val_pre, 'val_pred' + app)
             self._write_list(val_data.y, 'val_true' + app)
-            if not (self.enable_early == 'yes'):
-                self._find_most_important_weights(weights)
             self.trained = True
 
             print('Model saved in: \n{}'.format(self.savedir))
@@ -1189,30 +1185,6 @@ class OneHotMLP:
             # plt.savefig(self.mistag_savedir + 'val_as_x_{}.eps'.format(i))
             plt.clf()
 
-    def _find_most_important_weights(self, w, n=10):
-        # Only consider the first hidden layer.
-        weight = w[0].eval()
-        weight = np.absolute(weight)
-        weight_abs_mean = np.mean(weight, axis=1, dtype=np.float32)
-        with open(self.branchlist, 'r') as f:
-            self.branches = [line.strip() for line in f]
-        max_weight = 0.0
-        values = []
-        indices = []
-        branchnames = []
-
-        for i in range(n):
-            index = np.argmax(weight_abs_mean)
-            indices.append(index)
-            values.append(weight_abs_mean[index])
-            branchnames.append(self.branches[index])
-            weight_abs_mean[index] = 0.0
-
-
-        with open (self.cross_savedir + '/most_important_variables.txt', 'w') as f:
-            for i in range(n):
-                f.write('branch: {}, mean_abs: {}\n'.format(branchnames[i],
-                    values[i]))
 
 
 def find_limits(arr):
