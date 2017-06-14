@@ -372,9 +372,9 @@ class OneHotMLP:
                                 'Achieved best validation score of '\
                                 '{:.4f} in epoch {}.'.format(
                                     early_stopping['val_acc'],
-                                    early_stopping['epoch']))
+                                    early_stopping['epoch']+1))
                         best_epoch = early_stopping['epoch']
-                        app = '_{}'.format(best_epoch)
+                        app = '_{}'.format(best_epoch+1)
                         self._plot_weight_matrices(weights_list[best_epoch],
                                 best_epoch, early='yes')
                         self._plot_cross(cross_train_list[best_epoch],
