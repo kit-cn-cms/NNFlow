@@ -17,8 +17,8 @@ name_subdir  =
 
 #----------------------------------------------------------------------------------------------------
 sys.path.append(NNFlow_base)
-from onehot_mlp.onehot_mlp import OneHotMLP
-from onehot_mlp.data_frame import DataFrame
+from mlp.onehot_mlp import OneHotMLP
+from mlp.data_frame_onehot_mlp import DataFrame
 #----------------------------------------------------------------------------------------------------
 
 

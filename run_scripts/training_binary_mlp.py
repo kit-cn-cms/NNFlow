@@ -17,8 +17,8 @@ name_subdir  =
 
 #----------------------------------------------------------------------------------------------------
 sys.path.append(NNFlow_base)
-from binary_mlp.binary_mlp import BinaryMLP
-from binary_mlp.data_frame import DataFrame
+from mlp.binary_mlp import BinaryMLP
+from mlp.data_frame_binary_mlp import DataFrame
 #----------------------------------------------------------------------------------------------------
 
 
