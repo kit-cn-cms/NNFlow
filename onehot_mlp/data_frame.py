@@ -23,14 +23,8 @@ class DataFrame:
 
         self.n = self.x.shape[0]
         self.nfeatures = self.x.shape[1]
-        
-        print('Found {} events.'.format(self.n))
-        print('Length of each event: {}'.format(self.nfeatures))
 
-        print('Now shuffling data...')
         self.shuffle()
-        print('done.')
-        # print(self.w[0:100])
 
     
     def shuffle(self):
