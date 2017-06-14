@@ -35,7 +35,7 @@ def classify_test_sample_binary(path_to_model, path_to_test_sample, gpu_usage):
 
         x = graph.get_tensor_by_name("input:0")
 
-        feed_dict ={x:test_data}
+        feed_dict ={x:network_input}
 
         y = graph.get_tensor_by_name("output:0")
         prediction = sess.run(y, feed_dict)
@@ -51,6 +51,7 @@ def classify_test_sample_multinomial(path_to_model, path_to_test_sample, number_
     array_test_sample = np.load(path_to_test_sample)
 
     network_input = array_test_sample[:, number_of_processes:-1]
+    weights = array_test_sample[:, -1]
     true_values = array_test_sample[:, :number_of_processes]
 
 
@@ -66,18 +67,19 @@ def classify_test_sample_multinomial(path_to_model, path_to_test_sample, number_
             config.gpu_options.per_process_gpu_memory_fraction = gpu_usage['per_process_gpu_memory_fraction']
 
 
-    with tf.Session(config=config) as sess:
+    graph = tf.Graph()
+    with tf.Session(config=config, graph=graph) as sess:
         saver = tf.train.import_meta_graph(path_to_model + '.meta')
         saver.restore(sess, path_to_model)
-
-        graph = tf.get_default_graph()
-
+            
         x = graph.get_tensor_by_name("input:0")
 
-        feed_dict ={x:test_data}
+        feed_dict ={x:network_input}
 
         y = graph.get_tensor_by_name("output:0")
-        prediction = sess.run(y, feed_dict)
+        predictions = sess.run(y, feed_dict)
+
+        W = graph.get_tensor_by_name("W_1:0").eval()
 
     
-    return prediction, true_values
+    return predictions, true_values, weights, W

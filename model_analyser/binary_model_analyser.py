@@ -19,3 +19,5 @@ class BinaryModelAnalyser(ModelAnalyser):
 
             x = graph.get_tensor_by_name("input:0")
             y = graph.get_tensor_by_name("output:0")
+
+            Verschiebe das in allgemeine Funktion
