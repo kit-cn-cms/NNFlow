@@ -12,12 +12,17 @@ class ModelAnalyser(object):
     
     def __init__(self,
                  path_to_model,
+                 path_to_train_data_set,
+                 path_to_val_data_set,
+                 path_to_test_data_set,
                  gpu_usage):
 
 
-        self._path_to_model = path_to_model
-        self._path_to_data = path_to_data
-        self._gpu_usage = gpu_usage
+        self._path_to_model          = path_to_model
+        self._path_to_train_data_set = path_to_train_data_set
+        self._path_to_val_data_set   = path_to_val_data_set
+        self._path_to_test_data_set  = path_to_test_data_set
+        self._gpu_usage              = gpu_usage
 
 
 
