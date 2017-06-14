@@ -316,14 +316,14 @@ class OneHotMLP:
                 # monitor training
                 train_pre = sess.run(yy_, {x:train_data.x})
                 train_corr, train_mistag, train_cross, train_cat = self._validate_epoch( 
-                        train_pre, train_data.y, train_data.w, epoch)
-                print('train: {}'.format((train_corr, train_mistag)))
+                        train_pre, train_data.y, train_data.w)
+                #print('train: {}'.format((train_corr, train_mistag)))
                 train_accuracy.append(train_corr / (train_corr + train_mistag))
                 
                 val_pre = sess.run(yy_, {x:val_data.x})
                 val_corr, val_mistag, val_cross, val_cat = self._validate_epoch(val_pre,
-                        val_data.y, val_data.w, epoch)
-                print('validation: {}'.format((val_corr, val_mistag)))
+                        val_data.y, val_data.w)
+                #print('validation: {}'.format((val_corr, val_mistag)))
                 val_accuracy.append(val_corr / (val_corr + val_mistag))
                 
                 
@@ -337,21 +337,21 @@ class OneHotMLP:
 
                 if (epoch % 10 == 0):
                     t0 = time.time()
-                    self._plot_loss(train_losses)
-                    self._plot_accuracy(train_accuracy, val_accuracy, train_cats,
-                            val_cats, epochs)
-                    self._plot_cross(train_cross, val_cross, epoch + 1)
+                    #self._plot_loss(train_losses)
+                    #self._plot_accuracy(train_accuracy, val_accuracy, train_cats,
+                    #        val_cats, epochs)
+                    #self._plot_cross(train_cross, val_cross, epoch+1)
                     t1 = time.time()
                     times_list.append(t1 - t0)
                 if (epoch == 0):
                     t0 = time.time()
                     app = '_{}'.format(epoch+1)
-                    self._write_list(train_pre, 'train_pred' + app)
-                    self._write_list(train_data.y, 'train_true' + app)
-                    self._write_list(val_pre, 'val_pred' + app)
-                    self._write_list(val_data.y, 'val_true' + app)
-                    self._plot_hists(train_pre, val_pre, train_data.y,
-                            val_data.y, 1)
+                    #self._write_list(train_pre, 'train_pred' + app)
+                    #self._write_list(train_data.y, 'train_true' + app)
+                    #self._write_list(val_pre, 'val_pred' + app)
+                    #self._write_list(val_data.y, 'val_true' + app)
+                    #self._plot_hists(train_pre, val_pre, train_data.y,
+                    #        val_data.y, 1)
                     t1 = time.time()
                     times_list.append(t1 - t0)
 
@@ -365,16 +365,16 @@ class OneHotMLP:
                         best_val_true = val_data.y
                         early_stopping['val_acc'] = val_accuracy[-1]
                         early_stopping['epoch'] = epoch
-                    elif ((epoch+1 - early_stopping['epoch']) > self.early_stop):
+                    elif ((epoch - early_stopping['epoch']) >= self.early_stop):
                         t0 = time.time()
                         print(125*'-')
                         print('Early stopping invoked. '\
                                 'Achieved best validation score of '\
                                 '{:.4f} in epoch {}.'.format(
                                     early_stopping['val_acc'],
-                                    early_stopping['epoch']+1))
+                                    early_stopping['epoch']))
                         best_epoch = early_stopping['epoch']
-                        app = '_{}'.format(best_epoch+1)
+                        app = '_{}'.format(best_epoch)
                         self._plot_weight_matrices(weights_list[best_epoch],
                                 best_epoch, early='yes')
                         self._plot_cross(cross_train_list[best_epoch],
@@ -437,7 +437,7 @@ class OneHotMLP:
         return tf.add_n(losses)
 
 
-    def _validate_epoch(self, pred, labels, weights, epoch):
+    def _validate_epoch(self, pred, labels, weights):
         """Evaluates the training process.
 
         Arguments:
