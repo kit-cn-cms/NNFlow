@@ -12,16 +12,12 @@ class ModelAnalyser(object):
     
     def __init__(self,
                  path_to_model,
-                 path_to_train_data_set,
-                 path_to_val_data_set,
-                 path_to_test_data_set,
+                 number_of_processes,
                  gpu_usage):
 
 
         self._path_to_model          = path_to_model
-        self._path_to_train_data_set = path_to_train_data_set
-        self._path_to_val_data_set   = path_to_val_data_set
-        self._path_to_test_data_set  = path_to_test_data_set
+        self._number_of_processes    = number_of_processes
         self._gpu_usage              = gpu_usage
 
 
@@ -56,8 +52,10 @@ class ModelAnalyser(object):
 
 
 
+
     def _get_gpu_config(self):
-        
+
+
         config = tf.ConfigProto()
         if self._gpu_usage['shared_machine']:
             if self._gpu_usage['restrict_visible_devices']:
@@ -70,3 +68,43 @@ class ModelAnalyser(object):
                 config.gpu_options.per_process_gpu_memory_fraction = self._gpu_usage['per_process_gpu_memory_fraction']
 
         return config
+
+
+
+
+    def _load_data_set(self,
+                       path_to_input_file):
+
+
+        array = np.load(path_to_input_file)
+
+        data    = array[:, self._number_of_processes:-1]
+        labels  = array[:, :self._number_of_processes]
+        weights = array[:, -1]
+
+
+        return data, labels, weights
+
+
+
+
+    def _get_predictions_labels_weights(self,
+                                        path_to_input_file):
+
+
+        data, labels, weights = self._get_data_set(path_to_input_file)
+
+        gpu_config = self._get_gpu_config()
+        graph = tf.Graph()
+        with tf.Session(config=config, graph=graph) as sess:
+            saver = tf.train.import_meta_graph(self._path_to_model + '.meta')
+            saver.restore(sess, path_to_model)
+
+            x = graph.get_tensor_by_name("input:0")
+            y = graph.get_tensor_by_name("output:0")
+
+            feed_dict ={x:data}
+            predictions = sess.run(y, feed_dict)
+
+
+        return predictions, labels, weights
