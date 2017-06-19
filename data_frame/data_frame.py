@@ -7,12 +7,12 @@ class DataFrame(object):
 
 
     def __init__(self,
-                 path_to_array,
+                 path_to_input_file,
                  number_of_output_neurons
                  ):
 
 
-        array = np.load(path_to_array)
+        array = np.load(path_to_input_file)
 
 
         self.data                    = array[:, number_of_output_neurons:-1]

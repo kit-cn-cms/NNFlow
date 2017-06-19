@@ -7,18 +7,20 @@ import pandas as pd
 
 import tensorflow as tf
 
+from data_frame.data_frame import DataFrame
+
 
 class ModelAnalyser(object):
     
     def __init__(self,
                  path_to_model,
-                 number_of_processes,
+                 number_of_output_neurons,
                  gpu_usage):
 
 
-        self._path_to_model          = path_to_model
-        self._number_of_processes    = number_of_processes
-        self._gpu_usage              = gpu_usage
+        self._path_to_model            = path_to_model
+        self._number_of_output_neurons = number_of_output_neurons
+        self._gpu_usage                = gpu_usage
 
 
 
@@ -72,29 +74,17 @@ class ModelAnalyser(object):
 
 
 
-    def _load_data_set(self,
-                       path_to_input_file):
-
-
-        array = np.load(path_to_input_file)
-
-        data    = array[:, self._number_of_processes:-1]
-        labels  = array[:, :self._number_of_processes]
-        weights = array[:, -1]
-
-
-        return data, labels, weights
-
-
-
-
     def _get_predictions_labels_weights(self,
                                         path_to_input_file):
 
 
-        data, labels, weights = self._get_data_set(path_to_input_file)
+        data_labels_weights = DataFrame(path_to_input_file       = path_to_input_file,
+                                        number_of_output_neurons = self._number_of_output_neurons)
+        
+        data, labels, weights = data_labels_weights.get_data_labels_weights()
 
-        gpu_config = self._get_gpu_config()
+
+        config = self._get_gpu_config()
         graph = tf.Graph()
         with tf.Session(config=config, graph=graph) as sess:
             saver = tf.train.import_meta_graph(self._path_to_model + '.meta')
@@ -103,7 +93,7 @@ class ModelAnalyser(object):
             x = graph.get_tensor_by_name("input:0")
             y = graph.get_tensor_by_name("output:0")
 
-            feed_dict ={x:data}
+            feed_dict = {x:data}
             predictions = sess.run(y, feed_dict)
 
 
