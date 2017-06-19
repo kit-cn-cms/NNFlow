@@ -6,11 +6,22 @@ import sys
 class MLP(object):
 
     def __init__(self,
+                 savedir,
+                 name,
+                 number_of_input_neurons,
+                 number_of_output_neurons,
+                 hidden_layers,
                  activation_function,
                  ):
 
 
-        self._activation_function = activation_function
+        self._savedir                  = savedir
+        self._name                     = name
+
+        self._number_of_input_neurons  = number_of_input_neurons
+        self._number_of_output_neurons = number_of_output_neurons
+        self._hidden_layers            = hidden_layers
+        self._activation_function      = activation_function
 
 
 

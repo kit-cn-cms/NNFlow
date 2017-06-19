@@ -36,18 +36,12 @@ class BinaryMLP(MLP):
     Should describe the used dataset. 
     """
 
-    def __init__(self, n_variables, h_layers, savedir, activation,
+    def init_old(self, n_variables, h_layers, savedir, activation,
                  var_names=None):
-        self.n_variables = n_variables
-        self.n_labels = 1
-        self.h_layers = h_layers
-        self.activation = activation
-        self.name = savedir.rsplit('/')[-1]
         self.variables = var_names
-        self.savedir = savedir
 
         # check wether model file exists
-        if os.path.exists(self.savedir + '/{}.ckpt.meta'.format(self.name)):
+        if os.path.exists(self.savedir + '/{}.ckpt.meta'.format(self._name)):
             self.trained = True
         else:
             self.trained = False
@@ -71,8 +65,8 @@ class BinaryMLP(MLP):
         biases (list) :
         A dictionary with the tensorflow Variables for the biases.
         """
-        n_variables = self.n_variables
-        h_layers = self.h_layers
+        n_variables = self._number_of_input_neurons
+        h_layers = self._hidden_layers
 
         weights = [tf.Variable(
             tf.random_normal(shape = [n_variables, h_layers[0]],
@@ -163,7 +157,7 @@ class BinaryMLP(MLP):
             tf.add(tf.matmul(x, W[0]), B[0])), 1.)
         
         # fancy loop for creating hidden layer
-        if len(self.h_layers) > 1:
+        if len(self._hidden_layers) > 1:
             for weight, bias in zip(W[1:-1], B[1:-1]):
                 layer = tf.nn.dropout(activation(
                     tf.add(tf.matmul(layer, weight), bias)),keep_prob)
@@ -220,7 +214,7 @@ class BinaryMLP(MLP):
         
         train_graph = tf.Graph()
         with train_graph.as_default():
-            x = tf.placeholder(tf.float32, [None, self.n_variables], name='input')
+            x = tf.placeholder(tf.float32, [None, self._n_variables], name='input')
             y = tf.placeholder(tf.float32, [None, 1])
             w = tf.placeholder(tf.float32, [None, 1])
 
@@ -265,7 +259,7 @@ class BinaryMLP(MLP):
                 config.gpu_options.per_process_gpu_memory_fraction = gpu_usage['per_process_gpu_memory_fraction']
         
         with tf.Session(config=config, graph=train_graph) as sess:
-            self.model_loc = self.savedir + '/{}.ckpt'.format(self.name)
+            self.model_loc = self._savedir + '/{}.ckpt'.format(self._name)
             sess.run(init)
             
             train_auc = []
@@ -378,12 +372,12 @@ class BinaryMLP(MLP):
         Contains probabilities of a sample to belong to the signal.
         """
         if not self.trained:
-            sys.exit('Model {} has not been trained yet'.format(self.name))
+            sys.exit('Model {} has not been trained yet'.format(self._name))
 
         predict_graph = tf.Graph()
         with predict_graph.as_default():
             weights, biases = self._get_parameters()
-            x = tf.placeholder(tf.float32, [None, self.n_variables])
+            x = tf.placeholder(tf.float32, [None, self._number_of_input_neurons])
             x_mean = tf.Variable(-1.0, validate_shape=False,  name='x_mean')
             x_std = tf.Variable(-1.0, validate_shape=False,  name='x_std')
             x_scaled = tf.div(tf.subtract(x, x_mean), x_std, name='x_scaled')
@@ -397,7 +391,7 @@ class BinaryMLP(MLP):
         config.gpu_options.allow_growth = True
         
         with tf.Session(config=config, graph = predict_graph) as sess:
-            saver.restore(sess, self.savedir + '/{}.ckpt'.format(self.name))
+            saver.restore(sess, self._savedir + '/{}.ckpt'.format(self._name))
             prob = sess.run(y, {x: data})
 
         return prob
@@ -408,12 +402,12 @@ class BinaryMLP(MLP):
         node names.
         """
         if not self.trained:
-            sys.exit('Model {} has not been trained yet'.format(self.name))
+            sys.exit('Model {} has not been trained yet'.format(self._name))
 
         export_graph = tf.Graph()
         with export_graph.as_default():
             weights, biases = self._get_parameters()
-            x = tf.constant(-1.0, shape=[1, self.n_variables],
+            x = tf.constant(-1.0, shape=[1, self._number_of_input_neurons],
                                name='input_node')
             x_mean = tf.Variable(-1.0, validate_shape=False,  name='x_mean')
             x_std = tf.Variable(-1.0, validate_shape=False,  name='x_std')
@@ -428,10 +422,10 @@ class BinaryMLP(MLP):
         config = tf.ConfigProto()
         config.gpu_options.allow_growth = True
         with tf.Session(config=config, graph=export_graph) as sess:
-            saver.restore(sess, self.savedir + '/{}.ckpt'.format(self.name))
+            saver.restore(sess, self._savedir + '/{}.ckpt'.format(self._name))
             const_graph=tf.graph_util.convert_variables_to_constants(
                 sess, export_graph.as_graph_def(), ['output_node'])
-            tf.train.write_graph(const_graph, self.savedir, self.name + ".pb",
+            tf.train.write_graph(const_graph, self._savedir, self._name + ".pb",
                                  as_text=False)
 
     def _write_parameters(self, batch_size, keep_prob, beta, time,
@@ -439,10 +433,10 @@ class BinaryMLP(MLP):
         """Writes network parameters in a .txt file
         """
 
-        with open('{}/NN_Info.txt'.format(self.savedir), 'w') as f:
-            f.write('Number of input variables: {}\n'.format(self.n_variables))
+        with open('{}/NN_Info.txt'.format(self._savedir), 'w') as f:
+            f.write('Number of input variables: {}\n'.format(self._number_of_input_neurons))
             f.write('Number of hidden layers and neurons: {}\n'
-                    .format(self.h_layers))
+                    .format(self._hidden_layers))
             f.write('Activation function: {}\n'.format(self.activation))
             f.write('Optimizer: {}, Learning Rate: {}\n'
                     .format(self._optimizer, self._lr))
@@ -461,7 +455,7 @@ class BinaryMLP(MLP):
             f.write('L2 Regularization: {}\n'.format(beta))
             f.write('Mean Training Time per Epoch: {} s\n'.format(time))
 
-        with open('{}/NN_Info.txt'.format(self.savedir), 'r') as f:
+        with open('{}/NN_Info.txt'.format(self._savedir), 'r') as f:
             for line in f:
                 print(line)
         print(90*'-')
@@ -511,14 +505,14 @@ class BinaryMLP(MLP):
         plt.ylabel('Ereignisse (normiert)')
         if self.variables:
             plt.title(self.variables, loc='left')
-        plt.title(self.name, loc='center')
+        plt.title(self._name, loc='center')
         # plt.title('CMS Private Work', loc='right')
         
         
-        plt_name = self.name + '_dist'
-        plt.savefig(self.savedir + '/' + plt_name + '.pdf')
-        plt.savefig(self.savedir + '/' + plt_name + '.png')
-        plt.savefig(self.savedir + '/' + plt_name + '.eps')
+        plt_name = self._name + '_dist'
+        plt.savefig(self._savedir + '/' + plt_name + '.pdf')
+        plt.savefig(self._savedir + '/' + plt_name + '.png')
+        plt.savefig(self._savedir + '/' + plt_name + '.eps')
         plt.clf()
 
         # roc curve
@@ -526,7 +520,7 @@ class BinaryMLP(MLP):
         fpr, tpr, thresh = roc_curve(v_labels, v_pred)
         auc = roc_auc_score(v_labels, v_pred)
         #plot the roc_curve
-        plt_name = self.name +  '_roc'
+        plt_name = self._name +  '_roc'
         
         plt.plot(tpr, np.ones(len(fpr)) - fpr, color='#1f77b4',
                  label='ROC Kurve (Integral = {:.4f})'.format(auc), lw=1.7)
@@ -539,13 +533,13 @@ class BinaryMLP(MLP):
         if self.variables:
             plt.title(self.variables, loc='left')
         plt.grid(True)
-        plt.title(self.name, loc='center')
+        plt.title(self._name, loc='center')
         # plt.title('CMS Private Work', loc='right')
         plt.legend(loc='best')
         
-        plt.savefig(self.savedir + '/' + plt_name + '.pdf')
-        plt.savefig(self.savedir + '/' + plt_name + '.png')
-        plt.savefig(self.savedir + '/' + plt_name + '.eps')
+        plt.savefig(self._savedir + '/' + plt_name + '.pdf')
+        plt.savefig(self._savedir + '/' + plt_name + '.png')
+        plt.savefig(self._savedir + '/' + plt_name + '.eps')
         plt.clf()
             
     def _plot_loss(self, train_loss):
@@ -559,15 +553,15 @@ class BinaryMLP(MLP):
         
         if self.variables:
             plt.title(self.variables, loc='left')
-        plt.title(self.name, loc='center')
+        plt.title(self._name, loc='center')
         # plt.title('CMS Private Work', loc='right')
         plt.ticklabel_format(axis='y', style='sci', scilimits=(-2,2))
         plt.legend(loc=0)
         
-        plt_name = self.name + '_loss'
-        plt.savefig(self.savedir + '/' + plt_name + '.pdf')
-        plt.savefig(self.savedir + '/' + plt_name + '.png')
-        plt.savefig(self.savedir + '/' + plt_name + '.eps')
+        plt_name = self._name + '_loss'
+        plt.savefig(self._savedir + '/' + plt_name + '.pdf')
+        plt.savefig(self._savedir + '/' + plt_name + '.png')
+        plt.savefig(self._savedir + '/' + plt_name + '.eps')
         plt.clf()
 
     def _plot_auc_dev(self, train_auc, val_auc, stop):
@@ -584,13 +578,13 @@ class BinaryMLP(MLP):
         plt.axvline(x=stop, color='r')
         if self.variables:
             plt.title(self.variables, loc='left')
-        plt.title(self.name, loc='center')
+        plt.title(self._name, loc='center')
         # plt.title('CMS Private Work', loc='right')
         plt.legend(loc='best', frameon=False)
 
         # save plot
-        plt_name = self.name + '_auc_dev'
-        plt.savefig(self.savedir + '/' + plt_name + '.pdf')
-        plt.savefig(self.savedir + '/' + plt_name + '.png')
-        plt.savefig(self.savedir + '/' + plt_name + '.eps')
+        plt_name = self._name + '_auc_dev'
+        plt.savefig(self._savedir + '/' + plt_name + '.pdf')
+        plt.savefig(self._savedir + '/' + plt_name + '.png')
+        plt.savefig(self._savedir + '/' + plt_name + '.eps')
         plt.clf()

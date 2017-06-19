@@ -28,7 +28,7 @@ class OneHotMLP(MLP):
     """
 
 
-    def __init__(self, n_features, h_layers, out_size, savedir, labels_text,
+    def init_old(self, n_features, h_layers, out_size, savedir, labels_text,
             branchlist, act_func='tanh'):
         """Initializes the Classifier.
 
@@ -59,19 +59,13 @@ class OneHotMLP(MLP):
             Activation function.
         """
 
-        self.n_features = n_features
-        self.h_layers = h_layers
-        self.out_size = out_size
-        self.name = savedir.rsplit('/')[-1]
-        self.savedir = savedir
         self.labels_text = labels_text
         self.branchlist = branchlist
 #        self.sig_weight = sig_weight
 #        self.bg_weight = bg_weight
-        self.act_func = act_func
 
         # check whether the model file exists
-        if os.path.exists(self.savedir + '/{}.ckpt'.format(self.name)):
+        if os.path.exists(self.savedir + '/{}.ckpt'.format(self._name)):
             self.trained = True
         else:
             self.trained = False
@@ -109,8 +103,8 @@ class OneHotMLP(MLP):
             A dictionary with the TensorFlow Variables for the biases.
         """
 
-        n_features = self.n_features
-        h_layers = self.h_layers
+        n_features = self._number_of_input_neurons
+        h_layers = self._hidden_layers
 
         weights = [tf.Variable(tf.random_normal([n_features, h_layers[0]], 
             stddev=tf.sqrt(2.0/n_features)), name = 'W_1')]
@@ -127,9 +121,9 @@ class OneHotMLP(MLP):
                     'B_{}'.format(i+1)))
 
         # connect the last hidden layer to the output layer
-        weights.append(tf.Variable(tf.random_normal([h_layers[-1], self.out_size],
+        weights.append(tf.Variable(tf.random_normal([h_layers[-1], self._number_of_output_neurons],
             stddev = tf.sqrt(2.0/h_layers[-1])), name = 'W_out'))
-        biases.append(tf.Variable(tf.zeros([self.out_size]), name = 'B_out'))
+        biases.append(tf.Variable(tf.zeros([self._number_of_output_neurons]), name = 'B_out'))
         
         return weights, biases
 
@@ -155,7 +149,7 @@ class OneHotMLP(MLP):
         layer = tf.nn.dropout(self.act(tf.matmul(data, W[0]) + B[0]), 1)
         # if more the 1 hidden layer -> generate output via multiple weight
         # matrices 
-        if len(self.h_layers) > 1:
+        if len(self._hidden_layers) > 1:
             for weight, bias in zip(W[1:-1], B[1:-1]):
                 layer = tf.nn.dropout(self.act(tf.matmul(layer, weight) +
                     bias), keep_prob)
@@ -231,7 +225,7 @@ class OneHotMLP(MLP):
 
         train_graph = tf.Graph()
         with train_graph.as_default():
-            x = tf.placeholder(tf.float32, [None, self.n_features], name='input')
+            x = tf.placeholder(tf.float32, [None, self._number_of_input_neurons], name='input')
             y = tf.placeholder(tf.float32, [None, out_size])
             w = tf.placeholder(tf.float32, [None])
 
@@ -274,7 +268,7 @@ class OneHotMLP(MLP):
                 sess_config.gpu_options.per_process_gpu_memory_fraction = gpu_usage['per_process_gpu_memory_fraction']
 
         with tf.Session(config=sess_config, graph=train_graph) as sess:
-            self.model_loc = self.savedir + '/{}.ckpt'.format(self.name)
+            self.model_loc = self._savedir + '/{}.ckpt'.format(self._name)
             sess.run(init)
             train_accuracy = []
             val_accuracy = []
@@ -421,7 +415,7 @@ class OneHotMLP(MLP):
             self._write_list(val_data.y, 'val_true' + app)
             self.trained = True
 
-            print('Model saved in: \n{}'.format(self.savedir))
+            print('Model saved in: \n{}'.format(self._savedir))
 
 
     def _l2_regularization(self, weights):
@@ -451,15 +445,15 @@ class OneHotMLP(MLP):
 
         """
 
-        arr_cross = np.zeros((self.out_size, self.out_size),dtype=np.float32)
+        arr_cross = np.zeros((self._number_of_output_neurons, self._number_of_output_neurons),dtype=np.float32)
         index_true = np.argmax(labels, axis=1)
         index_pred = np.argmax(pred, axis=1)
         for i in range(index_true.shape[0]):
             arr_cross[index_true[i]][index_pred[i]] += weights[i]
         correct = np.diagonal(arr_cross).sum()
         mistag = arr_cross.sum() - correct
-        cat_acc = np.zeros((self.out_size), dtype=np.float32)
-        for i in range(self.out_size): 
+        cat_acc = np.zeros((self._number_of_output_neurons), dtype=np.float32)
+        for i in range(self._number_of_output_neurons): 
             cat_acc[i] = arr_cross[i][i] / (np.sum(arr_cross, axis=1)[i])
 
         
@@ -563,10 +557,10 @@ class OneHotMLP(MLP):
         """Writes network parameters in a .txt. file
         """
 
-        with open('{}/info.txt'.format(self.savedir),'w') as f:
+        with open('{}/info.txt'.format(self._savedir),'w') as f:
             f.write('Date: {}\n'.format(datetime.datetime.now().strftime("%Y_%m_%d")))
             f.write('Time: {}\n'.format(datetime.datetime.now().strftime("%H_%M_%S")))
-            f.write('Hidden layers: {}\n'.format(self.h_layers))
+            f.write('Hidden layers: {}\n'.format(self._hidden_layers))
             f.write('Training Epochs: {}\n'.format(epochs))
             f.write('Batch Size: {}\n'.format(batch_size))
             f.write('Dropout: {}\n'.format(keep_prob))
@@ -600,7 +594,7 @@ class OneHotMLP(MLP):
         plt.ticklabel_format(axis = 'y', style = 'sci', scilimits=(-2,2))
         plt.legend(bbox_to_anchor=(1,1))
         plt.grid(True)
-        plt.savefig(self.savedir + '/loss.pdf')
+        plt.savefig(self._savedir + '/loss.pdf')
         plt.clf()
 
 
@@ -614,37 +608,37 @@ class OneHotMLP(MLP):
         plt.title('Accuracy development')
         plt.legend(loc='best')
         plt.grid(True)
-        plt_name = self.name + '_accuracy'
-        plt.savefig(self.savedir + '/' + plt_name + '.pdf')
+        plt_name = self._name + '_accuracy'
+        plt.savefig(self._savedir + '/' + plt_name + '.pdf')
         plt.clf()
         
-        arr = np.zeros((self.out_size, len(train_cats)))
+        arr = np.zeros((self._number_of_output_neurons, len(train_cats)))
         for i in range(len(train_cats)):
-            for j in range(self.out_size):
+            for j in range(self._number_of_output_neurons):
                 arr[j][i] = train_cats[i][j]
-        for j in range(self.out_size):
+        for j in range(self._number_of_output_neurons):
             plt.plot(arr[j], label = self.labels_text[j])
         plt.xlabel('Epoch')
         plt.ylabel('Accuracy')
         plt.title('Categories: Training Accuracy development')
         plt.legend(loc='best')
         plt.grid(True)
-        plt_name = self.name + '_categories_train'
-        plt.savefig(self.savedir + '/' + plt_name + '.pdf')
+        plt_name = self._name + '_categories_train'
+        plt.savefig(self._savedir + '/' + plt_name + '.pdf')
         plt.clf()
-        arr = np.zeros((self.out_size, len(val_cats)))
+        arr = np.zeros((self._number_of_output_neurons, len(val_cats)))
         for i in range(len(val_cats)):
-            for j in range(self.out_size):
+            for j in range(self._number_of_output_neurons):
                 arr[j][i] = val_cats[i][j]
-        for j in range(self.out_size):
+        for j in range(self._number_of_output_neurons):
             plt.plot(arr[j], label = self.labels_text[j])
         plt.xlabel('Epoch')
         plt.ylabel('Accuracy')
         plt.title('Categories: Validation Accuracy development')
         plt.legend(loc='best')
         plt.grid(True)
-        plt_name = self.name + '_categories_val'
-        plt.savefig(self.savedir + '/' + plt_name + '.pdf')
+        plt_name = self._name + '_categories_val'
+        plt.savefig(self._savedir + '/' + plt_name + '.pdf')
         plt.clf()
     
 
@@ -682,14 +676,14 @@ class OneHotMLP(MLP):
         print(arr_train)
         print('-----------------')
         print(arr_val)
-        x = np.linspace(0, self.out_size, self.out_size + 1)
-        y = np.linspace(0, self.out_size, self.out_size + 1)
+        x = np.linspace(0, self._number_of_output_neurons, self._number_of_output_neurons + 1)
+        y = np.linspace(0, self._number_of_output_neurons, self._number_of_output_neurons + 1)
         xn, yn = np.meshgrid(x,y)
         cmap = matplotlib.cm.RdYlBu_r
         plt.pcolormesh(xn, yn, arr_train_float, cmap=cmap, vmin=0.0, vmax=1.0)
         plt.colorbar()
-        plt.xlim(0, self.out_size)
-        plt.ylim(0, self.out_size)
+        plt.xlim(0, self._number_of_output_neurons)
+        plt.ylim(0, self._number_of_output_neurons)
         plt.xlabel("Predicted")
         plt.ylabel("True")
         ax = plt.gca()
@@ -706,8 +700,8 @@ class OneHotMLP(MLP):
         cmap = matplotlib.cm.RdYlBu_r
         plt.pcolormesh(xn, yn, arr_val_float, cmap=cmap, vmin=0.0, vmax=1.0)
         plt.colorbar()
-        plt.xlim(0, self.out_size)
-        plt.ylim(0, self.out_size)
+        plt.xlim(0, self._number_of_output_neurons)
+        plt.ylim(0, self._number_of_output_neurons)
         plt.xlabel("Predicted")
         plt.ylabel("True")
         ax = plt.gca()
@@ -729,8 +723,8 @@ class OneHotMLP(MLP):
         plt.pcolormesh(xn, yn, arr_train_float, cmap=cmap,
                 norm=colors.LogNorm(vmin=max(minimum, 1e-6), vmax=maximum))
         plt.colorbar()
-        plt.xlim(0, self.out_size)
-        plt.ylim(0, self.out_size)
+        plt.xlim(0, self._number_of_output_neurons)
+        plt.ylim(0, self._number_of_output_neurons)
         plt.xlabel("Predicted")
         plt.ylabel("True")
         ax = plt.gca()
@@ -750,8 +744,8 @@ class OneHotMLP(MLP):
         plt.pcolormesh(xn, yn, arr_val_float, cmap=cmap,
                 norm=colors.LogNorm(vmin=max(minimum,1e-6), vmax=maximum))
         plt.colorbar()
-        plt.xlim(0, self.out_size)
-        plt.ylim(0, self.out_size)
+        plt.xlim(0, self._number_of_output_neurons)
+        plt.ylim(0, self._number_of_output_neurons)
         plt.xlabel("Predicted")
         plt.ylabel("True")
         ax = plt.gca()
@@ -773,8 +767,8 @@ class OneHotMLP(MLP):
         plt.pcolormesh(xn, yn, arr_train, cmap=cmap, norm=colors.LogNorm(
             vmin=max(minimum, 1e-6), vmax=maximum))
         plt.colorbar()
-        plt.xlim(0, self.out_size)
-        plt.ylim(0, self.out_size)
+        plt.xlim(0, self._number_of_output_neurons)
+        plt.ylim(0, self._number_of_output_neurons)
         
         plt.xlabel("Predicted")
         plt.ylabel("True")
@@ -799,8 +793,8 @@ class OneHotMLP(MLP):
         plt.pcolormesh(xn, yn, arr_val, cmap=cmap, norm=colors.LogNorm(
             vmin=max(minimum, 1e-6), vmax=maximum))
         plt.colorbar()
-        plt.xlim(0, self.out_size)
-        plt.ylim(0, self.out_size)
+        plt.xlim(0, self._number_of_output_neurons)
+        plt.ylim(0, self._number_of_output_neurons)
         
         plt.xlabel("Predicted")
         plt.ylabel("True")
@@ -1081,11 +1075,11 @@ class OneHotMLP(MLP):
         epoch (int):
             Epoch.
         """
-        train_x_classified_as_y = np.zeros((epoch, self.out_size, self.out_size))
-        val_x_classified_as_y = np.zeros((epoch, self.out_size, self.out_size))
-        train_y_classified_as_x = np.zeros((epoch, self.out_size,
-            self.out_size))
-        val_y_classified_as_x = np.zeros((epoch, self.out_size, self.out_size))
+        train_x_classified_as_y = np.zeros((epoch, self._number_of_output_neurons, self._number_of_output_neurons))
+        val_x_classified_as_y = np.zeros((epoch, self._number_of_output_neurons, self._number_of_output_neurons))
+        train_y_classified_as_x = np.zeros((epoch, self._number_of_output_neurons,
+            self._number_of_output_neurons))
+        val_y_classified_as_x = np.zeros((epoch, self._number_of_output_neurons, self._number_of_output_neurons))
 
 
         for list_index in range(len(train_list)):
