@@ -16,9 +16,11 @@ import sys
 import time
 import pickle
 
+from mlp.mlp import MLP
+
 # from sklearn.metrics import roc_auc_score, roc_curve
 
-class OneHotMLP:
+class OneHotMLP(MLP):
     """A one-hot output vector classifier using a multi layer perceptron.
 
     Makes probability predictions on a set of features (a 1-dimensional numpy
@@ -149,7 +151,7 @@ class OneHotMLP:
             Prediction of the model.
         """
 
-        self.act = self._build_activation_function()
+        self.act = self._get_activation_function()
         layer = tf.nn.dropout(self.act(tf.matmul(data, W[0]) + B[0]), 1)
         # if more the 1 hidden layer -> generate output via multiple weight
         # matrices 
@@ -554,18 +556,6 @@ class OneHotMLP:
         return optimizer, global_step
 
 
-    def _build_activation_function(self):
-        """Returns the activation function."""
-        if (self.act_func == 'relu'):
-            return tf.nn.relu
-        elif (self.act_func == 'elu'):
-            return tf.nn.elu
-        elif (self.act_func == 'sigmoid'):
-            return tf.sigmoid
-        elif (self.act_func == 'softplus'):
-            return tf.nn.softplus
-        else:
-            return tf.tanh
 
 
     def _write_parameters(self, epochs, batch_size, keep_prob, beta, time,

@@ -11,7 +11,9 @@ import time
 
 from sklearn.metrics import roc_auc_score, roc_curve
 
-class BinaryMLP:
+from mlp.mlp import MLP
+
+class BinaryMLP(MLP):
     """A Binary Classifier using a Multilayerperceptron.
 
     Makes probability predictions on a set of features (A 1-dimensional
@@ -98,32 +100,6 @@ class BinaryMLP:
 
         return weights, biases
     
-    def _get_activation(self, activation):
-        """Get activation function.
-
-        Arguments:
-        -----------
-        activation (str) :
-        Activation function which should be use. Has to be 'elu', 'relu', 'tanh' or
-        'sigmoid'.
-
-        Returns:
-        -----------
-        activation (tf.nn.activation) :
-        Chosen activation function.
-        """
-        
-        if activation == 'tanh':
-            return tf.nn.tanh
-        elif activation =='sigmoid':
-            return tf.nn.sigmoid
-        elif activation == 'relu':
-            return tf.nn.relu
-        elif activation == 'elu':
-            return tf.nn.elu
-        else:
-            sys.exit('Choose activation function from "relu", "elu", ' +
-                     '"tanh" or "sigmoid"')
             
     def _get_optimizer(self):
         """Get Opitimizer to be used for minimizing the loss function.
@@ -181,7 +157,7 @@ class BinaryMLP:
         output_node (tf.tensor)
         Prediction of the model.
         """
-        activation = self._get_activation(self.activation)
+        activation = self._get_activation_function()
         
         layer = tf.nn.dropout(activation(
             tf.add(tf.matmul(x, W[0]), B[0])), 1.)
