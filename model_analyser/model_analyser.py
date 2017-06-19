@@ -46,7 +46,7 @@ class ModelAnalyser(object):
 
         with open(os.path.join(save_dir, 'variable_ranking.txt'), 'w') as outfile:
             for variable in variable_ranking.index:
-                outfile.write('{:60} {}\n'.format(variable, str(variable_ranking[variable]))
+                outfile.write('{:60} {}\n'.format(variable, str(variable_ranking[variable])))
 
         variable_ranking.to_msgpack(os.path.join(save_dir, 'variable_ranking.msg'))
 
