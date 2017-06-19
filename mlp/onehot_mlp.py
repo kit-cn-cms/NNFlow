@@ -92,40 +92,6 @@ class OneHotMLP(MLP):
             os.makedirs(self.mistag_savedir)
 
 
-    def _get_parameters(self):
-        """Creates the TensorFlow Variables in two lists. 
-
-        Returns:
-        ----------------
-        weights (list):
-            A dictionary with the TensorFlow Variables for the weights.
-        biases (list):
-            A dictionary with the TensorFlow Variables for the biases.
-        """
-
-        n_features = self._number_of_input_neurons
-        h_layers = self._hidden_layers
-
-        weights = [tf.Variable(tf.random_normal([n_features, h_layers[0]], 
-            stddev=tf.sqrt(2.0/n_features)), name = 'W_1')]
-        biases = [tf.Variable(tf.zeros([h_layers[0]]), name = 'B_1')]
-
-
-        # if more than 1 hidden layer -> create additional weights and biases
-        if len(h_layers) > 1:
-            for i in range(1, len(h_layers)):
-                weights.append(tf.Variable(tf.random_normal([h_layers[i-1],
-                    h_layers[i]], stddev = tf.sqrt(2.0 / h_layers[i-1])), name =
-                    'W_{}'.format(i+1)))
-                biases.append(tf.Variable(tf.zeros([h_layers[i]]), name =
-                    'B_{}'.format(i+1)))
-
-        # connect the last hidden layer to the output layer
-        weights.append(tf.Variable(tf.random_normal([h_layers[-1], self._number_of_output_neurons],
-            stddev = tf.sqrt(2.0/h_layers[-1])), name = 'W_out'))
-        biases.append(tf.Variable(tf.zeros([self._number_of_output_neurons]), name = 'B_out'))
-        
-        return weights, biases
 
     def _model(self, data, W, B, keep_prob=1.0):
         """Model for the multi layer perceptron

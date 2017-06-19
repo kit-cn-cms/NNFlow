@@ -50,50 +50,7 @@ class BinaryMLP(MLP):
         if not os.path.isdir(self.savedir):
             os.makedirs(self.savedir)
 
-    def _get_parameters(self):
-        """Create TensorFlow variables in two lists.
-        
-        Weights are initialized as random number taken from a normal
-        distribution with standard deviation sqrt(2.0/n_inputs), where n_inputs
-        is the number of neurons in the previous layer. Biases are initialized
-        as 0.1.
-        
-        Returns:
-        --------------
-        weights (list) :
-        A dictionary with the tensorflow Variables for the weights.
-        biases (list) :
-        A dictionary with the tensorflow Variables for the biases.
-        """
-        n_variables = self._number_of_input_neurons
-        h_layers = self._hidden_layers
-
-        weights = [tf.Variable(
-            tf.random_normal(shape = [n_variables, h_layers[0]],
-                             stddev = tf.sqrt(2.0/n_variables)), name = 'W_1')]
-        biases = [tf.Variable(tf.fill(dims=[h_layers[0]],
-                                      value=0.1), name = 'B_1')]
-
-        # fancy loop in order to create weights connecting the hidden layer.
-        if len(h_layers) > 1:
-            for i in range(1, len(h_layers)):
-                weights.append(tf.Variable(
-                    tf.random_normal( shape = [h_layers[i-1], h_layers[i]],
-                    stddev = tf.sqrt(2.0/h_layers[i-1])),
-                    name = 'W_{}'.format(i+1)))
-                biases.append(tf.Variable(
-                    tf.fill(dims=[h_layers[i]], value=0.1),
-                    name = 'B_{}'.format(i+1)))
-
-        weights.append(tf.Variable(
-                tf.random_normal([h_layers[-1], 1],
-                                 stddev=tf.sqrt(2.0/h_layers[-1])),
-            name = 'W_out'))
-        biases.append(tf.Variable(tf.fill(dims=[1], value=0.1),
-                      name = 'B_out'))
-
-        return weights, biases
-    
+   
             
     def _get_optimizer(self):
         """Get Opitimizer to be used for minimizing the loss function.
