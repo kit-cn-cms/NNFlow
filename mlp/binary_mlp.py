@@ -315,75 +315,8 @@ class BinaryMLP(MLP):
 
         return tf.add_n(weights)
 
-    def classify(self, data):
-        """Predict probability of a new feauture to belong to the signal.
 
-        Arguments:
-        ----------------
-        data (custom data set):
-        Data to classify.
 
-        Returns:
-        ----------------
-        prob (np.array):
-        Contains probabilities of a sample to belong to the signal.
-        """
-        if not self.trained:
-            sys.exit('Model {} has not been trained yet'.format(self._name))
-
-        predict_graph = tf.Graph()
-        with predict_graph.as_default():
-            weights, biases = self._get_parameters()
-            x = tf.placeholder(tf.float32, [None, self._number_of_input_neurons])
-            x_mean = tf.Variable(-1.0, validate_shape=False,  name='x_mean')
-            x_std = tf.Variable(-1.0, validate_shape=False,  name='x_std')
-            x_scaled = tf.div(tf.subtract(x, x_mean), x_std, name='x_scaled')
-            y=  tf.nn.sigmoid(self._model(x_scaled, weights, biases))
-            
-            saver = tf.train.Saver()
-
-        # dont allocate all available gpu memory, remove if you can dont share a
-        # machine with others
-        config = tf.ConfigProto()
-        config.gpu_options.allow_growth = True
-        
-        with tf.Session(config=config, graph = predict_graph) as sess:
-            saver.restore(sess, self._savedir + '/{}.ckpt'.format(self._name))
-            prob = sess.run(y, {x: data})
-
-        return prob
-
-    def export_graph_to_pb(self):
-        """Export the graph definition and the parameters of the model to a 
-        Protobuff file, that can be used by TensorFlow's C++ API. Do not change
-        node names.
-        """
-        if not self.trained:
-            sys.exit('Model {} has not been trained yet'.format(self._name))
-
-        export_graph = tf.Graph()
-        with export_graph.as_default():
-            weights, biases = self._get_parameters()
-            x = tf.constant(-1.0, shape=[1, self._number_of_input_neurons],
-                               name='input_node')
-            x_mean = tf.Variable(-1.0, validate_shape=False,  name='x_mean')
-            x_std = tf.Variable(-1.0, validate_shape=False,  name='x_std')
-            x_scaled = tf.div(tf.subtract(x, x_mean), x_std, name='x_scaled')
-            y = tf.nn.sigmoid(self._model(x_scaled, weights, biases),
-                             name='output_node')
-            
-            saver = tf.train.Saver()
-
-        # dont allocate all available gpu memory, remove if you can dont share a
-        # machine with others
-        config = tf.ConfigProto()
-        config.gpu_options.allow_growth = True
-        with tf.Session(config=config, graph=export_graph) as sess:
-            saver.restore(sess, self._savedir + '/{}.ckpt'.format(self._name))
-            const_graph=tf.graph_util.convert_variables_to_constants(
-                sess, export_graph.as_graph_def(), ['output_node'])
-            tf.train.write_graph(const_graph, self._savedir, self._name + ".pb",
-                                 as_text=False)
 
     def _write_parameters(self, batch_size, keep_prob, beta, time,
                           early_stop):
