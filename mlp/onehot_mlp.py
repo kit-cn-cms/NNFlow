@@ -5,20 +5,14 @@
 from __future__ import absolute_import, division, print_function
 
 import tensorflow as tf
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
-import matplotlib.colors as colors
 import numpy as np
 import os
 import datetime
 import sys
 import time
-import pickle
 
 from mlp.mlp import MLP
 
-# from sklearn.metrics import roc_auc_score, roc_curve
 
 class OneHotMLP(MLP):
     """A one-hot output vector classifier using a multi layer perceptron.
@@ -61,14 +55,7 @@ class OneHotMLP(MLP):
 
         self.labels_text = labels_text
         self.branchlist = branchlist
-#        self.sig_weight = sig_weight
-#        self.bg_weight = bg_weight
 
-        # check whether the model file exists
-        if os.path.exists(self.savedir + '/{}.ckpt'.format(self._name)):
-            self.trained = True
-        else:
-            self.trained = False
 
         # create directory if necessary
         if not os.path.isdir(self.savedir):
@@ -208,8 +195,6 @@ class OneHotMLP(MLP):
             # Cross entropy
             xentropy = tf.nn.softmax_cross_entropy_with_logits(labels=y,logits=y_)
             l2_reg = beta * self._l2_regularization(weights)
-            # loss = tf.add(tf.reduce_mean(tf.reduce_sum(tf.mul(w, xentropy))), l2_reg, 
-            #         name='loss')
             loss = tf.add(tf.reduce_mean(tf.multiply(w, xentropy)), l2_reg, 
                     name='loss')
             
@@ -255,7 +240,6 @@ class OneHotMLP(MLP):
             cross_train_list = []
             cross_val_list = []
             weights_list = []
-            times_list = []
             
             train_start = time.time()
             for epoch in range(epochs):
@@ -279,13 +263,11 @@ class OneHotMLP(MLP):
                 train_pre = sess.run(yy_, {x:train_data.x})
                 train_corr, train_mistag, train_cross, train_cat = self._validate_epoch( 
                         train_pre, train_data.y, train_data.w)
-                #print('train: {}'.format((train_corr, train_mistag)))
                 train_accuracy.append(train_corr / (train_corr + train_mistag))
                 
                 val_pre = sess.run(yy_, {x:val_data.x})
                 val_corr, val_mistag, val_cross, val_cat = self._validate_epoch(val_pre,
                         val_data.y, val_data.w)
-                #print('validation: {}'.format((val_corr, val_mistag)))
                 val_accuracy.append(val_corr / (val_corr + val_mistag))
                 
                 
@@ -297,25 +279,6 @@ class OneHotMLP(MLP):
                 train_cats.append(train_cat)
                 val_cats.append(val_cat)
 
-                if (epoch % 10 == 0):
-                    t0 = time.time()
-                    #self._plot_loss(train_losses)
-                    #self._plot_accuracy(train_accuracy, val_accuracy, train_cats,
-                    #        val_cats, epochs)
-                    #self._plot_cross(train_cross, val_cross, epoch+1)
-                    t1 = time.time()
-                    times_list.append(t1 - t0)
-                if (epoch == 0):
-                    t0 = time.time()
-                    app = '_{}'.format(epoch+1)
-                    #self._write_list(train_pre, 'train_pred' + app)
-                    #self._write_list(train_data.y, 'train_true' + app)
-                    #self._write_list(val_pre, 'val_pred' + app)
-                    #self._write_list(val_data.y, 'val_true' + app)
-                    #self._plot_hists(train_pre, val_pre, train_data.y,
-                    #        val_data.y, 1)
-                    t1 = time.time()
-                    times_list.append(t1 - t0)
 
                 if (self.enable_early=='yes'):
                     # Check for early stopping.
@@ -328,7 +291,6 @@ class OneHotMLP(MLP):
                         early_stopping['val_acc'] = val_accuracy[-1]
                         early_stopping['epoch'] = epoch
                     elif ((epoch - early_stopping['epoch']) >= self.early_stop):
-                        t0 = time.time()
                         print(125*'-')
                         print('Early stopping invoked. '\
                                 'Achieved best validation score of '\
@@ -336,20 +298,6 @@ class OneHotMLP(MLP):
                                     early_stopping['val_acc'],
                                     early_stopping['epoch']+1))
                         best_epoch = early_stopping['epoch']
-                        app = '_{}'.format(best_epoch+1)
-                        self._plot_weight_matrices(weights_list[best_epoch],
-                                best_epoch, early='yes')
-                        self._plot_cross(cross_train_list[best_epoch],
-                                cross_val_list[best_epoch], best_epoch,
-                                early='yes')
-                        self._plot_hists(best_train_pred, best_val_pred,
-                                best_train_true, best_val_true, best_epoch+1)
-                        self._write_list(best_train_pred, 'train_pred' + app)
-                        self._write_list(best_train_true, 'train_true' + app)
-                        self._write_list(best_val_pred, 'val_pred' + app)
-                        self._write_list(best_val_true, 'val_true' + app)
-                        t1 = time.time()
-                        times_list.append(t1 - t0)
                         break
                 else:
                     save_path = saver.save(sess, self.model_loc)
@@ -357,29 +305,10 @@ class OneHotMLP(MLP):
 
             print(110*'-')
             train_end=time.time()
-            dtime = train_end - train_start - sum(times_list)
+            dtime = train_end - train_start
 
-            self._plot_accuracy(train_accuracy, val_accuracy, train_cats,
-                    val_cats, epochs)
-            self._plot_loss(train_losses)
             self._write_parameters(epochs, batch_size, keep_prob, beta,
                     dtime, early_stopping, val_accuracy[-1])
-            self._plot_weight_matrices(weights, epoch)
-            self._plot_cross(train_cross, val_cross, epoch + 1)
-            self._plot_hists(train_pre, val_pre, train_data.y, val_data.y,
-                    epoch+1)
-            self._plot_cross_dev(cross_train_list, cross_val_list, epoch+1)
-            self._write_list(cross_train_list, 'train_cross')
-            self._write_list(cross_val_list, 'val_cross')
-            self._write_list(train_losses, 'train_losses')
-            self._write_list(train_accuracy, 'train_accuracy')
-            self._write_list(val_accuracy, 'val_accuracy')
-            app = '_{}'.format(epoch+1)
-            self._write_list(train_pre, 'train_pred' + app)
-            self._write_list(train_data.y, 'train_true' + app)
-            self._write_list(val_pre, 'val_pred' + app)
-            self._write_list(val_data.y, 'val_true' + app)
-            self.trained = True
 
             print('Model saved in: \n{}'.format(self._savedir))
 
