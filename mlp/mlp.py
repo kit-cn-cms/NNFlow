@@ -8,28 +8,10 @@ import tensorflow as tf
 
 class MLP(object):
 
-    def __init__(self,
-                 savedir,
-                 name,
-                 number_of_input_neurons,
-                 number_of_output_neurons,
-                 hidden_layers,
-                 activation_function,
-                 ):
-
-
-        self._savedir                  = savedir
-        self._name                     = name
-
-        self._number_of_input_neurons  = number_of_input_neurons
-        self._number_of_output_neurons = number_of_output_neurons
-        self._hidden_layers            = hidden_layers
-        self._activation_function      = activation_function
-
-
-
     
-    def _get_activation_function(self):
+    def _get_activation_function(self,
+                                 activation_function
+                                 ):
 
 
         activation_functions = {'tanh'    : tf.nn.tanh,
@@ -39,20 +21,19 @@ class MLP(object):
                                 'softplus': tf.nn.softplus
                                 }
 
-        if self._activation_function not in activation_functions.keys():
+        if activation_function not in activation_functions.keys():
             sys.exit('Choose activation function from ' + str.join(', ', activation_functions.keys()))
 
-        return activation_functions[self._activation_function]
+        return activation_functions[activation_function]
 
 
 
 
-    def _get_initial_weights_biases(self):
-
-
-        number_of_input_neurons  = self._number_of_input_neurons
-        hidden_layers            = self._hidden_layers
-        number_of_output_neurons = self._number_of_output_neurons
+    def _get_initial_weights_biases(self,
+                                    number_of_input_neurons,
+                                    number_of_output_neurons,
+                                    hidden_layers
+                                    ):
 
 
         weights = [tf.Variable(tf.random_normal([number_of_input_neurons, hidden_layers[0]], stddev=tf.sqrt(2.0/number_of_input_neurons)), name = 'W_1')]
