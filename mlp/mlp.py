@@ -10,7 +10,7 @@ class MLP(object):
 
     
     def _get_activation_function(self,
-                                 activation_function
+                                 name_activation_function
                                  ):
 
 
@@ -21,10 +21,10 @@ class MLP(object):
                                 'softplus': tf.nn.softplus
                                 }
 
-        if activation_function not in activation_functions.keys():
+        if name_activation_function not in activation_functions.keys():
             sys.exit('Choose activation function from ' + str.join(', ', activation_functions.keys()))
 
-        return activation_functions[activation_function]
+        return activation_functions[name_activation_function]
 
 
 
@@ -51,6 +51,31 @@ class MLP(object):
 
 
         return weights, biases
+
+
+
+
+    def _get_model(self,
+                   data,
+                   weights,
+                   biases,
+                   name_activation_function,
+                   keep_probability
+                   ):
+
+
+        activation_function = self._get_activation_function(name_activation_function)
+
+        layers = list()
+        layers.append( activation_function(tf.add(tf.matmul(data, weights[0]), biases[0])) )
+
+        for i in range(1, len(weights-1):
+            layers.append( tf.nn.dropout(activation_function(tf.add(tf.matmul(layers[i-1], weights[i]), biases[i])), keep_probability) )
+
+        logit = tf.add(tf.matmul(layers[-1], weights[-1]), biases[-1])
+
+
+        return logit
 
 
 

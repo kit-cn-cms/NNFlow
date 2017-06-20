@@ -80,35 +80,6 @@ class OneHotMLP(MLP):
 
 
 
-    def _model(self, data, W, B, keep_prob=1.0):
-        """Model for the multi layer perceptron
-        
-        Arguments:
-        ----------------
-        data (tf.placeholder):
-            A TensorFlow placeholder.
-        W (list):
-            A list with the TensorFlow Variables for the weights.
-        B (list):
-            A list with the TensorFlow Variables for the biases.
-
-        Returns:
-        ----------------
-        out (tf.tensor)
-            Prediction of the model.
-        """
-
-        self.act = self._get_activation_function()
-        layer = tf.nn.dropout(self.act(tf.matmul(data, W[0]) + B[0]), 1)
-        # if more the 1 hidden layer -> generate output via multiple weight
-        # matrices 
-        if len(self._hidden_layers) > 1:
-            for weight, bias in zip(W[1:-1], B[1:-1]):
-                layer = tf.nn.dropout(self.act(tf.matmul(layer, weight) +
-                    bias), keep_prob)
-
-        out = tf.matmul(layer, W[-1]) + B[-1]
-        return out
 
     def train(self, train_data, val_data, optimizer='Adam', epochs = 10, batch_size = 100,
             learning_rate = 1e-3, keep_prob = 0.9, beta = 0.0, out_size=6, 

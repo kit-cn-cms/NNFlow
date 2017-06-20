@@ -77,37 +77,6 @@ class BinaryMLP(MLP):
 
         return opt, global_step
     
-    def _model(self, x, W, B, keep_prob=1.0):
-        """Model for the multi layer perceptron
-
-        Arguments:
-        --------------
-        data (tf.placeholder) : 
-        A tensorflow placeholder.
-        W (list) :
-        A list with the tensorflow Variables for the weights.
-        B (list) :
-        A list with the tensorflow Variables for the biases.
-
-        Returns:
-        ---------------
-        output_node (tf.tensor)
-        Prediction of the model.
-        """
-        activation = self._get_activation_function()
-        
-        layer = tf.nn.dropout(activation(
-            tf.add(tf.matmul(x, W[0]), B[0])), 1.)
-        
-        # fancy loop for creating hidden layer
-        if len(self._hidden_layers) > 1:
-            for weight, bias in zip(W[1:-1], B[1:-1]):
-                layer = tf.nn.dropout(activation(
-                    tf.add(tf.matmul(layer, weight), bias)),keep_prob)
-
-        logit = tf.add(tf.matmul(layer, W[-1]), B[-1]) 
-
-        return logit
 
     def train(self, train_data, val_data, epochs, batch_size,
               lr, optimizer, early_stop, keep_prob, beta, gpu_usage,
