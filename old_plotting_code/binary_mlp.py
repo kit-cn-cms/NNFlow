@@ -36,78 +36,22 @@ class BinaryMLP(MLP):
     Should describe the used dataset. 
     """
 
+    def init_old(self, n_variables, h_layers, savedir, activation,
+                 var_names=None):
+        self.variables = var_names
+
+        # check wether model file exists
+        if os.path.exists(self.savedir + '/{}.ckpt.meta'.format(self._name)):
+            self.trained = True
+        else:
+            self.trained = False
+
+        # create save directory if needed
+        if not os.path.isdir(self.savedir):
+            os.makedirs(self.savedir)
+
    
             
-    def _get_optimizer(self):
-        """Get Opitimizer to be used for minimizing the loss function.
-
-        Returns:
-        ------------
-        opt (tf.train.Optimizer) :
-        Chosen optimizer.
-        global_step (tf.Variable) :
-        Variable that counts the minimization steps. Not trainable, only used 
-        for internal bookkeeping.
-        """
-        
-        global_step = tf.Variable(0, trainable=False)
-        if self._lr_decay:
-            learning_rate = (tf.train
-                             .exponential_decay(self._lr, global_step,
-                                                decay_steps = self._lr_decay[1],
-                                                 decay_rate = self._lr_decay[0])
-                             )
-        else:
-            learning_rate = self._lr
-
-        if self._optimizer == 'adam':
-            opt = tf.train.AdamOptimizer(learning_rate)
-        elif self._optimizer =='gradientdescent':
-            opt = tf.train.GradientDescentOptimizer(learning_rate)
-        elif self._optimizer == 'momentum':
-            if self._momentum:
-                opt = tf.train.MomentumOptimizer(learning_rate,
-                                                 self._momentum[0],
-                                                 use_nesterov = self._momentum[1])
-            else:
-                sys.exit('No momentum term for "momentum" optimizer available.')
-        else :
-            sys.exit('Choose Optimizer: "adam", ' +
-            '"gradientdescent" or "momentum"')
-
-        return opt, global_step
-    
-    def _model(self, x, W, B, keep_prob=1.0):
-        """Model for the multi layer perceptron
-
-        Arguments:
-        --------------
-        data (tf.placeholder) : 
-        A tensorflow placeholder.
-        W (list) :
-        A list with the tensorflow Variables for the weights.
-        B (list) :
-        A list with the tensorflow Variables for the biases.
-
-        Returns:
-        ---------------
-        output_node (tf.tensor)
-        Prediction of the model.
-        """
-        activation = self._get_activation_function()
-        
-        layer = tf.nn.dropout(activation(
-            tf.add(tf.matmul(x, W[0]), B[0])), 1.)
-        
-        # fancy loop for creating hidden layer
-        if len(self._hidden_layers) > 1:
-            for weight, bias in zip(W[1:-1], B[1:-1]):
-                layer = tf.nn.dropout(activation(
-                    tf.add(tf.matmul(layer, weight), bias)),keep_prob)
-
-        logit = tf.add(tf.matmul(layer, W[-1]), B[-1]) 
-
-        return logit
 
     def train(self, train_data, val_data, epochs, batch_size,
               lr, optimizer, early_stop, keep_prob, beta, gpu_usage,
@@ -271,51 +215,155 @@ class BinaryMLP(MLP):
                 epoch_end = time.time()
                 epoch_durations.append(epoch_end - epoch_start)
 
+            # get training prediction for validation, use batches to prevent
+            # allocating to much gpu memory
+            train_data.shuffle()
+            evts_per_batch = 100
+            total_batches = int(train_data.n/evts_per_batch)
+            train_pre = []
+            for batch in range(0, total_batches):
+                train_x, _, _ = train_data.next_batch(evts_per_batch)
+                pred = sess.run(yy_, {x: train_x})
+                train_pre.append(pred)
+            train_pre = np.concatenate(train_pre, axis=0)
             print(90*'-')
+            self._validation(train_pre, train_data.y[:total_batches*evts_per_batch],
+                             early_stopping['val_pre'], val_data.y)
+            self._plot_auc_dev(train_auc, val_auc, early_stopping['epoch'])
+            self._plot_loss(train_loss)
+            self.trained = True
             self._write_parameters(batch_size, keep_prob, beta,
                                    np.mean(epoch_durations), early_stopping)
             print('Model saved in: {}'.format(save_path))
             print(90*'-')
+
+
+
+    def _validation(self, t_pred, t_labels, v_pred, v_labels):
+        """Validation of the training process.
+        Makes plots of ROC curves and displays the development of AUC score.
+
+        Arguments:
+        ----------------
+        pred (np.array, shape(-1,)) :
+        Predictions for data put in the model.
+        labels (np.array, shape(-1)) :
+        Lables of the validation dataset.
+        """
+        
+        def seperate_sig_bkg(pred, labels):
+            """This functions seperates signal and background output of the
+            neural network.
+            """
+            y = np.hstack((pred, labels))
+            sig = y[y[:,1]==1, 0]
+            bg = y[y[:,1]==0, 0]
+            return sig, bg
+        
+        # plot distribution
+        t_sig, t_bg = seperate_sig_bkg(t_pred, t_labels)
+        v_sig, v_bg = seperate_sig_bkg(v_pred, v_labels)
+        bin_edges = np.linspace(0, 1, 30)
+        bin_centres = (bin_edges[:-1] + bin_edges[1:])/2
+        v_sig = np.histogram(v_sig, bins=bin_edges, normed=True)[0]
+        v_bg = np.histogram(v_bg, bins=bin_edges, normed=True)[0]
+        
+        plt.hist(t_sig, bins=bin_edges, histtype='step', lw=1.5,
+                 label='Signal (Training)', normed='True', color='#1f77b4')
+        plt.hist(t_bg, bins=bin_edges, lw=1.5, histtype='step',
+                 label='Untergrund (Training)', normed='True',
+                 color='#d62728')
+        plt.plot(bin_centres, v_sig, ls='', marker='o', markersize=3, color='#1f77b4',
+                 label='Signal (Validierung)')
+        plt.plot(bin_centres, v_bg, ls='', marker='o', markersize=3, color='#d62728',
+                 label='Untergrund (Validierung)')
+        plt.ylim([0.0, np.amax(v_sig)*1.4])
+        
+        plt.legend(loc='upper left')
+        plt.xlabel('Netzwerk Ausgabe')
+        plt.ylabel('Ereignisse (normiert)')
+        if self.variables:
+            plt.title(self.variables, loc='left')
+        plt.title(self._name, loc='center')
+        # plt.title('CMS Private Work', loc='right')
+        
+        
+        plt_name = self._name + '_dist'
+        plt.savefig(self._savedir + '/' + plt_name + '.pdf')
+        plt.savefig(self._savedir + '/' + plt_name + '.png')
+        plt.savefig(self._savedir + '/' + plt_name + '.eps')
+        plt.clf()
+
+        # roc curve
+        v_pred = np.reshape(v_pred, -1)
+        fpr, tpr, thresh = roc_curve(v_labels, v_pred)
+        auc = roc_auc_score(v_labels, v_pred)
+        #plot the roc_curve
+        plt_name = self._name +  '_roc'
+        
+        plt.plot(tpr, np.ones(len(fpr)) - fpr, color='#1f77b4',
+                 label='ROC Kurve (Integral = {:.4f})'.format(auc), lw=1.7)
+        #make the plot nicer
+        plt.xlim([0.0, 1.1])
+        plt.ylim([0.0, 1.1])
+        
+        plt.xlabel('Signaleffizienz')
+        plt.ylabel('Untergrundablehnung')
+        if self.variables:
+            plt.title(self.variables, loc='left')
+        plt.grid(True)
+        plt.title(self._name, loc='center')
+        # plt.title('CMS Private Work', loc='right')
+        plt.legend(loc='best')
+        
+        plt.savefig(self._savedir + '/' + plt_name + '.pdf')
+        plt.savefig(self._savedir + '/' + plt_name + '.png')
+        plt.savefig(self._savedir + '/' + plt_name + '.eps')
+        plt.clf()
             
-    def _l2_regularization(self, weights):
-        """Calculate and adds the squared values of the weights. This is used
-        for L2 Regularization.
+    def _plot_loss(self, train_loss):
+        """Plot loss of training and validation data.
         """
-        weights = map(lambda x: tf.nn.l2_loss(x), weights)
+        
+        plt.plot(train_loss, label= 'Trainingsfehler', color='#1f77b4', ls='',
+                 marker='^')
+        plt.xlabel('Epoche')
+        plt.ylabel('Fehlerfunktion')
+        
+        if self.variables:
+            plt.title(self.variables, loc='left')
+        plt.title(self._name, loc='center')
+        # plt.title('CMS Private Work', loc='right')
+        plt.ticklabel_format(axis='y', style='sci', scilimits=(-2,2))
+        plt.legend(loc=0)
+        
+        plt_name = self._name + '_loss'
+        plt.savefig(self._savedir + '/' + plt_name + '.pdf')
+        plt.savefig(self._savedir + '/' + plt_name + '.png')
+        plt.savefig(self._savedir + '/' + plt_name + '.eps')
+        plt.clf()
 
-        return tf.add_n(weights)
-
-
-
-
-    def _write_parameters(self, batch_size, keep_prob, beta, time,
-                          early_stop):
-        """Writes network parameters in a .txt file
+    def _plot_auc_dev(self, train_auc, val_auc, stop):
+        """Plot ROC-AUC-Score development
         """
+        plt.plot(range(1, len(train_auc)+1), train_auc, color='#1f77b4', label='Training', ls='',
+                 marker='^')
+        plt.plot(range(1, len(val_auc)+1), val_auc, color='#ff7f0e', label='Validierung', ls='',
+                 marker='^')
+        
+        # make plot nicer
+        plt.xlabel('Epoche')
+        plt.ylabel('ROC Integral')
+        plt.axvline(x=stop, color='r')
+        if self.variables:
+            plt.title(self.variables, loc='left')
+        plt.title(self._name, loc='center')
+        # plt.title('CMS Private Work', loc='right')
+        plt.legend(loc='best', frameon=False)
 
-        with open('{}/NN_Info.txt'.format(self._savedir), 'w') as f:
-            f.write('Number of input variables: {}\n'.format(self._number_of_input_neurons))
-            f.write('Number of hidden layers and neurons: {}\n'
-                    .format(self._hidden_layers))
-            f.write('Activation function: {}\n'.format(self.activation))
-            f.write('Optimizer: {}, Learning Rate: {}\n'
-                    .format(self._optimizer, self._lr))
-            if self._momentum:
-                f.write('Momentum: {}, Nesterov: {}\n'
-                        .format(self._momentum[0], self._momentum[1]))
-            if self._lr_decay:
-                f.write('Decay rate: {}, Decay steps: {}\n'
-                        .format(self._lr_decay[0], self._lr_decay[1]))
-            f.write('Number of epochs trained: {}\n'
-                    .format(early_stop['epoch']))
-            f.write('Validation ROC-AUC score: {:.4f}\n'
-                    .format(early_stop['auc']))
-            f.write('Batch Size: {}\n'.format(batch_size))
-            f.write('Dropout: {}\n'.format(keep_prob))
-            f.write('L2 Regularization: {}\n'.format(beta))
-            f.write('Mean Training Time per Epoch: {} s\n'.format(time))
-
-        with open('{}/NN_Info.txt'.format(self._savedir), 'r') as f:
-            for line in f:
-                print(line)
-        print(90*'-')
+        # save plot
+        plt_name = self._name + '_auc_dev'
+        plt.savefig(self._savedir + '/' + plt_name + '.pdf')
+        plt.savefig(self._savedir + '/' + plt_name + '.png')
+        plt.savefig(self._savedir + '/' + plt_name + '.eps')
+        plt.clf()
