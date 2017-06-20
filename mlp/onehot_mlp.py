@@ -165,8 +165,8 @@ class OneHotMLP(MLP):
             yy_ = tf.nn.softmax(self._model(x_scaled, weights, biases), name='output')
             # Cross entropy
             xentropy = tf.nn.softmax_cross_entropy_with_logits(labels=y,logits=y_)
-            l2_reg = beta * self._l2_regularization(weights)
-            loss = tf.add(tf.reduce_mean(tf.multiply(w, xentropy)), l2_reg, 
+            l2_regularization = beta * tf.add_n([tf.nn.l2_loss(w) for w in weights])
+            loss = tf.add(tf.reduce_mean(tf.multiply(w, xentropy)), l2_regularization, 
                     name='loss')
             
             # optimizer
@@ -274,15 +274,6 @@ class OneHotMLP(MLP):
             print('Model saved in: \n{}'.format(self._savedir))
 
 
-    def _l2_regularization(self, weights):
-        """Calculates and adds the squared values of the weights. This is used
-        for L2 regularization.
-        """
-        # Applies tf.nn.l2_loss to all elements of weights
-        # weights = map(lambda x: tf.nn.l2_loss(x), weights)
-        # return sum(weights)
-        losses = [tf.nn.l2_loss(w) for w in weights]
-        return tf.add_n(losses)
 
 
     def _validate_epoch(self, pred, labels, weights):

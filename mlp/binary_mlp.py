@@ -145,8 +145,8 @@ class BinaryMLP(MLP):
 
             # loss function
             xentropy = tf.nn.sigmoid_cross_entropy_with_logits(logits=y_, labels=y)
-            l2_reg = beta*self._l2_regularization(weights)
-            loss = tf.add(tf.reduce_mean(tf.multiply(w, xentropy)), l2_reg,
+            l2_regularization = beta * tf.add_n([tf.nn.l2_loss(w) for w in weights])
+            loss = tf.add(tf.reduce_mean(tf.multiply(w, xentropy)), l2_regularization,
                                   name='loss')
 
             # optimizer
@@ -236,14 +236,6 @@ class BinaryMLP(MLP):
             print('Model saved in: {}'.format(save_path))
             print(90*'-')
             
-    def _l2_regularization(self, weights):
-        """Calculate and adds the squared values of the weights. This is used
-        for L2 Regularization.
-        """
-        weights = map(lambda x: tf.nn.l2_loss(x), weights)
-
-        return tf.add_n(weights)
-
 
 
 
