@@ -30,7 +30,7 @@ class ModelAnalyser(object):
                               path_to_variablelist):
 
 
-        gpu_config = self._get_gpu_config()
+        config = self._get_session_config()
         graph = tf.Graph()
         with tf.Session(config=config, graph=graph) as sess:
              saver = tf.train.import_meta_graph(self._path_to_model + '.meta')
@@ -55,7 +55,7 @@ class ModelAnalyser(object):
 
 
 
-    def _get_gpu_config(self):
+    def _get_session_config(self):
 
 
         config = tf.ConfigProto()
@@ -68,6 +68,7 @@ class ModelAnalyser(object):
 
             if self._gpu_usage['restrict_per_process_gpu_memory_fraction']:
                 config.gpu_options.per_process_gpu_memory_fraction = self._gpu_usage['per_process_gpu_memory_fraction']
+
 
         return config
 
@@ -84,7 +85,7 @@ class ModelAnalyser(object):
         data, labels, weights = data_labels_weights.get_data_labels_weights()
 
 
-        config = self._get_gpu_config()
+        config = self._get_session_config()
         graph = tf.Graph()
         with tf.Session(config=config, graph=graph) as sess:
             saver = tf.train.import_meta_graph(self._path_to_model + '.meta')

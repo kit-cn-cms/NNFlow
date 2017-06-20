@@ -207,18 +207,8 @@ class OneHotMLP(MLP):
             saver = tf.train.Saver(weights + biases + [x_mean, x_std])
         
         
-        sess_config = tf.ConfigProto()
-        if gpu_usage['shared_machine']:
-            if gpu_usage['restrict_visible_devices']:
-                os.environ['CUDA_VISIBLE_DEVICES'] = gpu_usage['CUDA_VISIBLE_DEVICES']
-
-            if gpu_usage['allow_growth']:
-                sess_config.gpu_options.allow_growth = True
-
-            if gpu_usage['restrict_per_process_gpu_memory_fraction']:
-                sess_config.gpu_options.per_process_gpu_memory_fraction = gpu_usage['per_process_gpu_memory_fraction']
-
-        with tf.Session(config=sess_config, graph=train_graph) as sess:
+        config = self._get_session_config(gpu_usage)
+        with tf.Session(config=config, graph=train_graph) as sess:
             self.model_loc = self._savedir + '/{}.ckpt'.format(self._name)
             sess.run(init)
             train_accuracy = []
