@@ -276,35 +276,25 @@ class OneHotMLP(MLP):
 
 
 
-    def _validate_epoch(self, pred, labels, weights):
-        """Evaluates the training process.
+    def _get_accuracy(self,
+                      prediction,
+                      labels,
+                      weights
+                      ):
 
-        Arguments:
-        ----------------
-        pred (np.array):
-            Predictions made by the model for the data fed into it.
-        labels (np.array):
-            Labels of the validation dataset.
-        epoch (int):
-            Training epoch.
-        Returns:
-        ----------------
 
-        """
-
-        arr_cross = np.zeros((self._number_of_output_neurons, self._number_of_output_neurons),dtype=np.float32)
+        array_true_prediction = np.zeros((labels.shape[1], labels.shape[1]), dtype=np.float32)
         index_true = np.argmax(labels, axis=1)
         index_pred = np.argmax(pred, axis=1)
         for i in range(index_true.shape[0]):
-            arr_cross[index_true[i]][index_pred[i]] += weights[i]
-        correct = np.diagonal(arr_cross).sum()
-        mistag = arr_cross.sum() - correct
-        cat_acc = np.zeros((self._number_of_output_neurons), dtype=np.float32)
-        for i in range(self._number_of_output_neurons): 
-            cat_acc[i] = arr_cross[i][i] / (np.sum(arr_cross, axis=1)[i])
+            array_true_prediction[index_true[i]][index_pred[i]] += weights[i]
 
-        
-        return correct, mistag, arr_cross, cat_acc
+        accuracy = np.diagonal(array_true_prediction).sum() / array_true_prediction.sum()
+
+
+        return accuracy
+
+
 
 
     def _build_optimizer(self):
