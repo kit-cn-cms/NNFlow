@@ -1,7 +1,6 @@
 from __future__ import absolute_import, division, print_function
 
 import time
-import datetime
 
 import numpy as np
 
@@ -245,39 +244,3 @@ class OneHotMLP(MLP):
 
 
         return accuracy
-
-
-
-
-    def _write_parameters(self, epochs, batch_size, keep_prob, beta, time,
-            early_stop, val_acc_last):
-        """Writes network parameters in a .txt. file
-        """
-
-        with open('{}/info.txt'.format(self._savedir),'w') as f:
-            f.write('Date: {}\n'.format(datetime.datetime.now().strftime("%Y_%m_%d")))
-            f.write('Time: {}\n'.format(datetime.datetime.now().strftime("%H_%M_%S")))
-            f.write('Hidden layers: {}\n'.format(self._hidden_layers))
-            f.write('Training Epochs: {}\n'.format(epochs))
-            f.write('Batch Size: {}\n'.format(batch_size))
-            f.write('Dropout: {}\n'.format(keep_prob))
-            f.write('L2 Regularization: {}\n'.format(beta))
-            f.write('Training Time: {} sec.\n'.format(time))
-            f.write('Optimizer: {}\n'.format(self.optname))
-            f.write('Initial learning rate: {}\n'.format(self.initial_learning_rate))
-            f.write('Activation function: {}\n'.format(self.act_func))
-            if (self.optimizer_options):
-                f.write('Optimizer options: {}\n'.format(self.optimizer_options))
-            f.write('Number of epochs trained: {}\n'.format(early_stop['epoch']))
-            if (self.decay_learning_rate == 'yes'):
-                f.write('Learning rate decay rate: {}\n'.format(self.decay_rate))
-                f.write('Learning rate decay steps: {}\n'.format(self.decay_steps))
-            if (self.batch_decay == 'yes'):
-                f.write('Batch decay rate: {}\n'.format(self.batch_decay_rate))
-                f.write('Batch decay steps: {}\n'.format(self.batch_decay_steps))
-            if (self.enable_early == 'yes'):
-                f.write('Early stopping interval: {}\n'.format(self.early_stop))
-                f.write('Best validation epoch: {}\n'.format(early_stop['epoch']))
-                f.write('Best validation accuracy: {}'.format(early_stop['val_acc']))
-            else:
-                f.write('Last validation accuracy: {}'.format(val_acc_last))

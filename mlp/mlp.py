@@ -2,6 +2,9 @@ from __future__ import absolute_import, division, print_function
 
 import sys
 import os
+import datetime
+
+import numpy as np
 
 import tensorflow as tf
 
@@ -76,6 +79,55 @@ class MLP(object):
 
 
         return logit
+
+
+
+
+    def _get_network_and_training_properties_string(self,
+                                                    number_of_input_neurons,
+                                                    hidden_layers,
+                                                    activation_function_name,
+                                                    keep_probability,
+                                                    beta,
+                                                    early_stopping_interval,
+                                                    batch_size,
+                                                    optname,
+                                                    early_stopping,
+                                                    total_training_time,
+                                                    mean_training_time_per_epoch
+                                                    ):
+        
+
+        network_and_training_properties = str()
+
+        network_and_training_properties += 'Date:                         {}\n'.format(datetime.datetime.now().strftime("%Y_%m_%d"))
+        network_and_training_properties += 'Time:                         {}\n'.format(datetime.datetime.now().strftime("%H_%M_%S"))
+        network_and_training_properties += '\n'
+
+        network_and_training_properties += 'Number of input variables:    {}\n'.format(number_of_input_neurons)
+        network_and_training_properties += '\n'
+
+        network_and_training_properties += 'Hidden layers:                {}\n'.format(hidden_layers)
+        network_and_training_properties += 'Activation function:          {}\n'.format(activation_function_name)
+        network_and_training_properties += '\n'
+
+        network_and_training_properties += 'Keep probability (dropout):   {}\n'.format(keep_probability)
+        network_and_training_properties += 'L2 regularization:            {}\n'.format(beta)
+        network_and_training_properties += 'Early stopping interval:      {}\n'.format(early_stopping_interval)
+        network_and_training_properties += '\n'
+
+        network_and_training_properties += 'Batch size:                   {}\n'.format(batch_size)
+        network_and_training_properties += 'Optimizer:                    {}\n'.format(optname)
+        network_and_training_properties += '\n'
+        
+        network_and_training_properties += 'Epoch early stopping:         {}\n'.format(early_stopping['epoch'])
+        network_and_training_properties += '\n'
+
+        network_and_training_properties += 'Total training time:          {} s\n'.format(total_training_time)
+        network_and_training_properties += 'Mean training time per epoch: {} s\n'.format(mean_training_time_per_epoch)
+        #TODO: optimizer options, best accuracy/roc, lr decay + initial
+
+        return network_and_training_properties
 
 
 

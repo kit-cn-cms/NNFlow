@@ -135,38 +135,3 @@ class BinaryMLP(MLP):
                                    np.mean(epoch_durations), early_stopping)
             print('Model saved in: {}'.format(save_path))
             print(90*'-')
-            
-
-
-
-    def _write_parameters(self, batch_size, keep_prob, beta, time,
-                          early_stop):
-        """Writes network parameters in a .txt file
-        """
-
-        with open('{}/NN_Info.txt'.format(self._savedir), 'w') as f:
-            f.write('Number of input variables: {}\n'.format(self._number_of_input_neurons))
-            f.write('Number of hidden layers and neurons: {}\n'
-                    .format(self._hidden_layers))
-            f.write('Activation function: {}\n'.format(self.activation))
-            f.write('Optimizer: {}, Learning Rate: {}\n'
-                    .format(self._optimizer, self._lr))
-            if self._momentum:
-                f.write('Momentum: {}, Nesterov: {}\n'
-                        .format(self._momentum[0], self._momentum[1]))
-            if self._lr_decay:
-                f.write('Decay rate: {}, Decay steps: {}\n'
-                        .format(self._lr_decay[0], self._lr_decay[1]))
-            f.write('Number of epochs trained: {}\n'
-                    .format(early_stop['epoch']))
-            f.write('Validation ROC-AUC score: {:.4f}\n'
-                    .format(early_stop['auc']))
-            f.write('Batch Size: {}\n'.format(batch_size))
-            f.write('Dropout: {}\n'.format(keep_prob))
-            f.write('L2 Regularization: {}\n'.format(beta))
-            f.write('Mean Training Time per Epoch: {} s\n'.format(time))
-
-        with open('{}/NN_Info.txt'.format(self._savedir), 'r') as f:
-            for line in f:
-                print(line)
-        print(90*'-')
