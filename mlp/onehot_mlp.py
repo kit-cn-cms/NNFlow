@@ -1,26 +1,16 @@
-# A one-hot output vector multi layer perceptron classifier. Currently depends on
-# a custom dataset class defined in higgs_dataset.py. It is also assumed that
-# there are no errors in the shape of the dataset.
-
 from __future__ import absolute_import, division, print_function
 
-import tensorflow as tf
-import numpy as np
-import os
-import datetime
-import sys
 import time
+import datetime
+
+import numpy as np
+
+import tensorflow as tf
 
 from mlp.mlp import MLP
 
 
 class OneHotMLP(MLP):
-    """A one-hot output vector classifier using a multi layer perceptron.
-
-    Makes probability predictions on a set of features (a 1-dimensional numpy
-    vector belonging either to the 'signal' or the 'background').
-    """
-
 
     def init_old(self, n_features, h_layers, out_size, savedir, labels_text,
             branchlist, act_func='tanh'):
@@ -86,45 +76,7 @@ class OneHotMLP(MLP):
             optimizer_options=[], enable_early='no', early_stop=10, 
             decay_learning_rate='no', dlrate_options=[], batch_decay='no', 
             batch_decay_options=[], gpu_usage=None):
-        """Trains the classifier
 
-        Arguments:
-        ----------------
-        train_data (custom dataset):
-            Contains training data.
-        val_data (custom dataset):
-            Contains validation data.
-        optimizer (string):
-            Name of the optimizer to be built.
-        epochs (int): 
-            Number of iterations over the whole training set.
-        batch_size (int):
-            Number of batches fed into one optimization step.
-        learning_rate (float):
-            Optimizer learning rate.
-        keep_prob (float):
-            Probability of a neuron to 'fire'.
-        beta (float):
-            L2 regularization coefficient; default 0.0 = regularization off.
-        out_size (int):
-            Dimension of output vector, i.e. number of classes.
-        optimizer_options (list):
-            List of additional options for the optimizer; can have different
-            data types for different optimizers.
-        enably_early (string):
-            Check whether to use early stopping.
-        early_stop (int):
-            If validation accuracy does not increase over some epochs the training
-            process will be ended and only the best model will be saved.
-        decay_learning_rate (string):
-            Indicates whether to decay the learning rate.
-        dlrate_options (list):
-            Options for exponential learning rate decay.
-        batch_decay (string):
-            Indicates whether to decay the batch size.
-        batch_decay_options (list):
-            Options for exponential batch size decay.
-        """
 
         self.optname = optimizer
         self.learning_rate = learning_rate

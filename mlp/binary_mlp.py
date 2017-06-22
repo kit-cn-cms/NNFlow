@@ -1,84 +1,24 @@
-# A Binary Multilayerperceptron Classifier. Currently Depends on a custom
-# dataset class defined in data_frame.py.
 from __future__ import absolute_import, division, print_function
 
-import matplotlib.pyplot as plt
-import numpy as np
-import os
-import sys
-import tensorflow as tf
 import time
 
-from sklearn.metrics import roc_auc_score, roc_curve
+import numpy as np
+
+import tensorflow as tf
+
+from sklearn.metrics import roc_auc_score
 
 from mlp.mlp import MLP
 
+
 class BinaryMLP(MLP):
-    """A Binary Classifier using a Multilayerperceptron.
-
-    Makes probability predictions on a set of features (A 1-dimensional
-    numpy vector belonging either to the 'signal' or the 'background'.
-
-    Arguments:
-    ----------------
-    n_variables (int) :
-    The number of input features.
-    h_layers (list):
-    A list representing the hidden layers. Each entry gives the number of
-    neurons in the equivalent layer.
-    savedir (str) :
-    Path to the directory the model should be saved in.
-    activation (str) :
-    Default is 'relu'. Activation function used in the model. Also possible 
-    is 'tanh' or 'sigmoid'.
-    var_names (str) :
-    Optional. If given this string is plotted in the controll plots title.
-    Should describe the used dataset. 
-    """
-
-    
 
     def train(self, train_data, val_data, epochs, batch_size,
               lr, optimizer, early_stop, keep_prob, beta, gpu_usage,
               momentum=None, lr_decay=None):
-        """Train Neural Network with given training data set.
-
-        Arguments:
-        -------------
-        train_data (custom dataset) :
-        Contains training data.
-        val_data (custom dataset) :
-        Contains validation data.
-        savedir (string) :
-        Path to directory to save Plots.
-        epochs (int) :
-        Number of iterations over the whole trainig set.
-        batch_size (int) :
-        Number of batches fed into on optimization step.
-        lr (float) :
-        Default is 1e-3. Learning rate use by the optimizer for minizing the
-        loss. The default value should work with 'adam'. Other optimizers may
-        require other values. Tweak the learning rate for best results.
-        optimizer (str) :
-        Default is 'Adam'. Other options are 'gradientdescent' or 'momentum'.
-        momentum list(float, bool) :
-        Default is [0.1, True]. Only used if 'momentum' is used as optimizer.
-        momentum[0] is the momentum, momentum[1] indicates, wether Nesterov
-        momentum should be used.
-        lr_decay list() :
-        Default is None. Only use if 'gradientdescent' or 'momentum' is used as
-        optimizer. List requires form [decay_rate (float), decay_steps (int)].
-        List parameters are used to for exponentailly decaying learning rate.
-        Try [0.96, 100000].
-        early_stop (int):
-        Default is 20. If Validation AUC has not increase  in the given number
-        of epochs, the training is stopped. Only the model with the highest 
-        validation auc score is saved.
-        keep_prob (float):
-        Probability of a neuron to 'activate'.
-        beta (float):
-        L2 regularization coefficient. Defaul 0.0 = regularization off.
-        """
+        
+        
+        
         self._lr = lr
         self._optimizer = optimizer
         self._momentum = momentum
