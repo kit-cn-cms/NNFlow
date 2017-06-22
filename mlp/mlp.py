@@ -88,10 +88,10 @@ class MLP(object):
                                                     hidden_layers,
                                                     activation_function_name,
                                                     keep_probability,
-                                                    beta,
+                                                    l2_regularization_beta,
                                                     early_stopping_interval,
                                                     batch_size,
-                                                    optname,
+                                                    optimizer_name,
                                                     early_stopping,
                                                     total_training_time,
                                                     mean_training_time_per_epoch
@@ -112,12 +112,12 @@ class MLP(object):
         network_and_training_properties += '\n'
 
         network_and_training_properties += 'Keep probability (dropout):   {}\n'.format(keep_probability)
-        network_and_training_properties += 'L2 regularization:            {}\n'.format(beta)
+        network_and_training_properties += 'L2 regularization:            {}\n'.format(l2_regularization_beta)
         network_and_training_properties += 'Early stopping interval:      {}\n'.format(early_stopping_interval)
         network_and_training_properties += '\n'
 
         network_and_training_properties += 'Batch size:                   {}\n'.format(batch_size)
-        network_and_training_properties += 'Optimizer:                    {}\n'.format(optname)
+        network_and_training_properties += 'Optimizer:                    {}\n'.format(optimizer_name)
         network_and_training_properties += '\n'
         
         network_and_training_properties += 'Epoch early stopping:         {}\n'.format(early_stopping['epoch'])

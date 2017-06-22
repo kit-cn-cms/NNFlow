@@ -13,17 +13,23 @@ from mlp.mlp import MLP
 
 class BinaryMLP(MLP):
 
-    def train(self, train_data, val_data, epochs, batch_size,
-              lr, optimizer, early_stop, keep_prob, beta, gpu_usage,
-              momentum=None, lr_decay=None):
-        
-        
-        
-        self._lr = lr
-        self._optimizer = optimizer
-        self._momentum = momentum
-        self._lr_decay = lr_decay
-        
+    def train(self,
+              save_path,
+              number_of_input_neurons,
+              hidden_layers,
+              activation_function_name,
+              keep_probability,
+              l2_regularization_beta,
+              early_stopping_intervall,
+              train_data,
+              val_data,
+              batch_size,
+              lr,
+              optimizer_name,
+              gpu_usage
+              ):
+ 
+
         train_graph = tf.Graph()
         with train_graph.as_default():
             x = tf.placeholder(tf.float32, [None, self._n_variables], name='input')
@@ -38,8 +44,7 @@ class BinaryMLP(MLP):
 
             weights, biases = self._get_parameters()
 
-            # prediction, y_ is used for training, yy_ used for makin new
-            # predictions
+            # prediction, y_ is used for training, yy_ used for makin new predictions
             y_ = self._model(x_scaled, weights, biases, keep_prob)
             yy_ = tf.nn.sigmoid(self._model(x_scaled, weights, biases), name='output')
 
