@@ -33,7 +33,7 @@ beta = 1e-8
 enable_early='yes'
 early_stop = 15
 decay_learning_rate = 'no'
-lrate_decay_options = []
+lrate_decay_options = [0.97, 300]
 batch_decay = 'no'
 batch_decay_options = []
 

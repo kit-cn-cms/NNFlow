@@ -10,7 +10,7 @@ class MLP(object):
 
     
     def _get_activation_function(self,
-                                 name_activation_function
+                                 activation_function_name
                                  ):
 
 
@@ -21,10 +21,10 @@ class MLP(object):
                                 'softplus': tf.nn.softplus
                                 }
 
-        if name_activation_function not in activation_functions.keys():
+        if activation_function_name not in activation_functions.keys():
             sys.exit('Choose activation function from ' + str.join(', ', activation_functions.keys()))
 
-        return activation_functions[name_activation_function]
+        return activation_functions[activation_function_name]
 
 
 
@@ -59,12 +59,12 @@ class MLP(object):
                    data,
                    weights,
                    biases,
-                   name_activation_function,
+                   activation_function_name,
                    keep_probability
                    ):
 
 
-        activation_function = self._get_activation_function(name_activation_function)
+        activation_function = self._get_activation_function(activation_function_name)
 
         layers = list()
         layers.append( activation_function(tf.add(tf.matmul(data, weights[0]), biases[0])) )
@@ -76,6 +76,67 @@ class MLP(object):
 
 
         return logit
+
+
+
+
+    def _get_optimizer(self,
+                       optimizer_name,
+                       optimizer_options,
+                       learning_rate,
+                       decay_learning_rate,
+                       decay_learning_rate_options,
+                       ):
+
+
+        global_step = tf.Variable(0, trainable=False)
+
+        if decay_learning_rate:
+            initial_learning_rate = learning_rate
+
+            decay_rate  = decay_learning_rate_options['decay_rate']
+            decay_steps = decay_learning_rate_options['decay_steps']
+
+            learning_rate = tf.train.exponential_decay(initial_learning_rate, global_step, decay_rate=decay_rate, decay_steps=decay_steps)
+
+
+        if optimizer_name == "Adam":
+            beta1   = optimizer_options['beta1']
+            beta2   = optimizer_options['beta2']
+            epsilon = optimizer_options['epsilon']
+
+            optimizer = tf.train.AdamOptimizer(learning_rate, beta1=beta1, beta2=beta2, epsilon=epsilon)
+
+
+        elif optimizer_name == 'Adadelta':
+            rho     = optimizer_options['rho']
+            epsilon = optimizer_options['epsilon']
+
+            optimizer = tf.train.AdadeltaOptimizer(learning_rate, rho=rho, epsilon=epsilon)
+
+
+        elif optimizer_name == 'Adagrad':
+            initial_accumulator_value = optimizer_options['initial_accumulator_value']
+
+            optimizer = tf.train.AdagradOptimizer(learning_rate, initial_accumulator_value=initial_accumulator_value)
+
+
+        elif optimizer_name == 'GradientDescent':
+            optimizer = tf.train.GradientDescentOptimizer(learning_rate)
+
+
+        elif optimizer_name == 'Momentum':
+            momentum     = optimizer_options['momentum']
+            use_nesterov = optimizer_options['use_nesterov']
+
+            optimizer = tf.train.MomentumOptimizer(learning_rate, momentum=momentum, use_nesterov=use_nesterov)
+
+
+        else:
+            sys.exit('Optimizer named "{}" is not implemented.'.format(optimizer_name))
+
+
+        return optimizer, global_step
 
 
 

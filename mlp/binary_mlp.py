@@ -36,46 +36,6 @@ class BinaryMLP(MLP):
     Should describe the used dataset. 
     """
 
-   
-            
-    def _get_optimizer(self):
-        """Get Opitimizer to be used for minimizing the loss function.
-
-        Returns:
-        ------------
-        opt (tf.train.Optimizer) :
-        Chosen optimizer.
-        global_step (tf.Variable) :
-        Variable that counts the minimization steps. Not trainable, only used 
-        for internal bookkeeping.
-        """
-        
-        global_step = tf.Variable(0, trainable=False)
-        if self._lr_decay:
-            learning_rate = (tf.train
-                             .exponential_decay(self._lr, global_step,
-                                                decay_steps = self._lr_decay[1],
-                                                 decay_rate = self._lr_decay[0])
-                             )
-        else:
-            learning_rate = self._lr
-
-        if self._optimizer == 'adam':
-            opt = tf.train.AdamOptimizer(learning_rate)
-        elif self._optimizer =='gradientdescent':
-            opt = tf.train.GradientDescentOptimizer(learning_rate)
-        elif self._optimizer == 'momentum':
-            if self._momentum:
-                opt = tf.train.MomentumOptimizer(learning_rate,
-                                                 self._momentum[0],
-                                                 use_nesterov = self._momentum[1])
-            else:
-                sys.exit('No momentum term for "momentum" optimizer available.')
-        else :
-            sys.exit('Choose Optimizer: "adam", ' +
-            '"gradientdescent" or "momentum"')
-
-        return opt, global_step
     
 
     def train(self, train_data, val_data, epochs, batch_size,
