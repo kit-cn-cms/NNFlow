@@ -44,23 +44,20 @@ class BinaryMLP(MLP):
             event_labels  = tf.placeholder(tf.float32, [None])
             event_weights = tf.placeholder(tf.float32, [None])
 
-            x_mean   = tf.Variable(np.mean(train_data.x, axis=0).astype(np.float32), trainable=False,  name='x_mean')
-            x_std    = tf.Variable(np.std(train_data.x, axis=0).astype(np.float32), trainable=False,  name='x_std')
-            x_scaled = tf.div(tf.subtract(x, x_mean), x_std, name='x_scaled')
+            feature_scaling_mean = tf.Variable(np.mean(train_data.x, axis=0).astype(np.float32), trainable=False,  name='feature_scaling_mean')
+            feature_scaling_std  = tf.Variable(np.std(train_data.x, axis=0).astype(np.float32), trainable=False,  name='feature_scaling_std')
+            input_data_scaled    = tf.div(tf.subtract(input_data, feature_scaling_mean), feature_scaling_std)
 
             weights, biases = self._get_initial_weights_biases(number_of_input_neurons, number_of_output_neurons, hidden_layers)
 
-            # prediction, y_ is used for training, yy_ used for makin new predictions
             logits      =               tf.reshape(self._get_model(x_scaled, weights, biases, activation_function_name, keep_probability=keep_probability), [-1])
             predictions = tf.nn.sigmoid(tf.reshape(self._get_model(x_scaled, weights, biases, activation_function_name, keep_probability=1               ), [-1]), name='output')
 
-            # loss function
             cross_entropy     = tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=event_labels)
             l2_regularization = beta * tf.add_n([tf.nn.l2_loss(w) for w in weights])
             loss              = tf.add(tf.reduce_mean(tf.multiply(w, cross_entropy)), l2_regularization)
 
-            # optimizer
-            optimizer, global_step = self._get_optimizer()
+            optimizer, global_step = self._get_optimizer(optimizer_options, learning_rate_options)
             train_step = optimizer.minimize(loss, global_step=global_step)
 
             saver = tf.train.Saver(weights + biases + [x_mean, x_std])
@@ -69,8 +66,6 @@ class BinaryMLP(MLP):
         config = self._get_session_config(gpu_usage)
         with tf.Session(config=config, graph=train_graph) as sess:
             sess.run(tf.global_variables_initializer())
-
-            self.model_loc = self._savedir + '/{}.ckpt'.format(self._name)
 
             train_auc = list()
             val_auc = list()
@@ -115,12 +110,8 @@ class BinaryMLP(MLP):
                     early_stopping['epoch'] = epoch
                     early_stopping['val_pre'] = val_pre
                 elif (epoch - early_stopping['epoch']) >= early_stop:
-                    print(125*'-')
-                    print('Validation AUC has not increased for {} epochs. ' \
-                          'Achieved best validation auc score of {:.4f} ' \
-                          'in epoch {}'.format(early_stop, 
-                              early_stopping['auc'],
-                              early_stopping['epoch']))
+                    print(100*'-')
+                    print('Validation AUC has not increased for {} epochs. Achieved best validation auc score of {:.4f} in epoch {}'.format(early_stop, early_stopping['auc'], early_stopping['epoch']))
                     break
                 
                 
