@@ -1,73 +1,16 @@
 from __future__ import absolute_import, division, print_function
 
+import os
 import time
+import itertools
 
 import numpy as np
-
 import tensorflow as tf
 
 from mlp.mlp import MLP
 
 
 class OneHotMLP(MLP):
-
-    def init_old(self, n_features, h_layers, out_size, savedir, labels_text,
-            branchlist, act_func='tanh'):
-        """Initializes the Classifier.
-
-        Arguments:
-        ----------------
-        n_features (int):
-            The number of input features.
-        h_layers (list):
-            A list representing the hidden layers. Each entry gives the number
-            of neurons in the equivalent layer, [30,40,20] would describe a
-            network of three hidden layers, containing 30, 40 and 20 neurons.
-        out_size (int):
-            The size of the one-hot output vector.
-
-        Attributes:
-        ----------------
-        savedir (str):
-            Path to the directory everything will be saved to.
-        labels_text (list):
-            List of strings containing the labels for the plots.
-        branchlist (list):
-            List of strings containing the branches used.
-        sig_weight (float):
-            Weight of ttH events.
-        bg_weight (float):
-            Weight of ttbar events.
-        act_func (string):
-            Activation function.
-        """
-
-        self.labels_text = labels_text
-        self.branchlist = branchlist
-
-
-        # create directory if necessary
-        if not os.path.isdir(self.savedir):
-            os.makedirs(self.savedir)
-        
-        self.cross_savedir = self.savedir + '/cross_checks'
-        if not os.path.isdir(self.cross_savedir):
-            os.makedirs(self.cross_savedir)
-        
-        self.hists_savedir_train = self.cross_savedir + '/hists_train/'
-        if not os.path.isdir(self.hists_savedir_train):
-            os.makedirs(self.hists_savedir_train)
-        self.hists_savedir_val = self.cross_savedir + '/hists_val/'
-        if not os.path.isdir(self.hists_savedir_val):
-            os.makedirs(self.hists_savedir_val)
-        self.weights_savedir = self.cross_savedir + '/weights/'
-        if not os.path.isdir(self.weights_savedir):
-            os.makedirs(self.weights_savedir)
-        self.mistag_savedir = self.cross_savedir + '/mistag/'
-        if not os.path.isdir(self.mistag_savedir):
-            os.makedirs(self.mistag_savedir)
-
-
 
 
     def train(self, train_data, val_data, optimizer='Adam', epochs = 10, batch_size = 100,
