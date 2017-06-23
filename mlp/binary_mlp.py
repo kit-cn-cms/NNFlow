@@ -61,7 +61,7 @@ class BinaryMLP(MLP):
             loss              = tf.add(tf.reduce_mean(tf.multiply(event_weights, cross_entropy)), l2_regularization)
 
             optimizer, global_step = self._get_optimizer(optimizer_options)
-            train_step = optimizer.minimize(loss, global_step=global_step)
+            train_step             = optimizer.minimize(loss, global_step=global_step)
 
             saver = tf.train.Saver(weights + biases + [feature_scaling_mean, feature_scaling_std])
 
@@ -74,7 +74,7 @@ class BinaryMLP(MLP):
             training_roc_auc   = list()
             validation_roc_auc = list()
             training_loss      = list()
-            early_stopping     = {'auc': 0.0, 'epoch': 0}
+            early_stopping     = {'auc': -1.0, 'epoch': 0}
             epoch_durations    = list()
 
 
@@ -82,7 +82,7 @@ class BinaryMLP(MLP):
             print('{:^25} | {:^25} | {:^25} |{:^25}'.format('Epoch', 'Training data: loss', 'Training data: ROC AUC', 'Validation data: ROC AUC'))
             print(100*'-')
 
-            for epoch in itertools.count(start=0, step=1)
+            for epoch in itertools.count(start=1, step=1)
                 epoch_start = time.time()
                 total_batches = int(train_data.n/batch_size)
                 epoch_loss = 0

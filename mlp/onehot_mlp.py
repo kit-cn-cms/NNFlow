@@ -62,7 +62,7 @@ class OneHotMLP(MLP):
             loss              = tf.add(tf.reduce_mean(tf.multiply(event_weights, cross_entropy)), l2_regularization)
             
             optimizer, global_step = self._get_optimizer(optimizer_options)
-            train_step = optimizer.minimize(loss, global_step=global_step)
+            train_step             = optimizer.minimize(loss, global_step=global_step)
 
             saver = tf.train.Saver(weights + biases + [feature_scaling_mean, feature_scaling_std])
         
@@ -79,19 +79,16 @@ class OneHotMLP(MLP):
             val_cats = []
             early_stopping = {'val_acc': -1.0, 'epoch': 0}
 
-            print(110*'-')
-            print('Train model: {}'.format(self.model_loc))
-            print(110*'_')
-            print('{:^25} | {:^25} | {:^25} | {:^25}'.format('Epoch', 'Training Loss', 
-                'Training Accuracy', 'Validation Accuracy'))
-            print(110*'-')
+            print(100*'-')
+            print('{:^25} | {:^25} | {:^25} | {:^25}'.format('Epoch', 'Training Loss', 'Training Accuracy', 'Validation Accuracy'))
+            print(100*'-')
 
             cross_train_list = []
             cross_val_list = []
             weights_list = []
             
             train_start = time.time()
-            for epoch in range(epochs):
+            for epoch in itertools.count(start=1, step=1):
                 if (self.batch_decay == 'yes'):
                     batch_size = int(batch_size * (self.batch_decay_rate ** (1.0 /
                         self.batch_decay_steps)))
@@ -120,8 +117,7 @@ class OneHotMLP(MLP):
                 val_accuracy.append(val_corr / (val_corr + val_mistag))
                 
                 
-                print('{:^25} | {:^25.4e} | {:^25.4f} | {:^25.4f}'.format(epoch + 1, 
-                    train_losses[-1], train_accuracy[-1], val_accuracy[-1]))
+                print('{:^25} | {:^25.4e} | {:^25.4f} | {:^25.4f}'.format(epoch, train_losses[-1], train_accuracy[-1], val_accuracy[-1]))
                 saver.save(sess, self.model_loc)
                 cross_train_list.append(train_cross)
                 cross_val_list.append(val_cross)
@@ -129,37 +125,28 @@ class OneHotMLP(MLP):
                 val_cats.append(val_cat)
 
 
-                if (self.enable_early=='yes'):
-                    # Check for early stopping.
-                    if (val_accuracy[-1] > early_stopping['val_acc']):
-                        save_path = saver.save(sess, self.model_loc)
-                        best_train_pred = train_pre
-                        best_train_true = train_data.y
-                        best_val_pred = val_pre
-                        best_val_true = val_data.y
-                        early_stopping['val_acc'] = val_accuracy[-1]
-                        early_stopping['epoch'] = epoch
-                    elif ((epoch - early_stopping['epoch']) >= self.early_stop):
-                        print(125*'-')
-                        print('Early stopping invoked. '\
-                                'Achieved best validation score of '\
-                                '{:.4f} in epoch {}.'.format(
-                                    early_stopping['val_acc'],
-                                    early_stopping['epoch']+1))
-                        best_epoch = early_stopping['epoch']
-                        break
-                else:
+                # Check for early stopping.
+                if (val_accuracy[-1] > early_stopping['val_acc']):
                     save_path = saver.save(sess, self.model_loc)
+                    best_train_pred = train_pre
+                    best_train_true = train_data.y
+                    best_val_pred = val_pre
+                    best_val_true = val_data.y
+                    early_stopping['val_acc'] = val_accuracy[-1]
+                    early_stopping['epoch'] = epoch
+                elif ((epoch - early_stopping['epoch']) >= self.early_stop):
+                    print(100*'-')
+                    print('Early stopping invoked. Achieved best validation score of {:.4f} in epoch {}.'.format(early_stopping['val_acc'], early_stopping['epoch']))
+                    break
 
 
-            print(110*'-')
+            print(100*'-')
             train_end=time.time()
             dtime = train_end - train_start
 
             self._write_parameters(epochs, batch_size, keep_prob, beta,
                     dtime, early_stopping, val_accuracy[-1])
 
-            print('Model saved in: \n{}'.format(self._savedir))
 
 
 
