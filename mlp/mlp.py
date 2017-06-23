@@ -100,7 +100,7 @@ class MLP(object):
 
         network_and_training_properties = str()
 
-        network_and_training_properties += 'Date:                         {}\n'.format(datetime.datetime.now().strftime("%Y_%m_%d"))
+        network_and_training_properties += 'Date:                         {}\n'.format(datetime.datetime.now().strftime("%Y_%m_%d")) #TODO: format of date/time
         network_and_training_properties += 'Time:                         {}\n'.format(datetime.datetime.now().strftime("%H_%M_%S"))
         network_and_training_properties += '\n'
 
@@ -133,26 +133,26 @@ class MLP(object):
 
 
     def _get_optimizer(self,
-                       optimizer_name,
                        optimizer_options,
-                       learning_rate,
-                       decay_learning_rate,
-                       decay_learning_rate_options,
+                       learning_rate_options,
                        ):
 
 
         global_step = tf.Variable(0, trainable=False)
 
-        if decay_learning_rate:
-            initial_learning_rate = learning_rate
+        if learning_rate_options['decay_learning_rate']:
+            initial_learning_rate = learning_rate_options['initial_learning_rate']
 
-            decay_rate  = decay_learning_rate_options['decay_rate']
-            decay_steps = decay_learning_rate_options['decay_steps']
+            decay_rate  = learning_rate_options['decay_rate']
+            decay_steps = learning_rate_options['decay_steps']
 
             learning_rate = tf.train.exponential_decay(initial_learning_rate, global_step, decay_rate=decay_rate, decay_steps=decay_steps)
 
+        else:
+            learning_rate = learning_rate_options['initial_learning_rate']
 
-        if optimizer_name == "Adam":
+
+        if optimizer_options['name'] == "Adam":
             beta1   = optimizer_options['beta1']
             beta2   = optimizer_options['beta2']
             epsilon = optimizer_options['epsilon']
@@ -160,24 +160,24 @@ class MLP(object):
             optimizer = tf.train.AdamOptimizer(learning_rate, beta1=beta1, beta2=beta2, epsilon=epsilon)
 
 
-        elif optimizer_name == 'Adadelta':
+        elif optimizer_options['name'] == 'Adadelta':
             rho     = optimizer_options['rho']
             epsilon = optimizer_options['epsilon']
 
             optimizer = tf.train.AdadeltaOptimizer(learning_rate, rho=rho, epsilon=epsilon)
 
 
-        elif optimizer_name == 'Adagrad':
+        elif optimizer_options['name'] == 'Adagrad':
             initial_accumulator_value = optimizer_options['initial_accumulator_value']
 
             optimizer = tf.train.AdagradOptimizer(learning_rate, initial_accumulator_value=initial_accumulator_value)
 
 
-        elif optimizer_name == 'GradientDescent':
+        elif optimizer_options['name'] == 'GradientDescent':
             optimizer = tf.train.GradientDescentOptimizer(learning_rate)
 
 
-        elif optimizer_name == 'Momentum':
+        elif optimizer_options['name'] == 'Momentum':
             momentum     = optimizer_options['momentum']
             use_nesterov = optimizer_options['use_nesterov']
 
