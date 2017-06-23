@@ -63,7 +63,7 @@ class MLP(object):
                    weights,
                    biases,
                    activation_function_name,
-                   keep_probability
+                   dropout_keep_probability
                    ):
 
 
@@ -73,7 +73,7 @@ class MLP(object):
         layers.append( activation_function(tf.add(tf.matmul(data, weights[0]), biases[0])) )
 
         for i in range(1, len(weights-1):
-            layers.append( tf.nn.dropout(activation_function(tf.add(tf.matmul(layers[i-1], weights[i]), biases[i])), keep_probability) )
+            layers.append( tf.nn.dropout(activation_function(tf.add(tf.matmul(layers[i-1], weights[i]), biases[i])), dropout_keep_probability) )
 
         logit = tf.add(tf.matmul(layers[-1], weights[-1]), biases[-1])
 
@@ -87,7 +87,7 @@ class MLP(object):
                                                     number_of_input_neurons,
                                                     hidden_layers,
                                                     activation_function_name,
-                                                    keep_probability,
+                                                    dropout_keep_probability,
                                                     l2_regularization_beta,
                                                     early_stopping_interval,
                                                     batch_size,
@@ -111,7 +111,7 @@ class MLP(object):
         network_and_training_properties += 'Activation function:          {}\n'.format(activation_function_name)
         network_and_training_properties += '\n'
 
-        network_and_training_properties += 'Keep probability (dropout):   {}\n'.format(keep_probability)
+        network_and_training_properties += 'Keep probability (dropout):   {}\n'.format(dropout_keep_probability)
         network_and_training_properties += 'L2 regularization:            {}\n'.format(l2_regularization_beta)
         network_and_training_properties += 'Early stopping interval:      {}\n'.format(early_stopping_interval)
         network_and_training_properties += '\n'

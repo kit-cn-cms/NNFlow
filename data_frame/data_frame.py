@@ -16,12 +16,12 @@ class DataFrame(object):
 
 
         self.data                    = array[:, number_of_output_neurons:-1]
-        self.weights                 = array[:, -1]
+        self.event_weights           = array[:, -1]
 
         if number_of_output_neurons == 1:
-            self.labels = array[:, 0]
+            self.event_labels = array[:, 0]
         else:
-            self.labels = array[:, :number_of_output_neurons]
+            self.event_labels = array[:, :number_of_output_neurons]
 
 
         self.number_of_events        = self.data.shape[0]
@@ -36,7 +36,7 @@ class DataFrame(object):
     def get_data_labels_weights(self):
 
 
-        return self.data, self.labels, self.weights
+        return self.data, self.event_labels, self.event_weights
 
 
 
