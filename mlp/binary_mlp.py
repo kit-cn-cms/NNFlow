@@ -1,6 +1,7 @@
 from __future__ import absolute_import, division, print_function
 
 import os
+import sys
 import time
 import itertools
 
@@ -28,6 +29,13 @@ class BinaryMLP(MLP):
               optimizer_options,
               gpu_usage
               ):
+
+
+        print('\n' + 'TRAINING BINARY MLP' + '\n')
+
+
+        if not os.path.isdir(save_path):
+            sys.exit("Directory '" + save_path + "' doesn't exist." + "\n")
 
 
         path_to_model_file = os.path.join(save_path, '/{}.ckpt'.format(model_name))
@@ -60,8 +68,6 @@ class BinaryMLP(MLP):
 
         config = self._get_session_config(gpu_usage)
         with tf.Session(config=config, graph=graph) as sess:
-            print('\n' + 'TRAINING BINARY MLP' + '\n')
-
             sess.run(tf.global_variables_initializer())
 
 
