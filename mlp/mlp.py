@@ -91,7 +91,7 @@ class MLP(object):
                                                     l2_regularization_beta,
                                                     early_stopping_interval,
                                                     batch_size,
-                                                    optimizer_name,
+                                                    optimizer_options,
                                                     early_stopping,
                                                     total_training_time,
                                                     mean_training_time_per_epoch
@@ -100,32 +100,49 @@ class MLP(object):
 
         network_and_training_properties = str()
 
-        network_and_training_properties += 'Date:                         {}\n'.format(datetime.datetime.now().strftime("%Y_%m_%d")) #TODO: format of date/time
-        network_and_training_properties += 'Time:                         {}\n'.format(datetime.datetime.now().strftime("%H_%M_%S"))
+
+        network_and_training_properties += 'Date:                         {}\n'.format(datetime.datetime.now().strftime("%Y-%m-%d"))
+        network_and_training_properties += 'Time:                         {}\n'.format(datetime.datetime.now().strftime("%H:%M:%S"))
         network_and_training_properties += '\n'
+
 
         network_and_training_properties += 'Number of input variables:    {}\n'.format(number_of_input_neurons)
         network_and_training_properties += '\n'
 
+
         network_and_training_properties += 'Hidden layers:                {}\n'.format(hidden_layers)
         network_and_training_properties += 'Activation function:          {}\n'.format(activation_function_name)
         network_and_training_properties += '\n'
+
 
         network_and_training_properties += 'Keep probability (dropout):   {}\n'.format(dropout_keep_probability)
         network_and_training_properties += 'L2 regularization:            {}\n'.format(l2_regularization_beta)
         network_and_training_properties += 'Early stopping interval:      {}\n'.format(early_stopping_interval)
         network_and_training_properties += '\n'
 
+
         network_and_training_properties += 'Batch size:                   {}\n'.format(batch_size)
-        network_and_training_properties += 'Optimizer:                    {}\n'.format(optimizer_name)
+        network_and_training_properties += 'Optimizer:                    {}\n'.format(optimizer_options['name'])
+
+        optimizer_options_keys     = [key for key in optimizer_options.keys() if 'learning_rate' not in key and key!='name'].sort()
+        learning_rate_options_keys = [key for key in optimizer_options.keys() if 'learning_rate' in key].sort()
+
+        for key in optimizer_options_keys:
+            network_and_training_properties += '{:30}{}\n'.format(key, optimizer_options[key])
+
+        for key in learning_rate_options_keys:
+            network_and_training_properties += '{:30}{}\n'.format(key, optimizer_options[key])
+
         network_and_training_properties += '\n'
-        
+
+
         network_and_training_properties += 'Epoch early stopping:         {}\n'.format(early_stopping['epoch'])
         network_and_training_properties += '\n'
 
+
         network_and_training_properties += 'Total training time:          {} s\n'.format(total_training_time)
         network_and_training_properties += 'Mean training time per epoch: {} s\n'.format(mean_training_time_per_epoch)
-        #TODO: optimizer options, best accuracy/roc, lr decay + initial
+        #TODO: best accuracy/roc
 
         return network_and_training_properties
 
@@ -134,22 +151,21 @@ class MLP(object):
 
     def _get_optimizer(self,
                        optimizer_options,
-                       learning_rate_options,
                        ):
 
 
         global_step = tf.Variable(0, trainable=False)
 
-        if learning_rate_options['decay_learning_rate']:
-            initial_learning_rate = learning_rate_options['initial_learning_rate']
+        if optimizer_options['learning_rate_decay']:
+            initial_learning_rate = optimizer_options['learning_rate_decay_initial_value']
 
-            decay_rate  = learning_rate_options['decay_rate']
-            decay_steps = learning_rate_options['decay_steps']
+            decay_rate  = optimizer_options['learning_rate_decay_rate']
+            decay_steps = optimizer_options['learning_rate_decay_steps']
 
             learning_rate = tf.train.exponential_decay(initial_learning_rate, global_step, decay_rate=decay_rate, decay_steps=decay_steps)
 
         else:
-            learning_rate = learning_rate_options['initial_learning_rate']
+            learning_rate = learning_rate_options['learning_rate']
 
 
         if optimizer_options['name'] == "Adam":

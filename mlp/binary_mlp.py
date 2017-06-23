@@ -26,7 +26,6 @@ class BinaryMLP(MLP):
               validation_data,
               batch_size,
               optimizer_options,
-              learning_rate_options,
               gpu_usage
               ):
 
@@ -53,7 +52,7 @@ class BinaryMLP(MLP):
             l2_regularization = beta * tf.add_n([tf.nn.l2_loss(w) for w in weights])
             loss              = tf.add(tf.reduce_mean(tf.multiply(w, cross_entropy)), l2_regularization)
 
-            optimizer, global_step = self._get_optimizer(optimizer_options, learning_rate_options)
+            optimizer, global_step = self._get_optimizer(optimizer_options)
             train_step = optimizer.minimize(loss, global_step=global_step)
 
             saver = tf.train.Saver(weights + biases + [feature_scaling_mean, feature_scaling_std])
