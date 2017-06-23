@@ -53,12 +53,12 @@ class BinaryMLP(MLP):
 
             weights, biases = self._get_initial_weights_biases(number_of_input_neurons, number_of_output_neurons, hidden_layers)
 
-            logits      =               tf.reshape(self._get_model(x_scaled, weights, biases, activation_function_name, dropout_keep_probability=dropout_keep_probability), [-1])
-            predictions = tf.nn.sigmoid(tf.reshape(self._get_model(x_scaled, weights, biases, activation_function_name, dropout_keep_probability=1                       ), [-1]), name='output')
+            logits      =               tf.reshape(self._get_model(input_data_scaled, weights, biases, activation_function_name, dropout_keep_probability=dropout_keep_probability), [-1])
+            predictions = tf.nn.sigmoid(tf.reshape(self._get_model(input_data_scaled, weights, biases, activation_function_name, dropout_keep_probability=1), [-1]), name='output')
 
             cross_entropy     = tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=event_labels)
             l2_regularization = beta * tf.add_n([tf.nn.l2_loss(w) for w in weights])
-            loss              = tf.add(tf.reduce_mean(tf.multiply(w, cross_entropy)), l2_regularization)
+            loss              = tf.add(tf.reduce_mean(tf.multiply(event_weights, cross_entropy)), l2_regularization)
 
             optimizer, global_step = self._get_optimizer(optimizer_options)
             train_step = optimizer.minimize(loss, global_step=global_step)

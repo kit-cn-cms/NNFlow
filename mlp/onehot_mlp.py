@@ -1,6 +1,7 @@
 from __future__ import absolute_import, division, print_function
 
 import os
+import sys
 import time
 import itertools
 
@@ -13,69 +14,62 @@ from mlp.mlp import MLP
 class OneHotMLP(MLP):
 
 
-    def train(self, train_data, val_data, optimizer='Adam', epochs = 10, batch_size = 100,
-            learning_rate = 1e-3, keep_prob = 0.9, beta = 0.0, out_size=6, 
-            optimizer_options=[], enable_early='no', early_stop=10, 
-            decay_learning_rate='no', dlrate_options=[], batch_decay='no', 
-            batch_decay_options=[], gpu_usage=None):
+    def train(self,
+              save_path,
+              model_name,
+              number_of_input_neurons,
+              number_of_output_neurons,
+              hidden_layers,
+              activation_function_name,
+              dropout_keep_probability,
+              l2_regularization_beta,
+              early_stopping_intervall,
+              training_data,
+              validation_data,
+              batch_size,
+              optimizer_options,
+              gpu_usage
+              ):
 
 
-        self.optname = optimizer
-        self.learning_rate = learning_rate
-        self.optimizer_options = optimizer_options
-        self.enable_early = enable_early
-        self.early_stop = early_stop
-        self.decay_learning_rate = decay_learning_rate
-        self.decay_learning_rate_options = dlrate_options
-        self.batch_decay = batch_decay
-        self.batch_decay_options = batch_decay_options
+        print('\n' + 'TRAINING ONEHOT MLP' + '\n')
 
-        if (self.batch_decay == 'yes'):
-            try:
-                self.batch_decay_rate = batch_decay_options[0]
-            except IndexError:
-                self.batch_decay_rate = 0.95
-            try:
-                self.batch_decay_steps = batch_decay_options[1]
-            except IndexError:
-                # Batch size decreases over 10 epochs
-                self.batch_decay_steps = 10
 
-        train_graph = tf.Graph()
-        with train_graph.as_default():
-            x = tf.placeholder(tf.float32, [None, self._number_of_input_neurons], name='input')
-            y = tf.placeholder(tf.float32, [None, out_size])
-            w = tf.placeholder(tf.float32, [None])
+        if not os.path.isdir(save_path):
+            sys.exit("Directory '" + save_path + "' doesn't exist." + "\n")
 
-            x_mean = tf.Variable(np.mean(train_data.x, axis=0).astype(np.float32), trainable=False,  name='x_mean')
-            x_std = tf.Variable(np.std(train_data.x, axis=0).astype(np.float32), trainable=False,  name='x_std')
-            x_scaled = tf.div(tf.subtract(x, x_mean), x_std, name='x_scaled')
 
-            weights, biases = self._get_parameters()
+        path_to_model_file = os.path.join(save_path, '/{}.ckpt'.format(model_name))
 
-            # prediction
-            y_ = self._model(x_scaled, weights, biases, keep_prob)
-            # prediction for validation
-            yy_ = tf.nn.softmax(self._model(x_scaled, weights, biases), name='output')
-            # Cross entropy
-            xentropy = tf.nn.softmax_cross_entropy_with_logits(labels=y,logits=y_)
-            l2_regularization = beta * tf.add_n([tf.nn.l2_loss(w) for w in weights])
-            loss = tf.add(tf.reduce_mean(tf.multiply(w, xentropy)), l2_regularization, 
-                    name='loss')
+
+        graph = tf.Graph()
+        with graph.as_default():
+            input_data    = tf.placeholder(tf.float32, [None, number_of_input_neurons], name='input')
+            event_labels  = tf.placeholder(tf.float32, [None, number_of_output_neurons])
+            event_weights = tf.placeholder(tf.float32, [None])
+
+            feature_scaling_mean = tf.Variable(np.mean(train_data.x, axis=0).astype(np.float32), trainable=False,  name='feature_scaling_mean')
+            feature_scaling_std  = tf.Variable(np.std(train_data.x, axis=0).astype(np.float32), trainable=False,  name='feature_scaling_std')
+            input_data_scaled    = tf.div(tf.subtract(input_data, feature_scaling_mean), feature_scaling_std)
+
+            weights, biases = self._get_initial_weights_biases(number_of_input_neurons, number_of_output_neurons, hidden_layers)
+
+            logits      =               self._get_model(input_data_scaled, weights, biases, activation_function_name, dropout_keep_probability=dropout_keep_probability)
+            predictions = tf.nn.softmax(self._get_model(input_data_scaled, weights, biases, activation_function_name, dropout_keep_probability=1), name='output')
             
-            # optimizer
-            optimizer, global_step = self._build_optimizer()
+            cross_entropy     = tf.nn.softmax_cross_entropy_with_logits(labels=event_labels, logits=logits)
+            l2_regularization = beta * tf.add_n([tf.nn.l2_loss(w) for w in weights])
+            loss              = tf.add(tf.reduce_mean(tf.multiply(event_weights, cross_entropy)), l2_regularization)
+            
+            optimizer, global_step = self._get_optimizer(optimizer_options)
             train_step = optimizer.minimize(loss, global_step=global_step)
 
-            # initialize all variables
-            init = tf.global_variables_initializer()
-            saver = tf.train.Saver(weights + biases + [x_mean, x_std])
+            saver = tf.train.Saver(weights + biases + [feature_scaling_mean, feature_scaling_std])
         
         
         config = self._get_session_config(gpu_usage)
-        with tf.Session(config=config, graph=train_graph) as sess:
-            self.model_loc = self._savedir + '/{}.ckpt'.format(self._name)
-            sess.run(init)
+        with tf.Session(config=config, graph=graph) as sess:
+            sess.run(tf.global_variables_initializer())
             train_accuracy = []
             val_accuracy = []
             train_auc = []
