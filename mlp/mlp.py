@@ -19,6 +19,7 @@ class MLP(object):
     def train(self,
               save_path,
               model_name,
+              network_type,
               number_of_input_neurons,
               number_of_output_neurons,
               hidden_layers,
@@ -34,7 +35,7 @@ class MLP(object):
               ):
  
  
-        print('\n' + 'TRAINING BINARY MLP' + '\n')
+        print('\n' + 'TRAINING NEURAL NETWORK' + '\n')
  
  
         if not os.path.isdir(save_path):
@@ -57,19 +58,32 @@ class MLP(object):
         graph = tf.Graph()
         with graph.as_default():
             input_data    = tf.placeholder(tf.float32, [None, number_of_input_neurons], name='input')
-            labels        = tf.placeholder(tf.float32, [None])
             event_weights = tf.placeholder(tf.float32, [None])
  
-            feature_scaling_mean = tf.Variable(np.mean(training_data.x, axis=0).astype(np.float32), trainable=False,  name='feature_scaling_mean')
-            feature_scaling_std  = tf.Variable(np.std(training_data.x, axis=0).astype(np.float32), trainable=False,  name='feature_scaling_std')
+            feature_scaling_mean = tf.Variable(np.mean(training_data.get_data(), axis=0).astype(np.float32), trainable=False,  name='feature_scaling_mean')
+            feature_scaling_std  = tf.Variable(np.std(training_data.get_data(), axis=0).astype(np.float32), trainable=False,  name='feature_scaling_std')
             input_data_scaled    = tf.div(tf.subtract(input_data, feature_scaling_mean), feature_scaling_std)
  
             weights, biases = self._get_initial_weights_biases(number_of_input_neurons, number_of_output_neurons, hidden_layers)
- 
-            logits     =               tf.reshape(self._get_model(input_data_scaled, weights, biases, activation_function_name, dropout_keep_probability=dropout_keep_probability), [-1])
-            prediction = tf.nn.sigmoid(tf.reshape(self._get_model(input_data_scaled, weights, biases, activation_function_name, dropout_keep_probability=1), [-1]), name='output')
 
-            cross_entropy     = tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=event_labels)
+
+            if network_type == 'binary':
+                labels = tf.placeholder(tf.float32, [None])
+
+                logits      =               tf.reshape(self._get_model(input_data_scaled, weights, biases, activation_function_name, dropout_keep_probability=dropout_keep_probability), [-1])
+                predictions = tf.nn.sigmoid(tf.reshape(self._get_model(input_data_scaled, weights, biases, activation_function_name, dropout_keep_probability=1), [-1]), name='output')
+
+                cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=event_labels)
+
+            elif network_type == 'one-hot':
+                labels = tf.placeholder(tf.float32, [None, number_of_output_neurons])
+
+                logits      =               self._get_model(input_data_scaled, weights, biases, activation_function_name, dropout_keep_probability=dropout_keep_probability)
+                predictions = tf.nn.softmax(self._get_model(input_data_scaled, weights, biases, activation_function_name, dropout_keep_probability=1), name='output')
+
+                cross_entropy = tf.nn.softmax_cross_entropy_with_logits(labels=labels, logits=logits)
+
+
             l2_regularization = beta * tf.add_n([tf.nn.l2_loss(w) for w in weights])
             loss              = tf.add(tf.reduce_mean(tf.multiply(event_weights, cross_entropy)), l2_regularization)
  
@@ -84,26 +98,31 @@ class MLP(object):
             sess.run(tf.global_variables_initializer())
  
  
-            training_roc_auc   = list()
-            validation_roc_auc = list()
-            training_losses    = list()
-            early_stopping     = {'auc': -1.0, 'epoch': 0}
-            epoch_durations    = list()
+            training_accuracies   = list()
+            validation_accuracies = list()
+            training_losses       = list()
+            early_stopping        = {'auc': -1.0, 'epoch': 0}
+            epoch_durations       = list()
  
  
             print(100*'-')
-            print('{:^25} | {:^25} | {:^25} |{:^25}'.format('Epoch', 'Training data: loss', 'Training data: ROC AUC', 'Validation data: ROC AUC'))
+            if network_type == 'binary':
+                print('{:^25} | {:^25} | {:^25} |{:^25}'.format('Epoch', 'Training data: loss', 'Training data: ROC AUC', 'Validation data: ROC AUC'))
+            elif network_type == 'one-hot':
+                print('{:^25} | {:^25} | {:^25} |{:^25}'.format('Epoch', 'Training data: loss', 'Training data: accuracy', 'Validation data: accuracy'))
             print(100*'-')
- 
+
+
             for epoch in itertools.count(start=1, step=1)
                 epoch_start = time.time()
- 
+
+
                 for batch_data, batch_labels, batch_event_weights in training_data_set.batches(batch_size):
                     sess.run(train_step, {input_data    : batch_data,
                                           labels        : batch_labels,
                                           event_weights : batch_event_weights})
-                    
-                # monitor training
+
+
                 batch_predictions = list
                 batch_losses      = list()
                 for batch_data, batch_labels, batch_event_weights in training_data_set.batches(batch_size):
@@ -114,18 +133,29 @@ class MLP(object):
                     batch_predictions.append(batch_prediction)
                     batch_losses.append(batch_loss)
  
-                training_prediction = np.concatenate(batch_predictions, axis=0)
-                train_auc.append(roc_auc_score(y_true = train_data.y[:total_batches*batch_size], y_score = train_pre, sample_weight = train_data.w[:total_batches*batch_size]))
+                training_predictions                    = np.concatenate(batch_predictions, axis=0)
+                training_labels, training_event_weights = training_data_set.get_labels_event_weights()
+                training_accuracies.append(self._get_accuracy(training_labels, training_predictions, training_event_weights, network_type))
+
+
                 validation_prediction = sess.run(prediction, {input_data : validation_data_set.get_data()})
+                validation_labels
+
                 validation_roc_auc.append(roc_auc_score(y_true = val_data.y, y_score = val_pre, sample_weight = val_data.w))
+
+
+                training_losses.append(np.mean(batch_losses))
+
+
+                validation_prediction = sess.run(prediction, {input_data : validation_data_set.get_data()})
                 
-                print('{:^25} | {:^25.4e} | {:^25.4f} | {:^25.4f}'.format(epoch, training_losses[-1], train_auc[-1], val_auc[-1]))
- 
-                # check for early stopping, only save model if val_auc has increased
-                if val_auc[-1] > early_stopping['auc']:
+                print('{:^25} | {:^25.4e} | {:^25.4f} | {:^25.4f}'.format(epoch, training_losses[-1], training_accuracies[-1], validation_accuracies[-1]))
+
+
+                if validation_accuracies[-1] > early_stopping['auc']:
                     saver.save(sess, path_to_model_file)
  
-                    early_stopping['auc']     = val_auc[-1]
+                    early_stopping['auc']     = validation_accuracies[-1]
                     early_stopping['epoch']   = epoch
  
  
@@ -143,6 +173,34 @@ class MLP(object):
             network_and_training_properties_string = self._get_network_and_training_properties_string()
             print(network_and_training_properties_string)
             print(100*'-' + '\n')
+
+
+
+
+    def _get_accuracy(self,
+                      labels,
+                      predictions,
+                      event_weights,
+                      network_type
+                      ):
+ 
+
+        if network_type == 'binary':
+            accuracy = roc_auc_score(y_true = labels, y_score = predictions, sample_weight = event_weights)
+
+        elif network_type == 'one-hot':
+            array_true_prediction = np.zeros((labels.shape[1], labels.shape[1]), dtype=np.float32)
+            
+            index_true        = np.argmax(labels, axis=1)
+            index_predictions = np.argmax(predictions, axis=1)
+
+            for i in range(index_true.shape[0]):
+                array_true_prediction[index_true[i]][index_predictions[i]] += event_weights[i]
+     
+            accuracy = np.diagonal(array_true_prediction).sum() / array_true_prediction.sum()
+     
+     
+        return accuracy
 
 
 
@@ -283,9 +341,9 @@ class MLP(object):
 
 
 
-    def _get_optimizer(self,
-                       optimizer_options,
-                       ):
+    def _get_optimizer_global_step(self,
+                                   optimizer_options,
+                                   ):
 
 
         global_step = tf.Variable(0, trainable=False)
