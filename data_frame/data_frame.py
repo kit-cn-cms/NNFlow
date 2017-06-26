@@ -19,16 +19,33 @@ class DataFrame(object):
         self.event_weights           = array[:, -1]
 
         if number_of_output_neurons == 1:
-            self.event_labels = array[:, 0]
+            self.labels = array[:, 0]
         else:
-            self.event_labels = array[:, :number_of_output_neurons]
+            self.labels = array[:, :number_of_output_neurons]
 
 
-        self.number_of_events        = self.data.shape[0]
+        self.number_of_events = self.data.shape[0]
 
 
-        self._next_id     = 0
-        self._permutation = np.array(range(self.number_of_events))
+
+
+    def batches(self,
+                batch_size
+                ):
+
+
+        permutation = np.random.permutation(self.number_of_events)
+
+        current_index = 0
+        while (current_index + batch_size <= self.number_of_events):
+            batch_indices = permutation[current_index : current_index+batch_size]
+
+            current_index += batch_size
+
+            yield (self.data         [batch_indices],
+                   self.labels       [batch_indices],
+                   self.event_weights[batch_indices]
+                   )
 
 
 
@@ -36,33 +53,4 @@ class DataFrame(object):
     def get_data_labels_weights(self):
 
 
-        return self.data, self.event_labels, self.event_weights
-
-
-
-
-    def next_batch(self,
-                   batch_size
-                   ):
-
-
-        if self._next_id + batch_size >= self.number_of_events:
-            self.shuffle()
-
-        batch_indices = self._permutation[self._next_id : self._next_id+batch_size]
-
-        self._next_id += batch_size
-
-        return (self.data   [batch_indices],
-                self.labels [batch_indices],
-                self.weights[batch_indices]
-                )
-
-
-
-
-    def shuffle(self):
-        
-
-        self._next_id     = 0
-        self._permutation = np.random.permutation(self.number_of_events)
+        return self.data, self.labels, self.event_weights
