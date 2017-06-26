@@ -140,7 +140,6 @@ class MLP(object):
         network_and_training_properties += '\n'
 
 
-        network_and_training_properties += 'Total training time:          {} s\n'.format(total_training_time)
         network_and_training_properties += 'Mean training time per epoch: {} s\n'.format(mean_training_time_per_epoch)
         #TODO: best accuracy/roc
 
