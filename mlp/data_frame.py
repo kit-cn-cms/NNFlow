@@ -58,7 +58,15 @@ class DataFrame(object):
 
 
 
-    def get_data_labels_weights(self):
+    def get_data_labels_event_weights(self):
 
 
         return self._data, self._labels, self._event_weights
+
+
+
+
+    def get_labels_event_weights(self):
+
+
+        return self._labels, self._event_weights
