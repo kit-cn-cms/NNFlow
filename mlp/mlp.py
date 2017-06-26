@@ -29,8 +29,9 @@ class MLP(object):
               early_stopping_intervall,
               path_to_training_data_set,
               path_to_validation_data_set,
-              batch_size,
               optimizer_options,
+              training_batch_size,
+              classification_batch_size,
               gpu_usage
               ):
  
@@ -101,7 +102,7 @@ class MLP(object):
             training_accuracies   = list()
             validation_accuracies = list()
             training_losses       = list()
-            early_stopping        = {'auc': -1.0, 'epoch': 0}
+            early_stopping        = {'accuracy': -1.0, 'epoch': 0}
             epoch_durations       = list()
  
  
@@ -117,7 +118,7 @@ class MLP(object):
                 epoch_start = time.time()
 
 
-                for batch_data, batch_labels, batch_event_weights in training_data_set.batches(batch_size):
+                for batch_data, batch_labels, batch_event_weights in training_data_set.batches(training_batch_size):
                     sess.run(train_step, {input_data    : batch_data,
                                           labels        : batch_labels,
                                           event_weights : batch_event_weights})
@@ -155,8 +156,8 @@ class MLP(object):
                 if validation_accuracies[-1] > early_stopping['auc']:
                     saver.save(sess, path_to_model_file)
  
-                    early_stopping['auc']     = validation_accuracies[-1]
-                    early_stopping['epoch']   = epoch
+                    early_stopping['accuracy'] = validation_accuracies[-1]
+                    early_stopping['epoch']    = epoch
  
  
                 elif (epoch - early_stopping['epoch']) >= early_stop:
@@ -277,64 +278,79 @@ class MLP(object):
 
 
     def _get_network_and_training_properties_string(self,
+                                                    network_type,
                                                     number_of_input_neurons,
                                                     hidden_layers,
                                                     activation_function_name,
                                                     dropout_keep_probability,
                                                     l2_regularization_beta,
                                                     early_stopping_interval,
-                                                    batch_size,
                                                     optimizer_options,
+                                                    training_batch_size,
                                                     early_stopping,
                                                     total_training_time,
                                                     mean_training_time_per_epoch
                                                     ):
         
 
+        column_width = 55
+
+
         network_and_training_properties = str()
 
 
-        network_and_training_properties += 'Date:                         {}\n'.format(datetime.datetime.now().strftime("%Y-%m-%d"))
-        network_and_training_properties += 'Time:                         {}\n'.format(datetime.datetime.now().strftime("%H:%M:%S"))
+        network_and_training_properties += '{:{width}} {}\n'.format('Date:', datetime.datetime.now().strftime("%Y-%m-%d"), width=column_width)
+        network_and_training_properties += '{:{width}} {}\n'.format('Time:', datetime.datetime.now().strftime("%H:%M:%S"), width=column_width)
         network_and_training_properties += '\n'
 
 
-        network_and_training_properties += 'Number of input variables:    {}\n'.format(number_of_input_neurons)
+        network_and_training_properties += '{:{width}} {}\n'.format('Network type:' network_type, width=column_width)
         network_and_training_properties += '\n'
 
 
-        network_and_training_properties += 'Hidden layers:                {}\n'.format(hidden_layers)
-        network_and_training_properties += 'Activation function:          {}\n'.format(activation_function_name)
+        network_and_training_properties += '{:{width}} {}\n'.format('Number of input variables:', number_of_input_neurons, width=column_width)
         network_and_training_properties += '\n'
 
 
-        network_and_training_properties += 'Keep probability (dropout):   {}\n'.format(dropout_keep_probability)
-        network_and_training_properties += 'L2 regularization:            {}\n'.format(l2_regularization_beta)
-        network_and_training_properties += 'Early stopping interval:      {}\n'.format(early_stopping_interval)
+        network_and_training_properties += '{:{width}} {}\n'.format('Hidden layers:', hidden_layers, width=column_width)
+        network_and_training_properties += '{:{width}} {}\n'.format('Activation function:', activation_function_name, width=column_width)
         network_and_training_properties += '\n'
 
 
-        network_and_training_properties += 'Batch size:                   {}\n'.format(batch_size)
-        network_and_training_properties += 'Optimizer:                    {}\n'.format(optimizer_options['name'])
+        network_and_training_properties += '{:{width}} {}\n'.format('Keep probability (dropout):', dropout_keep_probability, width=column_width)
+        network_and_training_properties += '{:{width}} {}\n'.format('L2 regularization:', l2_regularization_beta, width=column_width)
+        network_and_training_properties += '{:{width}} {}\n'.format('Early stopping interval:', early_stopping_interval, width=column_width)
+        network_and_training_properties += '\n'
+
+
+        network_and_training_properties += '{:{width}} {}\n'.format('Optimizer', optimizer_options['name'], width=column_width)
 
         optimizer_options_keys     = [key for key in optimizer_options.keys() if 'learning_rate' not in key and key!='name'].sort()
         learning_rate_options_keys = [key for key in optimizer_options.keys() if 'learning_rate' in key].sort()
 
         for key in optimizer_options_keys:
-            network_and_training_properties += '{:30}{}\n'.format(key, optimizer_options[key])
+            network_and_training_properties += '{:{width}} {}\n'.format(key+':', optimizer_options[key], width=column_width)
 
         for key in learning_rate_options_keys:
-            network_and_training_properties += '{:30}{}\n'.format(key, optimizer_options[key])
+            network_and_training_properties += '{:{width}} {}\n'.format(key+':', optimizer_options[key], width=column_width)
+
+        network_and_training_properties += '{:{width}} {}\n'.format('Batch size:', batch_size, width=column_width)
+        network_and_training_properties += '\n'
+
+
+        network_and_training_properties += '{:{width}} {}\n'.format('Early stopping epoch:', early_stopping['epoch'], width=column_width)
+
+        if network_type == 'binary':
+            network_and_training_properties += '{:{width}} {}\n'.format('ROC AUC (validation data set, early stopping epoch):', early_stopping['accuracy'], width=column_width)
+
+        elif network_type == 'one-hot':
+            network_and_training_properties += '{:{width}} {}\n'.format('Accuracy (validation data set, early stopping epoch):', early_stopping['accuracy'], width=column_width)
 
         network_and_training_properties += '\n'
 
 
-        network_and_training_properties += 'Epoch early stopping:         {}\n'.format(early_stopping['epoch'])
-        network_and_training_properties += '\n'
+        network_and_training_properties += '{:{width}} {} s\n'.format('Mean training time per epoch:', mean_training_time_per_epoch, width=column_width)
 
-
-        network_and_training_properties += 'Mean training time per epoch: {} s\n'.format(mean_training_time_per_epoch)
-        #TODO: best accuracy/roc
 
         return network_and_training_properties
 
