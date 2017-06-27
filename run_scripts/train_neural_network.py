@@ -49,12 +49,14 @@ batch_size_training =
 
 
 #----------------------------------------------------------------------------------------------------
-### Depending on the chosen optimizer, you have to provide the following options:
-### 'Adam':               [beta1=0.9 (float), beta2=0.999 (float), epsilon=1e-8 (float)]
-### 'Adadelta':           [rho=0.95 (float), epsilon=1e-8 (float)]
-### 'Adagrad':            [initial_accumulator_value=0.1 (float)]
-### 'GradDescent':        []
-### 'Momentum':           [momentum=0.9 (float), use_nesterov=False (bool)]
+### The following optimizers are avialable.
+### Depending on the chosen optimizer, you have to provide the additional options.
+### If you do not want to use your own values, you can use the values that are suggested here.
+### 'Adam'               optimizer_options['beta1']=0.9, optimizer_options['beta2']=0.999, optimizer_options['epsilon']=1e-8
+### 'Adadelta'           optimizer_options['rho']=0.95, optimizer_options['epsilon']=1e-8
+### 'Adagrad'            optimizer_options['initial_accumulator_value']=0.1
+### 'GradientDescent'
+### 'Momentum'           optimizer_options['momentum']=0.9, optimizer_options['use_nesterov']=False
 
 
 optimizer_options = dict()
@@ -118,7 +120,6 @@ if not os.path.isdir(modeldir):
     if os.path.isdir(os.path.dirname(modeldir)):
         os.mkdir(modeldir)
 #----------------------------------------------------------------------------------------------------
-
 train_dict = {'save_path'                   : save_path,
               'model_name'                  : model_name,
               'network_type'                : network_type,
@@ -137,7 +138,5 @@ train_dict = {'save_path'                   : save_path,
               }
 
 
-
-
-nn = BinaryMLP(**init_dict) 
+nn = MLP() 
 nn.train(**train_dict)
