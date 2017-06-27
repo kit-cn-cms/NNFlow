@@ -29,16 +29,17 @@ class DataFrame(object):
 
 
 
-    def batches(self,
-                batch_size,
-                train_classify
-                ):
+    def get_data_labels_event_weights_as_batches(self,
+                                                 batch_size,
+                                                 sort_events_randomly,
+                                                 include_smaller_last_batch
+                                                 ):
 
 
-        if train_classify == 'train':
+        if sort_events_randomly:
             permutation = np.random.permutation(self._number_of_events)
 
-        elif train_classify == 'classify':
+        else:
             permutation = np.array(range(self._number_of_events))
 
 
@@ -54,7 +55,7 @@ class DataFrame(object):
                    )
 
 
-        if train_classify == 'classify':
+        if include_smaller_last_batch:
             if current_index < self._number_of_events:
                 batch_indices = permutation[current_index :]
                 
