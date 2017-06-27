@@ -30,11 +30,17 @@ class DataFrame(object):
 
 
     def batches(self,
-                batch_size
+                batch_size,
+                train_classify
                 ):
 
 
-        permutation = np.random.permutation(self._number_of_events)
+        if train_classify == 'train':
+            permutation = np.random.permutation(self._number_of_events)
+
+        elif train_classify == 'classify':
+            permutation = np.array(range(self._number_of_events))
+
 
         current_index = 0
         while (current_index + batch_size <= self._number_of_events):
@@ -46,6 +52,16 @@ class DataFrame(object):
                    self._labels       [batch_indices],
                    self._event_weights[batch_indices]
                    )
+
+
+        if train_classify == 'classify':
+            if current_index < self._number_of_events:
+                batch_indices = permutation[current_index :]
+                
+                yield (self._data         [batch_indices],
+                       self._labels       [batch_indices],
+                       self._event_weights[batch_indices]
+                       )
 
 
 
