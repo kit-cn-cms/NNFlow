@@ -118,38 +118,54 @@ class MLP(object):
                 epoch_start = time.time()
 
 
-                for batch_data, batch_labels, batch_event_weights in training_data_set.batches(training_batch_size):
+                for batch_data, batch_labels, batch_event_weights in training_data_set.get_data_labels_event_weights_as_batches(batch_size                 = training_batch_size,
+                                                                                                                                sort_events_randomly       = True,
+                                                                                                                                include_smaller_last_batch = False
+                                                                                                                                ):
                     sess.run(train_step, {input_data    : batch_data,
                                           labels        : batch_labels,
                                           event_weights : batch_event_weights})
 
 
-                batch_predictions = list
-                batch_losses      = list()
-                for batch_data, batch_labels, batch_event_weights in training_data_set.batches(batch_size):
+                training_batch_predictions = list()
+                training_batch_losses      = list()
+                for batch_data, batch_labels, batch_event_weights in training_data_set.get_data_labels_event_weights_as_batches(batch_size                 = classification_batch_size,
+                                                                                                                                sort_events_randomly       = False,
+                                                                                                                                include_smaller_last_batch = True
+                                                                                                                                ):
                     batch_prediction, batch_loss = sess.run([prediction, loss], {input_data    : batch_data,
                                                                                  labels        : batch_labels,
                                                                                  event_weights : batch_event_weights})
  
-                    batch_predictions.append(batch_prediction)
-                    batch_losses.append(batch_loss)
+                    training_batch_predictions.append(batch_prediction)
+                    training_batch_losses.append(batch_loss)
  
-                training_predictions                    = np.concatenate(batch_predictions, axis=0)
+                training_predictions                    = np.concatenate(training_batch_predictions, axis=0)
                 training_labels, training_event_weights = training_data_set.get_labels_event_weights()
                 training_accuracies.append(self._get_accuracy(training_labels, training_predictions, training_event_weights, network_type))
 
-
-                validation_prediction = sess.run(prediction, {input_data : validation_data_set.get_data()})
-                validation_labels
-
-                validation_roc_auc.append(roc_auc_score(y_true = val_data.y, y_score = val_pre, sample_weight = val_data.w))
+                training_losses.append(np.mean(training_batch_losses))
 
 
-                training_losses.append(np.mean(batch_losses))
+                validation_batch_predictions = list()
+                for batch_data, batch_labels, batch_event_weights in validation_data_set.get_data_labels_event_weights_as_batches(batch_size                 = classification_batch_size,
+                                                                                                                                  sort_events_randomly       = False,
+                                                                                                                                  include_smaller_last_batch = True
+                                                                                                                                  ):
+                    batch_prediction = sess.run(prediction, {input_data    : batch_data,
+                                                             labels        : batch_labels,
+                                                             event_weights : batch_event_weights})
+
+                    validation_batch_predictions.append(batch_prediction)
+
+                validation_predictions = np.concatenate(validation_batch_predictions, axis=0)
+
+                validation_labels, validation_event_weights = validation_data_set.get_labels_event_weights()
+
+                validation_accuracies.append(self._get_accuracy(validation_labels, validation_predictions, validation_event_weights, network_type))
 
 
-                validation_prediction = sess.run(prediction, {input_data : validation_data_set.get_data()})
-                
+
                 print('{:^25} | {:^25.4e} | {:^25.4f} | {:^25.4f}'.format(epoch, training_losses[-1], training_accuracies[-1], validation_accuracies[-1]))
 
 
