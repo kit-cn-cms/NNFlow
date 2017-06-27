@@ -36,9 +36,6 @@ class MLP(object):
               ):
  
  
-        print('\n' + 'TRAINING NEURAL NETWORK' + '\n')
- 
- 
         if not os.path.isdir(save_path):
             sys.exit("Directory '" + save_path + "' doesn't exist." + "\n")
  
@@ -50,12 +47,18 @@ class MLP(object):
  
  
         path_to_model_file = os.path.join(save_path, '/{}.ckpt'.format(model_name))
- 
+
+
+        #----------------------------------------------------------------------------------------------------
+        # Load data.
  
         training_data_set   = DataFrame(path_to_training_data_set, number_of_output_neurons)
         validation_data_set = DataFrame(path_to_validation_data_set, number_of_output_neurons)
- 
- 
+
+
+        #----------------------------------------------------------------------------------------------------
+        # Graph.
+
         graph = tf.Graph()
         with graph.as_default():
             input_data    = tf.placeholder(tf.float32, [None, number_of_input_neurons], name='input')
@@ -93,7 +96,9 @@ class MLP(object):
  
             saver = tf.train.Saver(weights + biases + [feature_scaling_mean, feature_scaling_std])
  
- 
+
+        #----------------------------------------------------------------------------------------------------
+
         config = self._get_session_config(gpu_usage)
         with tf.Session(config=config, graph=graph) as sess:
             sess.run(tf.global_variables_initializer())
@@ -118,6 +123,9 @@ class MLP(object):
                 epoch_start = time.time()
 
 
+                #----------------------------------------------------------------------------------------------------
+                # Loop over batches and minimize loss.
+
                 for batch_data, batch_labels, batch_event_weights in training_data_set.get_data_labels_event_weights_as_batches(batch_size                 = training_batch_size,
                                                                                                                                 sort_events_randomly       = True,
                                                                                                                                 include_smaller_last_batch = False
@@ -126,6 +134,9 @@ class MLP(object):
                                           labels        : batch_labels,
                                           event_weights : batch_event_weights})
 
+
+                #----------------------------------------------------------------------------------------------------
+                # Make predictions for training data set.
 
                 training_batch_predictions = list()
                 training_batch_losses      = list()
@@ -140,12 +151,16 @@ class MLP(object):
                     training_batch_predictions.append(batch_prediction)
                     training_batch_losses.append(batch_loss)
  
+
                 training_predictions                    = np.concatenate(training_batch_predictions, axis=0)
                 training_labels, training_event_weights = training_data_set.get_labels_event_weights()
                 training_accuracies.append(self._get_accuracy(training_labels, training_predictions, training_event_weights, network_type))
 
                 training_losses.append(np.mean(training_batch_losses))
 
+
+                #----------------------------------------------------------------------------------------------------
+                # Make predictions for validation data set.
 
                 validation_batch_predictions = list()
                 for batch_data, batch_labels, batch_event_weights in validation_data_set.get_data_labels_event_weights_as_batches(batch_size                 = classification_batch_size,
@@ -158,13 +173,13 @@ class MLP(object):
 
                     validation_batch_predictions.append(batch_prediction)
 
+
                 validation_predictions = np.concatenate(validation_batch_predictions, axis=0)
-
                 validation_labels, validation_event_weights = validation_data_set.get_labels_event_weights()
-
                 validation_accuracies.append(self._get_accuracy(validation_labels, validation_predictions, validation_event_weights, network_type))
 
 
+                #----------------------------------------------------------------------------------------------------
 
                 print('{:^25} | {:^25.4e} | {:^25.4f} | {:^25.4f}'.format(epoch, training_losses[-1], training_accuracies[-1], validation_accuracies[-1]))
 
@@ -173,10 +188,13 @@ class MLP(object):
                 epoch_durations.append(epoch_end - epoch_start)
 
 
-                if validation_accuracies[-1] > early_stopping['auc']:
+                #----------------------------------------------------------------------------------------------------
+                # Early stopping.
+
+                if validation_accuracies[-1] > early_stopping['validation_accuracy']:
                     saver.save(sess, path_to_model_file)
  
-                    early_stopping['accuracy'] = validation_accuracies[-1]
+                    early_stopping['validation_accuracy'] = validation_accuracies[-1]
                     early_stopping['epoch']    = epoch
  
  
@@ -184,7 +202,9 @@ class MLP(object):
                     print(100*'-')
                     print('Validation AUC has not increased for {} epochs. Achieved best validation auc score of {:.4f} in epoch {}'.format(early_stop, early_stopping['auc'], early_stopping['epoch']))
                     break
-                
+
+
+            #----------------------------------------------------------------------------------------------------
  
             network_and_training_properties_string = self._get_network_and_training_properties_string(network_type                 = network_type,
                                                                                                       number_of_input_neurons      = number_of_input_neurons,
@@ -371,10 +391,10 @@ class MLP(object):
         network_and_training_properties += '{:{width}} {}\n'.format('Early stopping epoch:', early_stopping['epoch'], width=column_width)
 
         if network_type == 'binary':
-            network_and_training_properties += '{:{width}} {}\n'.format('ROC AUC (validation data set, early stopping epoch):', early_stopping['accuracy'], width=column_width)
+            network_and_training_properties += '{:{width}} {}\n'.format('ROC AUC (validation data set, early stopping epoch):', early_stopping['validation_accuracy'], width=column_width)
 
         elif network_type == 'one-hot':
-            network_and_training_properties += '{:{width}} {}\n'.format('Accuracy (validation data set, early stopping epoch):', early_stopping['accuracy'], width=column_width)
+            network_and_training_properties += '{:{width}} {}\n'.format('Accuracy (validation data set, early stopping epoch):', early_stopping['validation_accuracy'], width=column_width)
 
         network_and_training_properties += '\n'
 
