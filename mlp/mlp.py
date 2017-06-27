@@ -29,8 +29,8 @@ class MLP(object):
               path_to_training_data_set,
               path_to_validation_data_set,
               optimizer_options,
-              training_batch_size,
-              classification_batch_size,
+              batch_size_training,
+              batch_size_classification,
               gpu_usage
               ):
  
@@ -128,7 +128,7 @@ class MLP(object):
                 #----------------------------------------------------------------------------------------------------
                 # Loop over batches and minimize loss.
 
-                for batch_data, batch_labels, batch_event_weights in training_data_set.get_data_labels_event_weights_as_batches(batch_size                 = training_batch_size,
+                for batch_data, batch_labels, batch_event_weights in training_data_set.get_data_labels_event_weights_as_batches(batch_size                 = batch_size_training,
                                                                                                                                 sort_events_randomly       = True,
                                                                                                                                 include_smaller_last_batch = False
                                                                                                                                 ):
@@ -143,7 +143,7 @@ class MLP(object):
                 training_batch_predictions = list()
                 training_batch_losses      = list()
 
-                for batch_data, batch_labels, batch_event_weights in training_data_set.get_data_labels_event_weights_as_batches(batch_size                 = classification_batch_size,
+                for batch_data, batch_labels, batch_event_weights in training_data_set.get_data_labels_event_weights_as_batches(batch_size                 = batch_size_classification,
                                                                                                                                 sort_events_randomly       = False,
                                                                                                                                 include_smaller_last_batch = True
                                                                                                                                 ):
@@ -167,7 +167,7 @@ class MLP(object):
 
                 validation_batch_predictions = list()
 
-                for batch_data, batch_labels, batch_event_weights in validation_data_set.get_data_labels_event_weights_as_batches(batch_size                 = classification_batch_size,
+                for batch_data, batch_labels, batch_event_weights in validation_data_set.get_data_labels_event_weights_as_batches(batch_size                 = batch_size_classification,
                                                                                                                                   sort_events_randomly       = False,
                                                                                                                                   include_smaller_last_batch = True
                                                                                                                                   ):
@@ -218,7 +218,7 @@ class MLP(object):
                                                                                                       l2_regularization_beta       = l2_regularization_beta,
                                                                                                       early_stopping_interval      = early_stopping_intervall,
                                                                                                       optimizer_options            = optimizer_options,
-                                                                                                      training_batch_size          = training_batch_size,
+                                                                                                      batch_size_training          = batch_size_training,
                                                                                                       early_stopping               = early_stopping,
                                                                                                       mean_training_time_per_epoch = np.mean(epoch_durations)
                                                                                                       )
@@ -341,7 +341,7 @@ class MLP(object):
                                                     l2_regularization_beta,
                                                     early_stopping_interval,
                                                     optimizer_options,
-                                                    training_batch_size,
+                                                    batch_size_training,
                                                     early_stopping,
                                                     mean_training_time_per_epoch
                                                     ):
@@ -388,7 +388,7 @@ class MLP(object):
         for key in learning_rate_options_keys:
             network_and_training_properties += '{:{width}} {}\n'.format(key+':', optimizer_options[key], width=column_width)
 
-        network_and_training_properties += '{:{width}} {}\n'.format('Batch size:', batch_size, width=column_width)
+        network_and_training_properties += '{:{width}} {}\n'.format('Batch size:', batch_size_training, width=column_width)
         network_and_training_properties += '\n'
 
 
