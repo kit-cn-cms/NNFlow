@@ -46,7 +46,7 @@ class MLP(object):
             sys.exit("Directory '" + path_to_training_data_set + "' doesn't exist." + "\n")
  
  
-        path_to_model_file = os.path.join(save_path, '/{}.ckpt'.format(model_name))
+        path_to_model_file = os.path.join(save_path, '{}.ckpt'.format(model_name))
 
 
         #----------------------------------------------------------------------------------------------------
@@ -64,8 +64,8 @@ class MLP(object):
             input_data    = tf.placeholder(tf.float32, [None, number_of_input_neurons], name='input')
             event_weights = tf.placeholder(tf.float32, [None])
  
-            feature_scaling_mean = tf.Variable(np.mean(training_data.get_data(), axis=0).astype(np.float32), trainable=False,  name='feature_scaling_mean')
-            feature_scaling_std  = tf.Variable(np.std(training_data.get_data(), axis=0).astype(np.float32), trainable=False,  name='feature_scaling_std')
+            feature_scaling_mean = tf.Variable(np.mean(training_data_set.get_data(), axis=0).astype(np.float32), trainable=False,  name='feature_scaling_mean')
+            feature_scaling_std  = tf.Variable(np.std(training_data_set.get_data(), axis=0).astype(np.float32), trainable=False,  name='feature_scaling_std')
             input_data_scaled    = tf.div(tf.subtract(input_data, feature_scaling_mean), feature_scaling_std)
  
             weights, biases = self._get_initial_weights_biases(number_of_input_neurons, number_of_output_neurons, hidden_layers)
@@ -77,7 +77,8 @@ class MLP(object):
                 logits      =               tf.reshape(self._get_model(input_data_scaled, weights, biases, activation_function_name, dropout_keep_probability=dropout_keep_probability), [-1])
                 predictions = tf.nn.sigmoid(tf.reshape(self._get_model(input_data_scaled, weights, biases, activation_function_name, dropout_keep_probability=1), [-1]), name='output')
 
-                cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=event_labels)
+                cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=labels)
+
 
             elif network_type == 'one-hot':
                 labels = tf.placeholder(tf.float32, [None, number_of_output_neurons])
@@ -140,6 +141,7 @@ class MLP(object):
 
                 training_batch_predictions = list()
                 training_batch_losses      = list()
+
                 for batch_data, batch_labels, batch_event_weights in training_data_set.get_data_labels_event_weights_as_batches(batch_size                 = classification_batch_size,
                                                                                                                                 sort_events_randomly       = False,
                                                                                                                                 include_smaller_last_batch = True
@@ -163,6 +165,7 @@ class MLP(object):
                 # Make predictions for validation data set.
 
                 validation_batch_predictions = list()
+
                 for batch_data, batch_labels, batch_event_weights in validation_data_set.get_data_labels_event_weights_as_batches(batch_size                 = classification_batch_size,
                                                                                                                                   sort_events_randomly       = False,
                                                                                                                                   include_smaller_last_batch = True
@@ -174,7 +177,7 @@ class MLP(object):
                     validation_batch_predictions.append(batch_prediction)
 
 
-                validation_predictions = np.concatenate(validation_batch_predictions, axis=0)
+                validation_predictions                      = np.concatenate(validation_batch_predictions, axis=0)
                 validation_labels, validation_event_weights = validation_data_set.get_labels_event_weights()
                 validation_accuracies.append(self._get_accuracy(validation_labels, validation_predictions, validation_event_weights, network_type))
 
@@ -195,10 +198,10 @@ class MLP(object):
                     saver.save(sess, path_to_model_file)
  
                     early_stopping['validation_accuracy'] = validation_accuracies[-1]
-                    early_stopping['epoch']    = epoch
+                    early_stopping['epoch']               = epoch
  
  
-                elif (epoch - early_stopping['epoch']) >= early_stop:
+                elif (epoch - early_stopping['epoch']) >= early_stopping_intervall:
                     print(100*'-')
                     print('Validation AUC has not increased for {} epochs. Achieved best validation auc score of {:.4f} in epoch {}'.format(early_stop, early_stopping['auc'], early_stopping['epoch']))
                     break
@@ -223,7 +226,7 @@ class MLP(object):
                 NN_Info_output_file.write(network_and_training_properties_string)
 
             print(100*'-')
-            print(network_and_training_properties_string)
+            print(network_and_training_properties_string, end='')
             print(100*'-' + '\n')
 
 
@@ -423,7 +426,7 @@ class MLP(object):
             learning_rate = tf.train.exponential_decay(initial_learning_rate, global_step, decay_rate=decay_rate, decay_steps=decay_steps)
 
         else:
-            learning_rate = learning_rate_options['learning_rate']
+            learning_rate = optimizer_options['learning_rate']
 
 
         if optimizer_options['name'] == "Adam":
