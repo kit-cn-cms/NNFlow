@@ -430,7 +430,7 @@ class MLP(object):
             learning_rate = optimizer_options['learning_rate']
 
 
-        if optimizer_options['name'] == "Adam":
+        if optimizer_options['optimizer_name'] == "Adam":
             beta1   = optimizer_options['beta1']
             beta2   = optimizer_options['beta2']
             epsilon = optimizer_options['epsilon']
@@ -438,24 +438,24 @@ class MLP(object):
             optimizer = tf.train.AdamOptimizer(learning_rate, beta1=beta1, beta2=beta2, epsilon=epsilon)
 
 
-        elif optimizer_options['name'] == 'Adadelta':
+        elif optimizer_options['optimizer_name'] == 'Adadelta':
             rho     = optimizer_options['rho']
             epsilon = optimizer_options['epsilon']
 
             optimizer = tf.train.AdadeltaOptimizer(learning_rate, rho=rho, epsilon=epsilon)
 
 
-        elif optimizer_options['name'] == 'Adagrad':
+        elif optimizer_options['optimizer_name'] == 'Adagrad':
             initial_accumulator_value = optimizer_options['initial_accumulator_value']
 
             optimizer = tf.train.AdagradOptimizer(learning_rate, initial_accumulator_value=initial_accumulator_value)
 
 
-        elif optimizer_options['name'] == 'GradientDescent':
+        elif optimizer_options['optimizer_name'] == 'GradientDescent':
             optimizer = tf.train.GradientDescentOptimizer(learning_rate)
 
 
-        elif optimizer_options['name'] == 'Momentum':
+        elif optimizer_options['optimizer_name'] == 'Momentum':
             momentum     = optimizer_options['momentum']
             use_nesterov = optimizer_options['use_nesterov']
 
@@ -463,7 +463,7 @@ class MLP(object):
 
 
         else:
-            sys.exit('Optimizer named "{}" is not implemented.'.format(optimizer_name))
+            sys.exit('Optimizer named "{}" is not implemented.'.format(optimizer_options['optimizer_name']))
 
 
         return optimizer, global_step
