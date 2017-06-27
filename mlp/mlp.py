@@ -153,6 +153,10 @@ class MLP(object):
                 print('{:^25} | {:^25.4e} | {:^25.4f} | {:^25.4f}'.format(epoch, training_losses[-1], training_accuracies[-1], validation_accuracies[-1]))
 
 
+                epoch_end = time.time()
+                epoch_durations.append(epoch_end - epoch_start)
+
+
                 if validation_accuracies[-1] > early_stopping['auc']:
                     saver.save(sess, path_to_model_file)
  
@@ -165,13 +169,24 @@ class MLP(object):
                     print('Validation AUC has not increased for {} epochs. Achieved best validation auc score of {:.4f} in epoch {}'.format(early_stop, early_stopping['auc'], early_stopping['epoch']))
                     break
                 
-                
-                epoch_end = time.time()
-                epoch_durations.append(epoch_end - epoch_start)
  
- 
+            network_and_training_properties_string = self._get_network_and_training_properties_string(network_type                 = network_type,
+                                                                                                      number_of_input_neurons      = number_of_input_neurons,
+                                                                                                      hidden_layers                = hidden_layers,
+                                                                                                      activation_function_name     = activation_function_name,
+                                                                                                      dropout_keep_probability     = dropout_keep_probability,
+                                                                                                      l2_regularization_beta       = l2_regularization_beta,
+                                                                                                      early_stopping_interval      = early_stopping_intervall,
+                                                                                                      optimizer_options            = optimizer_options,
+                                                                                                      training_batch_size          = training_batch_size,
+                                                                                                      early_stopping               = early_stopping,
+                                                                                                      mean_training_time_per_epoch = np.mean(epoch_durations)
+                                                                                                      )
+
+            with open(os.path.join(save_path, 'NN_Info.txt'), 'w') as NN_Info_output_file:
+                NN_Info_output_file.write(network_and_training_properties_string)
+
             print(100*'-')
-            network_and_training_properties_string = self._get_network_and_training_properties_string()
             print(network_and_training_properties_string)
             print(100*'-' + '\n')
 
@@ -288,7 +303,6 @@ class MLP(object):
                                                     optimizer_options,
                                                     training_batch_size,
                                                     early_stopping,
-                                                    total_training_time,
                                                     mean_training_time_per_epoch
                                                     ):
         
@@ -312,18 +326,18 @@ class MLP(object):
         network_and_training_properties += '\n'
 
 
-        network_and_training_properties += '{:{width}} {}\n'.format('Hidden layers:', hidden_layers, width=column_width)
+        network_and_training_properties += '{:{width}} {}\n'.format('Hidden layers:',       hidden_layers,            width=column_width)
         network_and_training_properties += '{:{width}} {}\n'.format('Activation function:', activation_function_name, width=column_width)
         network_and_training_properties += '\n'
 
 
         network_and_training_properties += '{:{width}} {}\n'.format('Keep probability (dropout):', dropout_keep_probability, width=column_width)
-        network_and_training_properties += '{:{width}} {}\n'.format('L2 regularization:', l2_regularization_beta, width=column_width)
-        network_and_training_properties += '{:{width}} {}\n'.format('Early stopping interval:', early_stopping_interval, width=column_width)
+        network_and_training_properties += '{:{width}} {}\n'.format('L2 regularization:',          l2_regularization_beta,   width=column_width)
+        network_and_training_properties += '{:{width}} {}\n'.format('Early stopping interval:',    early_stopping_interval,  width=column_width)
         network_and_training_properties += '\n'
 
 
-        network_and_training_properties += '{:{width}} {}\n'.format('Optimizer', optimizer_options['name'], width=column_width)
+        network_and_training_properties += '{:{width}} {}\n'.format('Optimizer:', optimizer_options['name'], width=column_width)
 
         optimizer_options_keys     = [key for key in optimizer_options.keys() if 'learning_rate' not in key and key!='name'].sort()
         learning_rate_options_keys = [key for key in optimizer_options.keys() if 'learning_rate' in key].sort()
