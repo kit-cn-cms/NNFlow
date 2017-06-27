@@ -24,7 +24,8 @@ class DataFrame(object):
             self._labels = array[:, :number_of_output_neurons]
 
 
-        self._number_of_events = self.data.shape[0]
+        self._number_of_events    = self.data.shape[0]
+        self._number_of_variables = self.data.shape[1]
 
 
 
@@ -87,3 +88,11 @@ class DataFrame(object):
 
 
         return self._labels, self._event_weights
+
+
+
+
+    def get_number_of_variables(self):
+
+
+        return self._number_of_variables

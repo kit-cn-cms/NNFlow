@@ -20,7 +20,6 @@ class MLP(object):
               save_path,
               model_name,
               network_type,
-              number_of_input_neurons,
               number_of_output_neurons,
               hidden_layers,
               activation_function_name,
@@ -54,6 +53,8 @@ class MLP(object):
  
         training_data_set   = DataFrame(path_to_training_data_set, number_of_output_neurons)
         validation_data_set = DataFrame(path_to_validation_data_set, number_of_output_neurons)
+
+        number_of_input_neurons = training_data_set.get_number_of_variables()
 
 
         #----------------------------------------------------------------------------------------------------
