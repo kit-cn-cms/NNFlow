@@ -17,32 +17,60 @@ name_subdir  =
 
 #----------------------------------------------------------------------------------------------------
 sys.path.append(NNFlow_base)
-from mlp.binary_mlp import BinaryMLP
-from mlp.data_frame_binary_mlp import DataFrame
+from mlp.mlp import MLP
 #----------------------------------------------------------------------------------------------------
 
 
-n_hidden_layers =
-n_neuron_per_layer =
-hlayers = [n_neuron_per_layer for i in range(n_hidden_layers)]
+### Network type: 'binary' or 'one-hot'
+network_type =
 
 
-### Available activation functions: 'elu', 'relu', 'tanh', 'sigmoid'
-activation =
+number_of_hidden_layers     =
+number_of_neurons_per_layer =
+hidden_layers               = [number_of_neurons_per_layer for i in range(number_of_hidden_layers)]
 
 
-epochs =
+### Available activation functions: 'elu', 'relu', 'tanh', 'sigmoid', 'softplus'
+activation_function_name =
 
 
-early_stop =
+early_stopping_intervall =
 
 
 ### Parameter for dropout
-keep_prob =
+dropout_keep_probability =
 
 
 ### Parameter for L2 regularization
-beta =
+l2_regularization_beta =
+
+
+batch_size_training =
+
+
+#----------------------------------------------------------------------------------------------------
+### Depending on the chosen optimizer, you have to provide the following options:
+### 'Adam':               [beta1=0.9 (float), beta2=0.999 (float), epsilon=1e-8 (float)]
+### 'Adadelta':           [rho=0.95 (float), epsilon=1e-8 (float)]
+### 'Adagrad':            [initial_accumulator_value=0.1 (float)]
+### 'GradDescent':        []
+### 'Momentum':           [momentum=0.9 (float), use_nesterov=False (bool)]
+
+
+optimizer_options = dict()
+
+optimizer_options['optimizer_name'] =
+
+
+optimizer_options['learning_rate_decay'] =
+
+### The following options have to be provided if you want to use learning rate decay.
+#optimizer_options['learning_rate_decay_initial_value'] =
+#optimizer_options['learning_rate_decay_rate']          =
+#optimizer_options['learning_rate_decay_steps']         =
+
+### The following value has to be provided if you do not want to use learning rate decay.
+optimizer_options['learning_rate']                     =
 
 
 #----------------------------------------------------------------------------------------------------
@@ -62,51 +90,53 @@ gpu_usage['per_process_gpu_memory_fraction']          = 0.1
 #----------------------------------------------------------------------------------------------------
 
 
-modeldir             = os.path.join(workdir_base, name_subdir, 'model')
-train_path           = os.path.join(workdir_base, name_subdir, 'training_data/train.npy')
-val_path             = os.path.join(workdir_base, name_subdir, 'training_data/val.npy')
+save_path  = os.path.join(workdir_base, name_subdir, 'model')
+model_name = name_subdir
 
 
-optimizer='adam'
-lr=1e-3
-batch_size=128
-#momentum=
-#lr_decay=
+batch_size_classification = 1000
 
 
+path_to_training_data_set   = os.path.join(workdir_base, name_subdir, 'training_data/train.npy')
+path_to_validation_data_set = os.path.join(workdir_base, name_subdir, 'training_data/val.npy')
+
+
+if network_type == 'one-hot':
+    path_to_process_names = os.path.join(workdir_base, name_subdir, 'training_data/process_labels.txt')
+
+
+#----------------------------------------------------------------------------------------------------
+if network_type == 'binary':
+    number_of_output_neurons = 1
+
+elif network_type == 'one-hot':
+    with open(path_to_process_names, 'r') as file_process_names:
+        process_names = file_process_names.readlines()
+    number_of_output_neurons = len(process_names)
 #----------------------------------------------------------------------------------------------------
 if not os.path.isdir(modeldir):
     if os.path.isdir(os.path.dirname(modeldir)):
         os.mkdir(modeldir)
 #----------------------------------------------------------------------------------------------------
-train = DataFrame(np.load(train_path))
-val = DataFrame(np.load(val_path))
-#----------------------------------------------------------------------------------------------------
-init_dict = {'n_variables' : train.nvariables,
-             'h_layers'    : hlayers,
-             'savedir'     : modeldir,
-             'activation'  : activation
-             }
 
-
-train_dict = {'train_data' : train,
-              'val_data'   : val,
-              'epochs'     : epochs,
-              'batch_size' : batch_size,
-              'lr'         : lr,
-              'optimizer'  : optimizer,
-              'early_stop' : early_stop,
-              'keep_prob'  : keep_prob,
-              'beta'       : beta,
-              'gpu_usage'  : gpu_usage
+train_dict = {'save_path'                   : save_path,
+              'model_name'                  : model_name,
+              'network_type'                : network_type,
+              'number_of_output_neurons'    : number_of_output_neurons,
+              'hidden_layers'               : hidden_layers,
+              'activation_function_name'    : activation_function_name,
+              'dropout_keep_probability'    : dropout_keep_probability,
+              'l2_regularization_beta'      : l2_regularization_beta,
+              'early_stopping_intervall'    : early_stopping_intervall,
+              'path_to_training_data_set'   : path_to_training_data_set,
+              'path_to_validation_data_set' : path_to_validation_data_set,
+              'optimizer_options'           : optimizer_options,
+              'batch_size_training'         : batch_size_training,
+              'batch_size_classification'   : batch_size_classification,
+              'gpu_usage'                   : gpu_usage
               }
 
 
-if optimizer=='momentum':
-    train_dict['momentum'] = momentum
-
-if optimizer=='momentum' or optimizer=='gradientdescent':
-    train_dict['lr_decay'] = lr_decay
 
 
 nn = BinaryMLP(**init_dict) 
