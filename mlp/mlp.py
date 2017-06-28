@@ -321,7 +321,7 @@ class MLP(object):
         layers = list()
         layers.append( activation_function(tf.add(tf.matmul(data, weights[0]), biases[0])) )
 
-        for i in range(1, len(weights-1):
+        for i in range(1, len(weights-1)):
             layers.append( tf.nn.dropout(activation_function(tf.add(tf.matmul(layers[i-1], weights[i]), biases[i])), dropout_keep_probability) )
 
         logit = tf.add(tf.matmul(layers[-1], weights[-1]), biases[-1])
