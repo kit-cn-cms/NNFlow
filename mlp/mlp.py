@@ -47,7 +47,7 @@ class MLP(object):
             sys.exit("File '" + path_to_training_data_set + "' doesn't exist." + "\n")
  
         if not os.path.isfile(path_to_validation_data_set):
-            sys.exit("File '" + path_to_training_data_set + "' doesn't exist." + "\n")
+            sys.exit("File '" + path_to_validation_data_set + "' doesn't exist." + "\n")
  
  
         path_to_model_file = os.path.join(save_path, '{}.ckpt'.format(model_name))
