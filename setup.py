@@ -16,4 +16,4 @@ setup(name             = 'NNFlow',
                           'pandas>=0.20.2',
                           'tables'
                           ],
-    zip_safe           = True)
+      zip_safe         = True)
