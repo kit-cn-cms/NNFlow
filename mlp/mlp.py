@@ -390,8 +390,8 @@ class MLP(object):
 
         network_and_training_properties += '{:{width}} {}\n'.format('Optimizer:', optimizer_options['optimizer_name'], width=column_width)
 
-        optimizer_options_keys     = [key for key in optimizer_options.keys() if 'learning_rate' not in key and key!='optimizer_name'].sort()
-        learning_rate_options_keys = [key for key in optimizer_options.keys() if 'learning_rate' in key].sort()
+        optimizer_options_keys     = sorted([key for key in optimizer_options.keys() if 'learning_rate' not in key and key!='optimizer_name'])
+        learning_rate_options_keys = sorted([key for key in optimizer_options.keys() if 'learning_rate' in key])
 
         for key in optimizer_options_keys:
             network_and_training_properties += '{:{width}} {}\n'.format(key+':', optimizer_options[key], width=column_width)
