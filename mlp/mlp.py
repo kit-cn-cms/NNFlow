@@ -237,7 +237,7 @@ class MLP(object):
         print(110*'-')
 
 
-        print('\n' + '========'
+        print('\n' + '========')
         print(       'FINISHED')
         print(       '========' + '\n')
 
