@@ -90,7 +90,7 @@ class MLP(object):
                 cross_entropy = tf.nn.softmax_cross_entropy_with_logits(labels=labels, logits=logits)
 
 
-            l2_regularization = beta * tf.add_n([tf.nn.l2_loss(w) for w in weights])
+            l2_regularization = l2_regularization_beta * tf.add_n([tf.nn.l2_loss(w) for w in weights])
             loss              = tf.add(tf.reduce_mean(tf.multiply(event_weights, cross_entropy)), l2_regularization)
  
             optimizer, global_step = self._get_optimizer_global_step(optimizer_options)
