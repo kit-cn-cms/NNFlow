@@ -210,7 +210,7 @@ class MLP(object):
  
                 elif (epoch - early_stopping['epoch']) >= early_stopping_intervall:
                     print(110*'-')
-                    print('Validation AUC has not increased for {} epochs. Achieved best validation auc score of {:.4f} in epoch {}'.format(early_stopping_intervall, early_stopping['auc'], early_stopping['epoch']))
+                    print('Validation AUC has not increased for {} epochs. Achieved best validation auc score of {:.4f} in epoch {}'.format(early_stopping_intervall, early_stopping['validation_accuracy'], early_stopping['epoch']))
                     break
 
 
