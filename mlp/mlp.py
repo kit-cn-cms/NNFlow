@@ -33,7 +33,10 @@ class MLP(object):
               batch_size_classification,
               gpu_usage
               ):
- 
+
+
+        print('\n' + 'TRAINING MLP' + '\n')
+
  
         if not os.path.isdir(save_path):
             sys.exit("Directory '" + save_path + "' doesn't exist." + "\n")
@@ -109,10 +112,11 @@ class MLP(object):
             training_accuracies   = list()
             validation_accuracies = list()
             training_losses       = list()
-            early_stopping        = {'accuracy': -1.0, 'epoch': 0}
+            early_stopping        = {'validation_accuracy': -1.0, 'epoch': 0}
             epoch_durations       = list()
- 
- 
+
+
+            print('\n', end='')
             print(110*'-')
             if network_type == 'binary':
                 print('{:^25} | {:^25} | {:^25} | {:^25}'.format('Epoch', 'Training data: loss', 'Training data: ROC AUC', 'Validation data: ROC AUC'))
@@ -208,27 +212,30 @@ class MLP(object):
                     break
 
 
-            #----------------------------------------------------------------------------------------------------
- 
-            network_and_training_properties_string = self._get_network_and_training_properties_string(network_type                 = network_type,
-                                                                                                      number_of_input_neurons      = number_of_input_neurons,
-                                                                                                      hidden_layers                = hidden_layers,
-                                                                                                      activation_function_name     = activation_function_name,
-                                                                                                      dropout_keep_probability     = dropout_keep_probability,
-                                                                                                      l2_regularization_beta       = l2_regularization_beta,
-                                                                                                      early_stopping_interval      = early_stopping_intervall,
-                                                                                                      optimizer_options            = optimizer_options,
-                                                                                                      batch_size_training          = batch_size_training,
-                                                                                                      early_stopping               = early_stopping,
-                                                                                                      mean_training_time_per_epoch = np.mean(epoch_durations)
-                                                                                                      )
+        #----------------------------------------------------------------------------------------------------
 
-            with open(os.path.join(save_path, 'NN_Info.txt'), 'w') as NN_Info_output_file:
-                NN_Info_output_file.write(network_and_training_properties_string)
+        network_and_training_properties_string = self._get_network_and_training_properties_string(network_type                 = network_type,
+                                                                                                  number_of_input_neurons      = number_of_input_neurons,
+                                                                                                  hidden_layers                = hidden_layers,
+                                                                                                  activation_function_name     = activation_function_name,
+                                                                                                  dropout_keep_probability     = dropout_keep_probability,
+                                                                                                  l2_regularization_beta       = l2_regularization_beta,
+                                                                                                  early_stopping_interval      = early_stopping_intervall,
+                                                                                                  optimizer_options            = optimizer_options,
+                                                                                                  batch_size_training          = batch_size_training,
+                                                                                                  early_stopping               = early_stopping,
+                                                                                                  mean_training_time_per_epoch = np.mean(epoch_durations)
+                                                                                                  )
 
-            print(110*'-')
-            print(network_and_training_properties_string, end='')
-            print(110*'-' + '\n')
+        with open(os.path.join(save_path, 'NN_Info.txt'), 'w') as NN_Info_output_file:
+            NN_Info_output_file.write(network_and_training_properties_string)
+
+        print(110*'-')
+        print(network_and_training_properties_string, end='')
+        print(110*'-')
+
+
+        print('\n' + 'FINISHED' + '\n')
 
 
 
