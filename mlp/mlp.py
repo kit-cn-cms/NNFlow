@@ -41,7 +41,7 @@ class MLP(object):
         if not os.path.isdir(path_to_training_data_set):
             sys.exit("Directory '" + path_to_training_data_set + "' doesn't exist." + "\n")
  
-        if not os.path.isdir(path_to_validation_data_set:
+        if not os.path.isdir(path_to_validation_data_set):
             sys.exit("Directory '" + path_to_training_data_set + "' doesn't exist." + "\n")
  
  
