@@ -1,5 +1,5 @@
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(name='NNFlow',
       version='0.5.0',
@@ -7,7 +7,7 @@ setup(name='NNFlow',
       url='https://github.com/kit-cn-cms/NNFlow',
       author='KIT CN CMS team: Lukas Hilser, Marco A. Harrendorf, Maximilian Welsch',
       author_email='iekp-cn-analysis@lists.kit.edu',
-      packages=['NNFlow'],
+      packages=find_packages(),
       install_requires=[
           'matplotlib',
           'root-numpy',
