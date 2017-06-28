@@ -113,12 +113,12 @@ class MLP(object):
             epoch_durations       = list()
  
  
-            print(100*'-')
+            print(110*'-')
             if network_type == 'binary':
-                print('{:^25} | {:^25} | {:^25} |{:^25}'.format('Epoch', 'Training data: loss', 'Training data: ROC AUC', 'Validation data: ROC AUC'))
+                print('{:^25} | {:^25} | {:^25} | {:^25}'.format('Epoch', 'Training data: loss', 'Training data: ROC AUC', 'Validation data: ROC AUC'))
             elif network_type == 'one-hot':
-                print('{:^25} | {:^25} | {:^25} |{:^25}'.format('Epoch', 'Training data: loss', 'Training data: accuracy', 'Validation data: accuracy'))
-            print(100*'-')
+                print('{:^25} | {:^25} | {:^25} | {:^25}'.format('Epoch', 'Training data: loss', 'Training data: accuracy', 'Validation data: accuracy'))
+            print(110*'-')
 
 
             for epoch in itertools.count(start=1, step=1):
@@ -147,9 +147,9 @@ class MLP(object):
                                                                                                                                 sort_events_randomly       = False,
                                                                                                                                 include_smaller_last_batch = True
                                                                                                                                 ):
-                    batch_prediction, batch_loss = sess.run([prediction, loss], {input_data    : batch_data,
-                                                                                 labels        : batch_labels,
-                                                                                 event_weights : batch_event_weights})
+                    batch_prediction, batch_loss = sess.run([predictions, loss], {input_data    : batch_data,
+                                                                                  labels        : batch_labels,
+                                                                                  event_weights : batch_event_weights})
  
                     training_batch_predictions.append(batch_prediction)
                     training_batch_losses.append(batch_loss)
@@ -171,9 +171,9 @@ class MLP(object):
                                                                                                                                   sort_events_randomly       = False,
                                                                                                                                   include_smaller_last_batch = True
                                                                                                                                   ):
-                    batch_prediction = sess.run(prediction, {input_data    : batch_data,
-                                                             labels        : batch_labels,
-                                                             event_weights : batch_event_weights})
+                    batch_prediction = sess.run(predictions, {input_data    : batch_data,
+                                                              labels        : batch_labels,
+                                                              event_weights : batch_event_weights})
 
                     validation_batch_predictions.append(batch_prediction)
 
@@ -203,7 +203,7 @@ class MLP(object):
  
  
                 elif (epoch - early_stopping['epoch']) >= early_stopping_intervall:
-                    print(100*'-')
+                    print(110*'-')
                     print('Validation AUC has not increased for {} epochs. Achieved best validation auc score of {:.4f} in epoch {}'.format(early_stop, early_stopping['auc'], early_stopping['epoch']))
                     break
 
@@ -226,9 +226,9 @@ class MLP(object):
             with open(os.path.join(save_path, 'NN_Info.txt'), 'w') as NN_Info_output_file:
                 NN_Info_output_file.write(network_and_training_properties_string)
 
-            print(100*'-')
+            print(110*'-')
             print(network_and_training_properties_string, end='')
-            print(100*'-' + '\n')
+            print(110*'-' + '\n')
 
 
 
