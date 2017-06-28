@@ -55,26 +55,6 @@ class ModelAnalyser(object):
 
 
 
-    def _get_session_config(self):
-
-
-        config = tf.ConfigProto()
-        if self._gpu_usage['shared_machine']:
-            if self._gpu_usage['restrict_visible_devices']:
-                os.environ['CUDA_VISIBLE_DEVICES'] = self._gpu_usage['CUDA_VISIBLE_DEVICES']
-
-            if self._gpu_usage['allow_growth']:
-                config.gpu_options.allow_growth = True
-
-            if self._gpu_usage['restrict_per_process_gpu_memory_fraction']:
-                config.gpu_options.per_process_gpu_memory_fraction = self._gpu_usage['per_process_gpu_memory_fraction']
-
-
-        return config
-
-
-
-
     def _get_predictions_labels_weights(self,
                                         path_to_input_file):
 

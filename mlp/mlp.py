@@ -10,10 +10,11 @@ import numpy as np
 import tensorflow as tf
 from sklearn.metrics import roc_auc_score
 
+from NNFlow_base_class.NNFlow_base_class import NNFlowBaseClass
 from data_frame.data_frame import DataFrame
 
 
-class MLP(object):
+class MLP(NNFlowBaseClass):
 
 
     def train(self,
@@ -482,25 +483,3 @@ class MLP(object):
 
 
         return optimizer, global_step
-
-
-
-
-    def _get_session_config(self,
-                            gpu_usage
-                            ):
-
-
-        config = tf.ConfigProto()
-        if gpu_usage['shared_machine']:
-            if gpu_usage['restrict_visible_devices']:
-                os.environ['CUDA_VISIBLE_DEVICES'] = gpu_usage['CUDA_VISIBLE_DEVICES']
-
-            if gpu_usage['allow_growth']:
-                config.gpu_options.allow_growth = True
-
-            if gpu_usage['restrict_per_process_gpu_memory_fraction']:
-                config.gpu_options.per_process_gpu_memory_fraction = gpu_usage['per_process_gpu_memory_fraction']
-
-
-        return config
