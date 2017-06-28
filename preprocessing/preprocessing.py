@@ -30,7 +30,9 @@ def root_to_HDF5(save_path,
                  conditions_for_splitting={'variables': list()}):
 
 
-    print('\n' + 'CONVERT ROOT FILES TO HDF5 FILES' + '\n')
+    print('\n' + '================================')
+    print(       'CONVERT ROOT FILES TO HDF5 FILES')
+    print(       '================================' + '\n')
 
 
     if isinstance(filenames_inputfiles, basestring):
@@ -231,7 +233,9 @@ def root_to_HDF5(save_path,
                 store.put('weights_in_data_set', pd.Series(weights_to_keep), format='fixed')
 
 
-    print('\n' + 'FINISHED' + '\n')
+    print('\n' + '========')
+    print(       'FINISHED')
+    print(       '========' + '\n')
 
 
 
@@ -242,7 +246,9 @@ def merge_data_sets(path_to_inputfiles,
                     columns_for_cutbased_event_selection=list()):
 
 
-    print('\n' + 'MERGE DATA SETS' + '\n')
+    print('\n' + '===============')
+    print(       'MERGE DATA SETS')
+    print(       '===============' + '\n')
 
 
     for filename in np.concatenate(input_data_sets.values()):
@@ -315,7 +321,9 @@ def merge_data_sets(path_to_inputfiles,
         store_output.put('processes_in_data_set', pd.Series(processes), format='fixed')
 
 
-    print('\n' + 'FINISHED' + '\n')
+    print('\n' + '========')
+    print(       'FINISHED')
+    print(       '========' + '\n')
 
 
 
@@ -336,7 +344,9 @@ def create_data_set_for_training(save_path,
                                  new_process_labels=None):
 
 
-    print('\n' + 'CREATE DATA SET FOR TRAINING' + '\n')
+    print('\n' + '============================')
+    print(       'CREATE DATA SET FOR TRAINING')
+    print(       '============================' + '\n')
     
     
     if not os.path.isdir(save_path):
@@ -540,4 +550,6 @@ def create_data_set_for_training(save_path,
                 outputfile_process_labels.write(process + '\n')
 
 
-    print('FINISHED' + '\n')
+    print('========')
+    print('FINISHED')
+    print('========' + '\n')

@@ -35,7 +35,9 @@ class MLP(object):
               ):
 
 
-        print('\n' + 'TRAINING MLP' + '\n')
+        print('\n' + '============')
+        print(       'TRAINING MLP')
+        print(       '============' + '\n')
 
  
         if not os.path.isdir(save_path):
@@ -208,7 +210,7 @@ class MLP(object):
  
                 elif (epoch - early_stopping['epoch']) >= early_stopping_intervall:
                     print(110*'-')
-                    print('Validation AUC has not increased for {} epochs. Achieved best validation auc score of {:.4f} in epoch {}'.format(early_stop, early_stopping['auc'], early_stopping['epoch']))
+                    print('Validation AUC has not increased for {} epochs. Achieved best validation auc score of {:.4f} in epoch {}'.format(early_stopping_intervall, early_stopping['auc'], early_stopping['epoch']))
                     break
 
 
@@ -235,7 +237,9 @@ class MLP(object):
         print(110*'-')
 
 
-        print('\n' + 'FINISHED' + '\n')
+        print('\n' + '========'
+        print(       'FINISHED')
+        print(       '========' + '\n')
 
 
 
