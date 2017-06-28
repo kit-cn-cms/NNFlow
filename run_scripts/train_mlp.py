@@ -116,9 +116,9 @@ elif network_type == 'one-hot':
         process_names = file_process_names.readlines()
     number_of_output_neurons = len(process_names)
 #----------------------------------------------------------------------------------------------------
-if not os.path.isdir(modeldir):
-    if os.path.isdir(os.path.dirname(modeldir)):
-        os.mkdir(modeldir)
+if not os.path.isdir(save_path):
+    if os.path.isdir(os.path.dirname(save_path)):
+        os.mkdir(save_path)
 #----------------------------------------------------------------------------------------------------
 train_dict = {'save_path'                   : save_path,
               'model_name'                  : model_name,
