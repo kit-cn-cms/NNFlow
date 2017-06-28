@@ -121,7 +121,7 @@ class MLP(object):
             print(100*'-')
 
 
-            for epoch in itertools.count(start=1, step=1)
+            for epoch in itertools.count(start=1, step=1):
                 epoch_start = time.time()
 
 
