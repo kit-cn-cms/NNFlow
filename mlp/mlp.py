@@ -414,7 +414,7 @@ class MLP(object):
         network_and_training_properties += '\n'
 
 
-        network_and_training_properties += '{:{width}} {:.3f} s\n'.format('Mean training time per epoch:', mean_training_time_per_epoch, width=column_width)
+        network_and_training_properties += '{:{width}} {:.2f} s\n'.format('Mean training time per epoch:', mean_training_time_per_epoch, width=column_width)
 
 
         return network_and_training_properties
