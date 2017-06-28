@@ -4,6 +4,10 @@ A framework to train binary and multinomial neural networks for the separation o
 
 The framework is based on a framework for binary classification by Max Welsch and a framework for multinomial classification by Martin Lang.
 
+## Mirroring
+* This repository is hosted on gitlab.cern.ch and all PR should go to this repository.
+* In addition, this repository is also mirrored to Github
+
 
 ## Install environment
 ### On ekpdeepthought
