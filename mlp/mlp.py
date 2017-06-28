@@ -358,7 +358,7 @@ class MLP(object):
         network_and_training_properties += '\n'
 
 
-        network_and_training_properties += '{:{width}} {}\n'.format('Network type:' network_type, width=column_width)
+        network_and_training_properties += '{:{width}} {}\n'.format('Network type:', network_type, width=column_width)
         network_and_training_properties += '\n'
 
 
