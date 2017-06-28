@@ -406,15 +406,15 @@ class MLP(object):
         network_and_training_properties += '{:{width}} {}\n'.format('Early stopping epoch:', early_stopping['epoch'], width=column_width)
 
         if network_type == 'binary':
-            network_and_training_properties += '{:{width}} {}\n'.format('ROC AUC (validation data set, early stopping epoch):', early_stopping['validation_accuracy'], width=column_width)
+            network_and_training_properties += '{:{width}} {:.4f}\n'.format('ROC AUC (validation data set, early stopping epoch):', early_stopping['validation_accuracy'], width=column_width)
 
         elif network_type == 'one-hot':
-            network_and_training_properties += '{:{width}} {}\n'.format('Accuracy (validation data set, early stopping epoch):', early_stopping['validation_accuracy'], width=column_width)
+            network_and_training_properties += '{:{width}} {:.4f}\n'.format('Accuracy (validation data set, early stopping epoch):', early_stopping['validation_accuracy'], width=column_width)
 
         network_and_training_properties += '\n'
 
 
-        network_and_training_properties += '{:{width}} {} s\n'.format('Mean training time per epoch:', mean_training_time_per_epoch, width=column_width)
+        network_and_training_properties += '{:{width}} {:.3f} s\n'.format('Mean training time per epoch:', mean_training_time_per_epoch, width=column_width)
 
 
         return network_and_training_properties
