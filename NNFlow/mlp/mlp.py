@@ -10,11 +10,10 @@ import numpy as np
 import tensorflow as tf
 from sklearn.metrics import roc_auc_score
 
-from NNFlow_base_class.NNFlow_base_class import NNFlowBaseClass
 from data_frame.data_frame import DataFrame
 
 
-class MLP(NNFlowBaseClass):
+class MLP(object):
 
 
     def train(self,
@@ -147,45 +146,43 @@ class MLP(NNFlowBaseClass):
                 #----------------------------------------------------------------------------------------------------
                 # Make predictions for training data set.
 
-                training_batch_predictions = list()
-                training_batch_losses      = list()
+                training_batch_predictions_list = list()
+                training_batch_loss_list        = list()
 
                 for batch_data, batch_labels, batch_event_weights in training_data_set.get_data_labels_event_weights_as_batches(batch_size                 = batch_size_classification,
                                                                                                                                 sort_events_randomly       = False,
                                                                                                                                 include_smaller_last_batch = True
                                                                                                                                 ):
-                    batch_prediction, batch_loss = sess.run([predictions, loss], {input_data    : batch_data,
-                                                                                  labels        : batch_labels,
-                                                                                  event_weights : batch_event_weights})
+                    batch_predictions, batch_loss = sess.run([predictions, loss], {input_data    : batch_data,
+                                                                                   labels        : batch_labels,
+                                                                                   event_weights : batch_event_weights})
  
-                    training_batch_predictions.append(batch_prediction)
-                    training_batch_losses.append(batch_loss)
+                    training_batch_predictions_list.append(batch_predictions)
+                    training_batch_loss_list.append(batch_loss)
  
 
-                training_predictions                    = np.concatenate(training_batch_predictions, axis=0)
+                training_predictions                    = np.concatenate(training_batch_predictions_list, axis=0)
                 training_labels, training_event_weights = training_data_set.get_labels_event_weights()
                 training_accuracies.append(self._get_accuracy(training_labels, training_predictions, training_event_weights, network_type))
 
-                training_losses.append(np.mean(training_batch_losses))
+                training_losses.append(np.mean(training_batch_loss_list))
 
 
                 #----------------------------------------------------------------------------------------------------
                 # Make predictions for validation data set.
 
-                validation_batch_predictions = list()
+                validation_batch_predictions_list = list()
 
                 for batch_data, batch_labels, batch_event_weights in validation_data_set.get_data_labels_event_weights_as_batches(batch_size                 = batch_size_classification,
                                                                                                                                   sort_events_randomly       = False,
                                                                                                                                   include_smaller_last_batch = True
                                                                                                                                   ):
-                    batch_prediction = sess.run(predictions, {input_data    : batch_data,
-                                                              labels        : batch_labels,
-                                                              event_weights : batch_event_weights})
+                    batch_predictions = sess.run(predictions, {input_data : batch_data})
 
-                    validation_batch_predictions.append(batch_prediction)
+                    validation_batch_predictions_list.append(batch_predictions)
 
 
-                validation_predictions                      = np.concatenate(validation_batch_predictions, axis=0)
+                validation_predictions                      = np.concatenate(validation_batch_predictions_list, axis=0)
                 validation_labels, validation_event_weights = validation_data_set.get_labels_event_weights()
                 validation_accuracies.append(self._get_accuracy(validation_labels, validation_predictions, validation_event_weights, network_type))
 
@@ -483,3 +480,25 @@ class MLP(NNFlowBaseClass):
 
 
         return optimizer, global_step
+
+
+
+
+    def _get_session_config(self,
+                            gpu_usage
+                            ):
+
+
+        config = tf.ConfigProto()
+        if gpu_usage['shared_machine']:
+            if gpu_usage['restrict_visible_devices']:
+                os.environ['CUDA_VISIBLE_DEVICES'] = gpu_usage['CUDA_VISIBLE_DEVICES']
+
+            if gpu_usage['allow_growth']:
+                config.gpu_options.allow_growth = True
+
+            if gpu_usage['restrict_per_process_gpu_memory_fraction']:
+                config.gpu_options.per_process_gpu_memory_fraction = gpu_usage['per_process_gpu_memory_fraction']
+
+
+        return config

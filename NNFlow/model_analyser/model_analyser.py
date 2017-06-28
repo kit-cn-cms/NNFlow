@@ -55,14 +55,34 @@ class ModelAnalyser(object):
 
 
 
-    def _get_predictions_labels_weights(self,
-                                        path_to_input_file):
+    def _get_session_config(self):
 
 
-        data_labels_weights = DataFrame(path_to_input_file       = path_to_input_file,
-                                        number_of_output_neurons = self._number_of_output_neurons)
+        config = tf.ConfigProto()
+        if self._gpu_usage['shared_machine']:
+            if self._gpu_usage['restrict_visible_devices']:
+                os.environ['CUDA_VISIBLE_DEVICES'] = self._gpu_usage['CUDA_VISIBLE_DEVICES']
+
+            if self._gpu_usage['allow_growth']:
+                config.gpu_options.allow_growth = True
+
+            if self._gpu_usage['restrict_per_process_gpu_memory_fraction']:
+                config.gpu_options.per_process_gpu_memory_fraction = self._gpu_usage['per_process_gpu_memory_fraction']
+
+
+        return config
+
+
+
+
+    def _get_labels_predictions_event_weights(self,
+                                              path_to_input_file):
+
+
+        data_labels_event_weights = DataFrame(path_to_input_file       = path_to_input_file,
+                                              number_of_output_neurons = self._number_of_output_neurons)
         
-        data, labels, weights = data_labels_weights.get_data_labels_weights()
+        data, labels, weights = data_labels_event_weights.get_data_labels_event_weights()
 
 
         config = self._get_session_config()
@@ -71,11 +91,10 @@ class ModelAnalyser(object):
             saver = tf.train.import_meta_graph(self._path_to_model + '.meta')
             saver.restore(sess, path_to_model)
 
-            x = graph.get_tensor_by_name("input:0")
-            y = graph.get_tensor_by_name("output:0")
+            input_data  = graph.get_tensor_by_name("input:0")
+            predictions = graph.get_tensor_by_name("output:0")
 
-            feed_dict = {x:data}
-            predictions = sess.run(y, feed_dict)
+            predictions = sess.run(y, {input_data : data})
 
 
-        return predictions, labels, weights
+        return labels, predictions, event_weights
