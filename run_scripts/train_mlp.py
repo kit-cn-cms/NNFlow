@@ -72,7 +72,7 @@ optimizer_options['learning_rate_decay'] =
 #optimizer_options['learning_rate_decay_steps']         =
 
 ### The following value has to be provided if you do not want to use learning rate decay.
-optimizer_options['learning_rate']                     =
+optimizer_options['learning_rate'] =
 
 
 #----------------------------------------------------------------------------------------------------
