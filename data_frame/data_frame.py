@@ -24,8 +24,8 @@ class DataFrame(object):
             self._labels = array[:, :number_of_output_neurons]
 
 
-        self._number_of_events    = self.data.shape[0]
-        self._number_of_variables = self.data.shape[1]
+        self._number_of_events    = self._data.shape[0]
+        self._number_of_variables = self._data.shape[1]
 
 
 
