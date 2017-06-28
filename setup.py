@@ -13,7 +13,7 @@ setup(name             = 'NNFlow',
                           'root-numpy',
                           'tensorflow-gpu>=1.1.0*',
                           'scikit-learn>=0.18.2',
-                          'pandas',
+                          'pandas>=0.20.2',
                           'tables'
                           ],
-    zip_safe=True)
+    zip_safe           = True)
