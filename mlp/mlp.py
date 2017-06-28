@@ -210,7 +210,11 @@ class MLP(object):
  
                 elif (epoch - early_stopping['epoch']) >= early_stopping_intervall:
                     print(110*'-')
-                    print('Validation AUC has not increased for {} epochs. Achieved best validation auc score of {:.4f} in epoch {}'.format(early_stopping_intervall, early_stopping['validation_accuracy'], early_stopping['epoch']))
+                    if network_type == 'binary':
+                        print('ROC AUC on validation data has not increased for {} epochs. Achieved best ROC AUC of {:.4f} in epoch {}'.format(early_stopping_intervall, early_stopping['validation_accuracy'], early_stopping['epoch']))
+                    elif network_type == 'one-hot':
+                        print('Accuracy on validation data has not increased for {} epochs. Achieved best accuracy of {:.4f} in epoch {}'.format(early_stopping_intervall, early_stopping['validation_accuracy'], early_stopping['epoch']))
+                    
                     break
 
 
