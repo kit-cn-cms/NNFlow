@@ -96,7 +96,7 @@ save_path  = os.path.join(workdir_base, name_subdir, 'model')
 model_name = name_subdir
 
 
-batch_size_classification = 1000
+batch_size_classification = 200000
 
 
 path_to_training_data_set   = os.path.join(workdir_base, name_subdir, 'training_data/train.npy')
