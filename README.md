@@ -69,9 +69,12 @@ Activate environment in a new shell:
 export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
 source $VO_CMS_SW_DIR/cmsset_default.sh
 
-cd /path/to/CMSSW_9_0_3
+cd /path/to/CMSSW_9_2_0
 cd src
 cmsenv
+
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/cuda-7.5-cudNNV5.1/lib64:/usr/local/cuda-7.5-cudNNV5.1/extras/CUPTI/lib64"
+export CUDA_HOME=/usr/local/cuda-7.5-cudNNV5.1
 ```
 
 
