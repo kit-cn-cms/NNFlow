@@ -46,8 +46,8 @@ export PYTHONPATH=$PYTHONPATH:/usr/local/lib
 export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
 source $VO_CMS_SW_DIR/cmsset_default.sh
 
-export SCRAM_ARCH="slc6_amd64_gcc530"
-export CMSSW_VERSION="CMSSW_9_0_3"
+export SCRAM_ARCH="slc6_amd64_gcc700"
+export CMSSW_VERSION="CMSSW_9_2_0"
 export CMSSWINSTALLDIR=$PWD"/"$CMSSW_VERSION
 export PIPTARGETDIR=$CMSSWINSTALLDIR"/lib/"$SCRAM_ARCH
 scram project $CMSSW_VERSION
@@ -58,9 +58,10 @@ wget https://bootstrap.pypa.io/get-pip.py
 python get-pip.py --target=$PIPTARGETDIR
 rm get-pip.py
 
-python -m pip install --target=$PIPTARGETDIR root_numpy
-python -m pip install --target=$PIPTARGETDIR tables
-python -m pip install --target=$PIPTARGETDIR --upgrade pandas
+python -m pip install --target=$PIPTARGETDIR git+http://github.com/kit-cn-cms/NNFlow.git#egg=NNFlow
+
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/cuda-7.5-cudNNV5.1/lib64:/usr/local/cuda-7.5-cudNNV5.1/extras/CUPTI/lib64"
+export CUDA_HOME=/usr/local/cuda-7.5-cudNNV5.1
 ```
 
 Activate environment in a new shell:
