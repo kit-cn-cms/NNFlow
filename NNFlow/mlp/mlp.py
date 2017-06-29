@@ -10,7 +10,7 @@ import numpy as np
 import tensorflow as tf
 from sklearn.metrics import roc_auc_score
 
-from data_frame.data_frame import DataFrame
+from NNFlow.data_frame.data_frame import DataFrame
 
 
 def train_mlp(save_path,

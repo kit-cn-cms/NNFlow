@@ -8,7 +8,7 @@ import pandas as pd
 
 from root_numpy import root2array
 
-from definitions import definitions
+from NNFlow.definitions import definitions
 
 
 
