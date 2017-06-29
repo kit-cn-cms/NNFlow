@@ -13,6 +13,45 @@ from sklearn.metrics import roc_auc_score
 from data_frame.data_frame import DataFrame
 
 
+def train_mlp(save_path,
+              model_name,
+              network_type,
+              number_of_output_neurons,
+              hidden_layers,
+              activation_function_name,
+              dropout_keep_probability,
+              l2_regularization_beta,
+              early_stopping_intervall,
+              path_to_training_data_set,
+              path_to_validation_data_set,
+              optimizer_options,
+              batch_size_training,
+              batch_size_classification,
+              gpu_usage
+              ):
+
+
+    mlp = MLP()
+    mlp.train(save_path                   = save_path,
+              model_name                  = model_name,
+              network_type                = network_type,
+              number_of_output_neurons    = number_of_output_neurons,
+              hidden_layers               = hidden_layers,
+              activation_function_name    = activation_function_name,
+              dropout_keep_probability    = dropout_keep_probability,
+              l2_regularization_beta      = l2_regularization_beta,
+              early_stopping_intervall    = early_stopping_intervall,
+              path_to_training_data_set   = path_to_training_data_set,
+              path_to_validation_data_set = path_to_validation_data_set,
+              optimizer_options           = optimizer_options,
+              batch_size_training         = batch_size_training,
+              batch_size_classification   = batch_size_classification,
+              gpu_usage                   = gpu_usage
+              )
+
+
+
+
 class MLP(object):
 
 
