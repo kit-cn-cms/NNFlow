@@ -11,37 +11,6 @@ The framework is based on a framework for binary classification by Max Welsch an
 
 
 ## Install environment
-### On ekpdeepthought
-
-```
-export TENSORFLOWINSTALLDIR=$PWD"/TensorFlow"
-virtualenv --system-site-packages $TENSORFLOWINSTALLDIR
-source $TENSORFLOWINSTALLDIR/bin/activate
-pip install tensorflow-gpu
-export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/cuda-7.5-cudNNV5.1/lib64:/usr/local/cuda-7.5-cudNNV5.1/extras/CUPTI/lib64"
-export CUDA_HOME=/usr/local/cuda-7.5-cudNNV5.1
-export PYTHONPATH=$PYTHONPATH:/usr/local/lib
-pip install scipy
-pip install matplotlib
-pip install rootpy
-NOTMVA=1 pip2 install --upgrade  root_numpy
-pip install pandas
-pip install tables
-pip install scikit-learn
-```
-
-Activate virtual environment in a new shell:
-```
-export TENSORFLOWDIR=/path/to/tensorflow
-source $TENSORFLOWDIR/bin/activate
-export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/cuda-7.5-cudNNV5.1/lib64:/usr/local/cuda-7.5-cudNNV5.1/extras/CUPTI/lib64"
-export CUDA_HOME=/usr/local/cuda-7.5-cudNNV5.1
-export PYTHONPATH=$PYTHONPATH:/usr/local/lib
-```
-
-
-### On ekpbms3
-
 ```
 export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
 source $VO_CMS_SW_DIR/cmsset_default.sh
