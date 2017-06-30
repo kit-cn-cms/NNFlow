@@ -7,12 +7,10 @@ class Optimizer(object):
 
 
     def __init__(self,
-                 optimizer_name,
                  learning_rate
                  ):
 
 
-        self._optimizer_name = optimizer_name
         self._learning_rate  = learning_rate
 
         self._learning_rate_decay = False
@@ -33,7 +31,7 @@ class Optimizer(object):
 
 
 
-    def get_optimizer_global_step(self):
+    def _get_learning_rate(self):
 
 
         global_step = tf.Variable(0, trainable=False)
@@ -44,3 +42,65 @@ class Optimizer(object):
 
         else:
             learning_rate = self._learning_rate
+
+
+        return learning_rate
+
+
+
+
+class AdadeltaOptimizer(Optimizer):
+
+
+    def __init__(self,
+                 rho,
+                 epsilon
+                 ):
+
+
+        Optimizer.__init__(self, learning_rate)
+
+        self._rho     = rho
+        self._epsilon = epsilon
+
+
+
+
+    def get_optimizer_global_step(self):
+
+
+        global_step = tf.Variable(0, trainable=False)
+        learning_rate = self._get_learning_rate()
+
+        return tf.train.AdadeltaOptimizer(learning_rate, rho=rho, epsilon=epsilon)
+
+
+
+
+class AdamOptimizer(Optimizer):
+
+
+    def __init__(self,
+                 learning_rate,
+                 beta1,
+                 beta2,
+                 epsilon
+                 ):
+
+
+        Optimizer.__init__(self, learning_rate)
+
+        self._beta1   = beta1
+        self._beta2   = beta2
+        self._epsilon = epsilon
+
+
+
+
+    def get_optimizer_global_step(self):
+
+
+        global_step = tf.Variable(0, trainable=False)
+        learning_rate = self._get_learning_rate()
+
+        tf.train.AdamOptimizer(learning_rate, beta1=beta1, beta2=beta2, epsilon=epsilon)
