@@ -7,7 +7,7 @@ import pandas as pd
 
 import tensorflow as tf
 
-from data_frame.data_frame import DataFrame
+from NNFlow.data_frame.data_frame import DataFrame
 
 
 class ModelAnalyser(object):
@@ -79,8 +79,8 @@ class ModelAnalyser(object):
                                               path_to_input_file):
 
 
-        data_labels_event_weights = DataFrame(path_to_input_file       = path_to_input_file,
-                                              number_of_output_neurons = self._number_of_output_neurons)
+        data_set = DataFrame(path_to_input_file       = path_to_input_file,
+                             number_of_output_neurons = self._number_of_output_neurons)
         
         data, labels, weights = data_labels_event_weights.get_data_labels_event_weights()
 
@@ -91,10 +91,10 @@ class ModelAnalyser(object):
             saver = tf.train.import_meta_graph(self._path_to_model + '.meta')
             saver.restore(sess, path_to_model)
 
-            input_data  = graph.get_tensor_by_name("input:0")
-            predictions = graph.get_tensor_by_name("output:0")
+            input_data     = graph.get_tensor_by_name("input:0")
+            network_output = graph.get_tensor_by_name("output:0")
 
-            predictions = sess.run(y, {input_data : data})
+            predictions = sess.run(network_output, {input_data : data})
 
 
         return labels, predictions, event_weights
