@@ -27,7 +27,7 @@ def train_mlp(save_path,
               optimizer_options,
               batch_size_training,
               batch_size_classification,
-              gpu_usage
+              session_config
               ):
 
 
@@ -46,7 +46,7 @@ def train_mlp(save_path,
               optimizer_options           = optimizer_options,
               batch_size_training         = batch_size_training,
               batch_size_classification   = batch_size_classification,
-              gpu_usage                   = gpu_usage
+              session_config              = session_config
               )
 
 
@@ -70,7 +70,7 @@ class MLP(object):
               optimizer_options,
               batch_size_training,
               batch_size_classification,
-              gpu_usage
+              session_config
               ):
 
 
@@ -145,7 +145,7 @@ class MLP(object):
 
         #----------------------------------------------------------------------------------------------------
 
-        config = self._get_session_config(gpu_usage)
+        config = session_config.get_config()
         with tf.Session(config=config, graph=graph) as sess:
             sess.run(tf.global_variables_initializer())
  
@@ -519,25 +519,3 @@ class MLP(object):
 
 
         return optimizer, global_step
-
-
-
-
-    def _get_session_config(self,
-                            gpu_usage
-                            ):
-
-
-        config = tf.ConfigProto()
-        if gpu_usage['shared_machine']:
-            if gpu_usage['restrict_visible_devices']:
-                os.environ['CUDA_VISIBLE_DEVICES'] = gpu_usage['CUDA_VISIBLE_DEVICES']
-
-            if gpu_usage['allow_growth']:
-                config.gpu_options.allow_growth = True
-
-            if gpu_usage['restrict_per_process_gpu_memory_fraction']:
-                config.gpu_options.per_process_gpu_memory_fraction = gpu_usage['per_process_gpu_memory_fraction']
-
-
-        return config

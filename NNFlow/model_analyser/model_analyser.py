@@ -15,12 +15,13 @@ class ModelAnalyser(object):
     def __init__(self,
                  path_to_model,
                  number_of_output_neurons,
-                 gpu_usage):
+                 session_config
+                 ):
 
 
         self._path_to_model            = path_to_model
         self._number_of_output_neurons = number_of_output_neurons
-        self._gpu_usage                = gpu_usage
+        self._session_config           = session_config
 
 
 
@@ -30,7 +31,7 @@ class ModelAnalyser(object):
                               path_to_variablelist):
 
 
-        config = self._get_session_config()
+        config = self._session_config.get_config()
         graph = tf.Graph()
         with tf.Session(config=config, graph=graph) as sess:
              saver = tf.train.import_meta_graph(self._path_to_model + '.meta')
@@ -55,26 +56,6 @@ class ModelAnalyser(object):
 
 
 
-    def _get_session_config(self):
-
-
-        config = tf.ConfigProto()
-        if self._gpu_usage['shared_machine']:
-            if self._gpu_usage['restrict_visible_devices']:
-                os.environ['CUDA_VISIBLE_DEVICES'] = self._gpu_usage['CUDA_VISIBLE_DEVICES']
-
-            if self._gpu_usage['allow_growth']:
-                config.gpu_options.allow_growth = True
-
-            if self._gpu_usage['restrict_per_process_gpu_memory_fraction']:
-                config.gpu_options.per_process_gpu_memory_fraction = self._gpu_usage['per_process_gpu_memory_fraction']
-
-
-        return config
-
-
-
-
     def _get_labels_predictions_event_weights(self,
                                               path_to_input_file):
 
@@ -85,7 +66,7 @@ class ModelAnalyser(object):
         data, labels, weights = data_labels_event_weights.get_data_labels_event_weights()
 
 
-        config = self._get_session_config()
+        config = self._session_config.get_config()
         graph = tf.Graph()
         with tf.Session(config=config, graph=graph) as sess:
             saver = tf.train.import_meta_graph(self._path_to_model + '.meta')
