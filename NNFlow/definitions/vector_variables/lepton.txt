@@ -1,5 +1,0 @@
-LooseLepton_E
-LooseLepton_Eta
-LooseLepton_M
-LooseLepton_Phi
-LooseLepton_Pt
