@@ -10,7 +10,8 @@ The framework is based on a framework for binary classification by Max Welsch an
 - In addition, this repository is also mirrored to Github.
 
 
-## Install environment
+## Install NNFlow
+### In a CMSSW environment
 ```
 export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
 source $VO_CMS_SW_DIR/cmsset_default.sh
@@ -27,6 +28,8 @@ wget https://bootstrap.pypa.io/get-pip.py
 python get-pip.py --target=$PIPTARGETDIR
 rm get-pip.py
 
+pytohn -m pip install --target=$PIPTARGETDIR --upgrade rootpy
+pytohn -m pip install --target=$PIPTARGETDIR --upgrade root_numpy
 python -m pip install --target=$PIPTARGETDIR git+http://github.com/kit-cn-cms/NNFlow.git#egg=NNFlow
 
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/cuda-7.5-cudNNV5.1/lib64:/usr/local/cuda-7.5-cudNNV5.1/extras/CUPTI/lib64"
@@ -42,6 +45,30 @@ cd /path/to/CMSSW_9_2_0
 cd src
 cmsenv
 
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/cuda-7.5-cudNNV5.1/lib64:/usr/local/cuda-7.5-cudNNV5.1/extras/CUPTI/lib64"
+export CUDA_HOME=/usr/local/cuda-7.5-cudNNV5.1
+```
+
+
+### In a virtual environment
+```
+export NNFLOWINSTALLDIR=$PWD"/NNFlow"
+virtualenv --system-site-packages $NNFLOWINSTALLDIR
+source $NNFLOWINSTALLDIR/bin/activate
+
+pip install --upgrade  rootpy          # If PyROOT is not installed on your machine, skip these two points.
+pip install --upgrade  root_numpy      # In this case, you can not perform step 1 of the preprocessing.
+
+pip install git+http://github.com/kit-cn-cms/NNFlow.git#egg=NNFlow
+
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/cuda-7.5-cudNNV5.1/lib64:/usr/local/cuda-7.5-cudNNV5.1/extras/CUPTI/lib64"
+export CUDA_HOME=/usr/local/cuda-7.5-cudNNV5.1
+```
+
+Activate environment in a new shell:
+```
+export NNFLOWINSTALLDIR=/path/to/NNFlow
+source $NNFLOWINSTALLDIR/bin/activate
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/cuda-7.5-cudNNV5.1/lib64:/usr/local/cuda-7.5-cudNNV5.1/extras/CUPTI/lib64"
 export CUDA_HOME=/usr/local/cuda-7.5-cudNNV5.1
 ```
