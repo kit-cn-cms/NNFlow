@@ -11,9 +11,26 @@ class Optimizer(object):
                  ):
 
 
-        self._learning_rate  = learning_rate
-
+        self._learning_rate       = learning_rate
         self._learning_rate_decay = False
+
+
+
+
+    def get_optimizer_global_step(self):
+
+
+        global_step = tf.Variable(0, trainable=False)
+
+
+        if self._learning_rate_decay:
+            decaying_learning_rate = tf.train.exponential_decay(self._learning_rate, global_step, decay_rate=self._learning_rate_decay_rate, decay_steps=self._learning_rate_dacay_steps)
+
+            return self._optimizer_function(learning_rate = decaying_learning_rate, **self._optimizer_options_dict), global_step
+
+
+        else:
+            return self._optimizer_function(learning_rate = self._learning_rate,    **self._optimizer_options_dict), global_step
 
 
 
@@ -31,48 +48,50 @@ class Optimizer(object):
 
 
 
-    def _get_learning_rate(self):
-
-
-        global_step = tf.Variable(0, trainable=False)
-
-
-        if self._learning_rate_decay:
-            learning_rate = tf.train.exponential_decay(self._learning_rate, global_step, decay_rate=self._learning_rate_decay_rate, decay_steps=self._learning_rate_dacay_steps)
-
-        else:
-            learning_rate = self._learning_rate
-
-
-        return learning_rate
-
-
-
-
 class AdadeltaOptimizer(Optimizer):
 
 
     def __init__(self,
-                 rho,
-                 epsilon
+                 learning_rate,
+                 rho           = 0.95,
+                 epsilon       = 1e-08
                  ):
 
 
         Optimizer.__init__(self, learning_rate)
 
-        self._rho     = rho
-        self._epsilon = epsilon
+
+        self._optimizer_name     = 'Adadelta'
+        self._optimizer_function = tf.train.AdadeltaOptimizer
+
+
+        self._optimizer_options_dict = dict()
+
+        self._optimizer_options_dict['rho']     = rho
+        self._optimizer_options_dict['epsilon'] = epsilon
 
 
 
 
-    def get_optimizer_global_step(self):
+class AdagradOptimizer(Optimizer):
 
 
-        global_step = tf.Variable(0, trainable=False)
-        learning_rate = self._get_learning_rate()
+    def __init__(self,
+                 learning_rate,
+                 initial_accumulator_value = 0.1
+                 ):
 
-        return tf.train.AdadeltaOptimizer(learning_rate, rho=rho, epsilon=epsilon)
+
+        Optimizer.__init__(self, learning_rate)
+
+
+        self._optimizer_name     = 'Adagrad'
+        self._optimizer_function = tf.train.AdagradOptimizer
+
+
+        self._optimizer_options_dict = dict()
+
+        self._optimizer_options_dict['initial_accumulator_value'] = initial_accumulator_value
 
 
 
@@ -82,25 +101,66 @@ class AdamOptimizer(Optimizer):
 
     def __init__(self,
                  learning_rate,
-                 beta1,
-                 beta2,
-                 epsilon
+                 beta1         = 0.9,
+                 beta2         = 0.999,
+                 epsilon       = 1e-08
                  ):
 
 
         Optimizer.__init__(self, learning_rate)
 
-        self._beta1   = beta1
-        self._beta2   = beta2
-        self._epsilon = epsilon
+
+        self._optimizer_name     = 'Adam'
+        self._optimizer_function = tf.train.AdamOptimizer
+
+
+        self._optimizer_options_dict = dict()
+
+        self._optimizer_options_dict['beta1']   = beta1
+        self._optimizer_options_dict['beta2']   = beta2
+        self._optimizer_options_dict['epsilon'] = epsilon
 
 
 
 
-    def get_optimizer_global_step(self):
+class GradientDescentOptimizer(Optimizer):
 
 
-        global_step = tf.Variable(0, trainable=False)
-        learning_rate = self._get_learning_rate()
+    def __init__(self,
+                 learning_rate
+                 ):
 
-        tf.train.AdamOptimizer(learning_rate, beta1=beta1, beta2=beta2, epsilon=epsilon)
+
+        Optimizer.__init__(self, learning_rate)
+
+
+        self._optimizer_name     = 'GradientDescent'
+        self._optimizer_function = tf.train.GradientDescentOptimizer
+
+
+        self._optimizer_options_dict = dict()
+
+
+
+
+class MomentumOptimizer(Optimizer):
+
+
+    def __init__(self,
+                 learning_rate,
+                 momentum,
+                 use_nesterov  = False
+                 ):
+
+
+        Optimizer.__init__(self, learning_rate)
+
+
+        self._optimizer_name     = 'Momentum'
+        self._optimizer_function = tf.train.MomentumOptimizer
+
+
+        self._optimizer_options_dict = dict()
+
+        self._optimizer_options_dict['momentum']     = momentum
+        self._optimizer_options_dict['use_nesterov'] = use_nesterov
