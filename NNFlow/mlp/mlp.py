@@ -392,7 +392,7 @@ class MLP(object):
                                                     dropout_keep_probability,
                                                     l2_regularization_beta,
                                                     early_stopping_interval,
-                                                    optimizer_options,
+                                                    optimizer,
                                                     batch_size_training,
                                                     early_stopping,
                                                     mean_training_time_per_epoch
@@ -428,6 +428,8 @@ class MLP(object):
         network_and_training_properties += '{:{width}} {}\n'.format('Early stopping interval:',    early_stopping_interval,  width=column_width)
         network_and_training_properties += '\n'
 
+
+        optimizer_options = optimizer.get_optimizer_properties()
 
         network_and_training_properties += '{:{width}} {}\n'.format('Optimizer:', optimizer_options['optimizer_name'], width=column_width)
 

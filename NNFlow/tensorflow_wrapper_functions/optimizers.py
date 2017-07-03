@@ -35,6 +35,28 @@ class Optimizer(object):
 
 
 
+    def get_optimizer_properties(self):
+
+
+        optimizer_properties = self._optimizer_options_dict
+
+        optimizer_properties['optimizer_name'] = self._optimizer_name
+        optimizer_properties['learning_rate']  = self._learning_rate
+
+        if self._learning_rate_decay:
+            optimizer_properties['learning_rate_decay']       = 'Yes'
+            optimizer_properties['learning_rate_decay_rate']  = self._learning_rate_decay_rate
+            optimizer_properties['learning_rate_dacay_steps'] = self._learning_rate_dacay_steps
+
+        else:
+            optimizer_properties['learning_rate_decay'] = 'No'
+
+
+        return optimizer_properties
+
+
+
+
     def set_learning_rate_decay(self,
                                 decay_rate,
                                 decay_steps
