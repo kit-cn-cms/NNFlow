@@ -24,7 +24,7 @@ def train_mlp(save_path,
               early_stopping_intervall,
               path_to_training_data_set,
               path_to_validation_data_set,
-              optimizer_options,
+              optimizer,
               batch_size_training,
               batch_size_classification,
               session_config
@@ -43,7 +43,7 @@ def train_mlp(save_path,
               early_stopping_intervall    = early_stopping_intervall,
               path_to_training_data_set   = path_to_training_data_set,
               path_to_validation_data_set = path_to_validation_data_set,
-              optimizer_options           = optimizer_options,
+              optimizer                   = optimizer,
               batch_size_training         = batch_size_training,
               batch_size_classification   = batch_size_classification,
               session_config              = session_config
@@ -67,7 +67,7 @@ class MLP(object):
               early_stopping_intervall,
               path_to_training_data_set,
               path_to_validation_data_set,
-              optimizer_options,
+              optimizer,
               batch_size_training,
               batch_size_classification,
               session_config
@@ -137,8 +137,8 @@ class MLP(object):
             l2_regularization = l2_regularization_beta * tf.add_n([tf.nn.l2_loss(w) for w in weights])
             loss              = tf.add(tf.reduce_mean(tf.multiply(event_weights, cross_entropy)), l2_regularization)
  
-            optimizer, global_step = self._get_optimizer_global_step(optimizer_options)
-            train_step             = optimizer.minimize(loss, global_step=global_step)
+            tf_optimizer, global_step = optimizer.get_optimizer_global_step()
+            train_step                = tf_optimizer.minimize(loss, global_step=global_step)
  
             saver = tf.train.Saver(weights + biases + [feature_scaling_mean, feature_scaling_std])
  
@@ -459,63 +459,3 @@ class MLP(object):
 
 
         return network_and_training_properties
-
-
-
-
-    def _get_optimizer_global_step(self,
-                                   optimizer_options,
-                                   ):
-
-
-        global_step = tf.Variable(0, trainable=False)
-
-        if optimizer_options['learning_rate_decay']:
-            initial_learning_rate = optimizer_options['learning_rate_decay_initial_value']
-
-            decay_rate  = optimizer_options['learning_rate_decay_rate']
-            decay_steps = optimizer_options['learning_rate_decay_steps']
-
-            learning_rate = tf.train.exponential_decay(initial_learning_rate, global_step, decay_rate=decay_rate, decay_steps=decay_steps)
-
-        else:
-            learning_rate = optimizer_options['learning_rate']
-
-
-        if optimizer_options['optimizer_name'] == "Adam":
-            beta1   = optimizer_options['beta1']
-            beta2   = optimizer_options['beta2']
-            epsilon = optimizer_options['epsilon']
-
-            optimizer = tf.train.AdamOptimizer(learning_rate, beta1=beta1, beta2=beta2, epsilon=epsilon)
-
-
-        elif optimizer_options['optimizer_name'] == 'Adadelta':
-            rho     = optimizer_options['rho']
-            epsilon = optimizer_options['epsilon']
-
-            optimizer = tf.train.AdadeltaOptimizer(learning_rate, rho=rho, epsilon=epsilon)
-
-
-        elif optimizer_options['optimizer_name'] == 'Adagrad':
-            initial_accumulator_value = optimizer_options['initial_accumulator_value']
-
-            optimizer = tf.train.AdagradOptimizer(learning_rate, initial_accumulator_value=initial_accumulator_value)
-
-
-        elif optimizer_options['optimizer_name'] == 'GradientDescent':
-            optimizer = tf.train.GradientDescentOptimizer(learning_rate)
-
-
-        elif optimizer_options['optimizer_name'] == 'Momentum':
-            momentum     = optimizer_options['momentum']
-            use_nesterov = optimizer_options['use_nesterov']
-
-            optimizer = tf.train.MomentumOptimizer(learning_rate, momentum=momentum, use_nesterov=use_nesterov)
-
-
-        else:
-            sys.exit('Optimizer named "{}" is not implemented.'.format(optimizer_options['optimizer_name']))
-
-
-        return optimizer, global_step
