@@ -11,15 +11,13 @@ class SessionConfig(object):
 
 
     def __init__(self,
-                 shared_machine                  = True,
-                 CUDA_VISIBLE_DEVICES            = 'all',
+                 visible_devices                 = 'all',
                  allow_growth                    = True,
                  per_process_gpu_memory_fraction = None
                  ):
 
 
-        self._shared_machine                  = shared_machine
-        self._CUDA_VISIBLE_DEVICES            = CUDA_VISIBLE_DEVICES
+        self._visible_devices                 = visible_devices
         self._allow_growth                    = allow_growth
         self._per_process_gpu_memory_fraction = per_process_gpu_memory_fraction
 
@@ -31,15 +29,14 @@ class SessionConfig(object):
 
         config = tf.ConfigProto()
 
-        if self._shared_machine
-            if self._CUDA_VISIBLE_DEVICES != 'all'
-                os.environ['CUDA_VISIBLE_DEVICES'] = self._CUDA_VISIBLE_DEVICES
+        if self._visible_devices != 'all':
+            os.environ['CUDA_VISIBLE_DEVICES'] = self._visible_devices
 
-            if allow_growth:
-                config.gpu_options.allow_growth = True
+        if allow_growth:
+            config.gpu_options.allow_growth = True
 
-            if per_process_gpu_memory_fraction is not None:
-                config.gpu_options.per_process_gpu_memory_fraction = per_process_gpu_memory_fraction
+        if per_process_gpu_memory_fraction is not None:
+            config.gpu_options.per_process_gpu_memory_fraction = per_process_gpu_memory_fraction
 
 
         return config
