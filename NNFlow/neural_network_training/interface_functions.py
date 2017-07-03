@@ -1,6 +1,7 @@
 from __future__ import absolute_import, division, print_function
 
-import NNFlow
+from NNFlow import SessionConfig()
+from .neural_network_trainer import NeuralNetworkTrainer()
 
 
 
@@ -27,7 +28,7 @@ def train_neural_network(save_path,
         session_config = NNFlow.SessionConfig()
 
         
-    neural_network_trainer = NNFlow.neural_network_training.neural_network_trainer.NeuralNetworkTrainer()
+    neural_network_trainer = NeuralNetworkTrainer()
 
     neural_network_trainer.train(save_path                   = save_path,
                                  model_name                  = model_name,
