@@ -1,0 +1,98 @@
+In den folgenden Aufgaben werden neuronale Netze trainiert, die ttH(bb)-Ereignisse von ttbb-Ereignissen trennen sollen. Dabei werden nur Ereignisse betrachtet, die mindestens 6 Jets haben, davon müssen mindestens 4 Jets einen b-tag haben.
+
+
+=========
+AUFGABE 1
+=========
+
+- Öffnen Sie die Datei Aufgabe1.py und betrachten Sie den Code.
+- Führen Sie das Skript aus und schauen Sie sich die produzierten Plots an.
+
+
+=========
+AUFGABE 2
+=========
+
+- Öffnen Sie die Datei Aufgabe2.py und betrachten Sie den Code.
+- Führen Sie das Skript mehrmals mit unterschiedlichen Werten für den Parameter "keep_prob" aus (Wertebereich 0.1 bis 0.9). 
+Wie verändert sich die Entwicklung des "AUC Training Score"? 
+Vergleichen Sie den "AUC Training Score" jeweils mit dem "AUC Validation Score".
+- Stellen Sie für den Parameter "keep_prob" einen Wert von 0.5 ein und führen Sie das Skript mehrmals 
+mit unterschiedlichen Werten für den Parameter "beta" aus (Wertebereich 1e-10 bis 1e-5). 
+Wie verändert sich die Entwicklung des "AUC Training Score" hier? 
+Vergleichen Sie den "AUC Training Score" wieder mit dem "AUC Validation Score".
+
+
+=========
+AUFGABE 3
+=========
+
+- Öffnen Sie die Dateien Aufgabe3[X].py und betrachten Sie den Code.
+- Führen Sie alle vier Skripte aus.
+- Die Skripte greifen jeweils auf unterschiedliche Datensätze zu was könnte der Unterschied zwischen den Datensätzen sein? Für einen Hinweis hierzu nach unten scrollen.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+====================
+HINWEIS ZU AUFGABE 3
+====================
+
+Schauen Sie sich die Datei "sum_of_weights_sorted.txt" für alle vier Netzwerke an. Hier sind für jede Eingangsvariable die Beträge der Gewichte summiert.
