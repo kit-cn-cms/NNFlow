@@ -1,0 +1,102 @@
+In the next few exercises neural networks (NN) will be trained. 
+This neural networks should allow to separate ttH(bb) events from ttbb events.
+Hereby, only events which contain at least 6 jets and among them 4 b-tagged b-jets.
+
+=========
+Exercise 1
+=========
+
+- Open the exercise file exercise1.py and try to understand the code.
+- Execute the script.
+- Have a look on the produced plots.
+
+
+=========
+Exercise 2
+=========
+
+- Open the file exercise2.py and try to understand the code.
+- Invoke the exercis2.py script a few times and apply different values for the parameter "keep_prob" (value range from 0.1 to 0.9).
+- How does the "AUC Training Score" develop? Compare each of the "AUC Training Scores" with their corresponding "AUC Validation Scores".
+- Choose a value of 0.5 for the parameter "keep_prob" and invoke the script a few times with different values for the parameter "beta" aus 
+(value range 1e-10 bis 1e-5).
+- How does the "AUC Training Score" change?  
+Compare the "AUC Training Score" again with the "AUC Validation Score".
+
+
+=========
+Exercise 3
+=========
+
+- Open the file exercise3X.py files and try to understand the code.
+- Execute all four scripts.
+- The scripts make use of 4 different data sets.
+What could be the difference between the 4 data sets?
+Scroll down to the bottom for a hint.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+====================
+Hint for  exercise 3
+====================
+
+- Have a look into the file "sum_of_weights_sorted.txt" for each of the four NNs.
+- Here, for all input variable the absoulute value for each supplied input variable is stored. 
