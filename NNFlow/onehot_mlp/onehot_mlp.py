@@ -261,14 +261,14 @@ class OneHotMLP:
         
         
         sess_config = tf.ConfigProto()
-        if gpu_usage['shared_machine']:
-            if gpu_usage['restrict_visible_devices']:
+        if 'shared_machine' in self._gpu_usage and self._gpu_usage['shared_machine']:
+            if 'restrict_visible_devices' in self._gpu_usage and self._gpu_usage['restrict_visible_devices'] and 'CUDA_VISIBLE_DEVICES' in self._gpu_usage:
                 os.environ['CUDA_VISIBLE_DEVICES'] = gpu_usage['CUDA_VISIBLE_DEVICES']
 
-            if gpu_usage['allow_growth']:
+            if 'allow_growth' in self._gpu_usage and self._gpu_usage['allow_growth']:
                 sess_config.gpu_options.allow_growth = True
 
-            if gpu_usage['restrict_per_process_gpu_memory_fraction']:
+            if 'restrict_per_process_gpu_memory_fraction' in self._gpu_usage and self._gpu_usage['restrict_per_process_gpu_memory_fraction']:
                 sess_config.gpu_options.per_process_gpu_memory_fraction = gpu_usage['per_process_gpu_memory_fraction']
 
         with tf.Session(config=sess_config, graph=train_graph) as sess:
