@@ -15,7 +15,7 @@ from NNFlow.data_frame.data_frame import DataFrame
 
 
 
-class MLP(object):
+class NeuralNetworkTrainer(object):
 
 
     def train(self,
