@@ -56,9 +56,6 @@ wget https://bootstrap.pypa.io/get-pip.py
 python get-pip.py --target=$PIPTARGETDIR
 rm get-pip.py
 
-python -m pip install --target=$PIPTARGETDIR --upgrade rootpy
-python -m pip install --target=$PIPTARGETDIR --upgrade root_numpy
-
 python -m pip install --target=$PIPTARGETDIR git+http://github.com/kit-cn-cms/NNFlow.git#egg=NNFlow
 ```
 
