@@ -11,7 +11,6 @@ from NNFlow.preprocessing import merge_data_sets
 #----------------------------------------------------------------------------------------------------
 
 
-NNFlow_base  =
 workdir_base =
 
 

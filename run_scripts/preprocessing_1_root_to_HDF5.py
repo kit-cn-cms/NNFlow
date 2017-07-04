@@ -14,7 +14,6 @@ from NNFlow.ttH_ttbb_definitions import vector_variables
 #----------------------------------------------------------------------------------------------------
 
 
-NNFlow_base  =
 workdir_base =
 
 
