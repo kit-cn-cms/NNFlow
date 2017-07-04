@@ -14,7 +14,7 @@ from NNFlow.definitions import definitions
 def merge_data_sets(path_to_inputfiles,
                     input_data_sets,
                     path_to_merged_data_set,
-                    columns_for_cutbased_event_selection=list()):
+                    columns_for_cutbased_event_selection=None):
 
 
     print('\n' + '===============')
@@ -28,6 +28,9 @@ def merge_data_sets(path_to_inputfiles,
 
     if not os.path.isdir(os.path.dirname(path_to_merged_data_set)):
         sys.exit("Directory '" + os.path.dirname(path_to_merged_data_set) + "' doesn't exist." + "\n")
+
+    if columns_for_cutbased_event_selection is None:
+        columns_for_cutbased_event_selection=list()
 
 
     #----------------------------------------------------------------------------------------------------
