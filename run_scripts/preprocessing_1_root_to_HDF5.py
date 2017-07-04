@@ -6,18 +6,14 @@ from __future__ import absolute_import, division, print_function
 
 import os
 import sys
+
+from NNFlow.preprocessing import root_to_HDF5
+from NNFlow.ttH_ttbb_definitions import definitions
 #----------------------------------------------------------------------------------------------------
 
 
 NNFlow_base  =
 workdir_base =
-
-
-#----------------------------------------------------------------------------------------------------
-sys.path.append(NNFlow_base)
-from preprocessing.preprocessing import root_to_HDF5
-from definitions import definitions
-#----------------------------------------------------------------------------------------------------
 
 
 ### Provide the file name for the output file WITHOUT file name extension.

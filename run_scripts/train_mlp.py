@@ -42,7 +42,7 @@ l2_regularization_beta =
 batch_size_training =
 
 
-optimizer = NNFlow.optimizers.AdamOptimizer(1e-3)
+optimizer =
 
 
 #----------------------------------------------------------------------------------------------------

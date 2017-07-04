@@ -6,19 +6,14 @@ from __future__ import absolute_import, division, print_function
 
 import os
 import sys
+
+from NNFlow.preprocessing import create_data_set_for_training
+from NNFlow.ttH_ttbb_definitions import definitions
 #----------------------------------------------------------------------------------------------------
 
 
-NNFlow_base  =
 workdir_base =
 name_subdir  =
-
-
-#----------------------------------------------------------------------------------------------------
-sys.path.append(NNFlow_base)
-from preprocessing.preprocessing import create_data_set_for_training
-from definitions import definitions
-#----------------------------------------------------------------------------------------------------
 
 
 ### You can choose from categories defined in definitions.definitions.jet_btag_category

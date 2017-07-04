@@ -6,18 +6,13 @@ from __future__ import absolute_import, division, print_function
 
 import os
 import sys
+
+from NNFlow.preprocessing import merge_data_sets
 #----------------------------------------------------------------------------------------------------
 
 
 NNFlow_base  =
 workdir_base =
-
-
-#----------------------------------------------------------------------------------------------------
-sys.path.append(NNFlow_base)
-from preprocessing.preprocessing import merge_data_sets
-#----------------------------------------------------------------------------------------------------
-
 
 
 ### The input data sets have to be provided as a dictionary in the following format:
