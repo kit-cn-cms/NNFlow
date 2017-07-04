@@ -18,10 +18,10 @@ def root_to_HDF5(save_path,
                  path_to_inputfiles,
                  filenames_inputfiles,
                  treenames,
-                 path_to_generator_level_variables,
-                 path_to_other_always_excluded_variables,
-                 path_to_vector_variables_lepton,
-                 path_to_vector_variables_jet,
+                 list_of_generator_level_variables,
+                 list_of_other_always_excluded_variables,
+                 list_of_vector_variables_lepton,
+                 list_of_vector_variables_jet,
                  weights_to_keep,
                  number_of_saved_jets,
                  number_of_saved_leptons,
@@ -56,18 +56,6 @@ def root_to_HDF5(save_path,
         if not os.path.isfile(os.path.join(path_to_inputfiles, filename)):
              sys.exit("File '" + os.path.join(path_to_inputfiles, filename) + "' doesn't exist." + "\n")
    
-    if not os.path.isfile(path_to_generator_level_variables):
-        sys.exit("File '" + path_to_generator_level_variables + "' doesn't exist." + "\n")
-
-    if not os.path.isfile(path_to_other_always_excluded_variables):
-        sys.exit("File '" + path_to_other_always_excluded_variables + "' doesn't exist." + "\n")
-
-    if not os.path.isfile(path_to_vector_variables_lepton):
-        sys.exit("File '" + path_to_vector_variables_lepton + "' doesn't exist." + "\n")
-
-    if not os.path.isfile(path_to_vector_variables_jet):
-        sys.exit("File '" + path_to_vector_variables_jet + "' doesn't exist." + "\n")
-
 
     if not (percentage_validation > 0 and percentage_validation < 100):
         sys.exit("Value for 'percentage_validation' is not allowed." + '\n')
@@ -91,11 +79,8 @@ def root_to_HDF5(save_path,
     structured_array = root2array(os.path.join(path_to_inputfiles, filenames_inputfiles[0]), treenames[0])
     df = pd.DataFrame(structured_array)
 
-    with open(path_to_generator_level_variables, 'r') as file_generator_level_variables:
-        generator_level_variables = [variable.rstrip() for variable in file_generator_level_variables.readlines() if variable.rstrip() in df.columns]
-    
-    with open(path_to_other_always_excluded_variables, 'r') as file_other_always_excluded_variables:
-        other_excluded_variables = [variable.rstrip() for variable in file_other_always_excluded_variables.readlines() if variable.rstrip() in df.columns]
+    generator_level_variables = [variable for variable in list_of_generator_level_variables       if variable in df.columns]
+    other_excluded_variables  = [variable for variable in list_of_other_always_excluded_variables if variable in df.columns]
 
     weight_variables = [variable for variable in df.columns if variable[:6]=='Weight' and variable not in weights_to_keep]
 
@@ -106,10 +91,8 @@ def root_to_HDF5(save_path,
     excluded_variables = [variable for variable in (generator_level_variables + weight_variables + other_excluded_variables) if variable not in variables_for_splitting]
 
 
-    with open(path_to_vector_variables_lepton, 'r') as file_vector_variables_lepton:
-        vector_variables_lepton = [variable.rstrip() for variable in file_vector_variables_lepton.readlines() if variable.rstrip() in df.columns and variable.rstrip() not in excluded_variables]
-    with open(path_to_vector_variables_jet, 'r') as file_vector_variables_jet:
-        vector_variables_jet = [variable.rstrip() for variable in file_vector_variables_jet.readlines() if variable.rstrip() in df.columns and variable.rstrip() not in excluded_variables]
+    vector_variables_lepton = [variable for variable in list_of_vector_variables_lepton if variable in df.columns and variable not in excluded_variables]
+    vector_variables_jet    = [variable for variable in list_of_vector_variables_jet    if variable in df.columns and variable not in excluded_variables]
 
     other_vector_variables = [variable for variable in df.columns if isinstance(df.iloc[0].loc[variable], np.ndarray) and variable not in vector_variables_lepton + vector_variables_jet + excluded_variables]
     excluded_variables += other_vector_variables

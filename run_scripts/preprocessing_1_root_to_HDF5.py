@@ -9,6 +9,8 @@ import sys
 
 from NNFlow.preprocessing import root_to_HDF5
 from NNFlow.ttH_ttbb_definitions import definitions
+from NNFlow.ttH_ttbb_definitions import excluded_variables
+from NNFlow.ttH_ttbb_definitions import vector_variables
 #----------------------------------------------------------------------------------------------------
 
 
@@ -42,10 +44,10 @@ split_data_set = False
 
 save_path = os.path.join(workdir_base, 'HDF5_files')
 
-path_to_generator_level_variables       = os.path.join(NNFlow_base, 'definitions/excluded_variables/generator_level_variables.txt')
-path_to_other_always_excluded_variables = os.path.join(NNFlow_base, 'definitions/excluded_variables/other_always_excluded_variables.txt')
-path_to_vector_variables_lepton         = os.path.join(NNFlow_base, 'definitions/vector_variables/lepton.txt')
-path_to_vector_variables_jet            = os.path.join(NNFlow_base, 'definitions/vector_variables/jet.txt')
+list_of_generator_level_variables       = excluded_variables.generator_level_variables()
+list_of_other_always_excluded_variables = excluded_variables.other_always_excluded_variables()
+list_of_vector_variables_lepton         = vector_variables.lepton_variables()
+list_of_vector_variables_jet            = vector_variables.jet_variables()
 
 
 weights_to_keep = definitions.default_weight_list()
@@ -69,10 +71,10 @@ function_call_dict = {'filename_outputfile'                     : filename_outpu
                       'treenames'                               : treenames,
                       'split_data_set'                          : split_data_set,
                       'save_path'                               : save_path,
-                      'path_to_generator_level_variables'       : path_to_generator_level_variables,
-                      'path_to_other_always_excluded_variables' : path_to_other_always_excluded_variables,
-                      'path_to_vector_variables_lepton'         : path_to_vector_variables_lepton,
-                      'path_to_vector_variables_jet'            : path_to_vector_variables_jet,
+                      'list_of_generator_level_variables'       : list_of_generator_level_variables,
+                      'list_of_other_always_excluded_variables' : list_of_other_always_excluded_variables,
+                      'list_of_vector_variables_lepton'         : list_of_vector_variables_lepton,
+                      'list_of_vector_variables_jet'            : list_of_vector_variables_jet,
                       'weights_to_keep'                         : weights_to_keep,
                       'number_of_saved_jets'                    : number_of_saved_jets,
                       'number_of_saved_leptons'                 : number_of_saved_leptons,
