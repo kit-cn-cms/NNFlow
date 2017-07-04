@@ -10,7 +10,6 @@ setup(name             = 'NNFlow',
       install_requires = ['numpy',
                           'scipy',
                           'matplotlib',
-                          'tensorflow-gpu>=1.2.0',
                           'scikit-learn>=0.18.2',
                           'pandas>=0.20.2',
                           'tables>=3.4.2'

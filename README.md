@@ -30,6 +30,10 @@ rm get-pip.py
 
 python -m pip install --target=$PIPTARGETDIR --upgrade rootpy
 python -m pip install --target=$PIPTARGETDIR --upgrade root_numpy
+
+python -m pip install --target=$PIPTARGETDIR --upgrade tensorflow      # Use this, if CUDA is not installed on your machine.
+python -m pip install --target=$PIPTARGETDIR --upgrade tensorflow-gpu  # Use this, if CUDA is installed on your machine.
+
 python -m pip install --target=$PIPTARGETDIR git+http://github.com/kit-cn-cms/NNFlow.git#egg=NNFlow
 
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/cuda-7.5-cudNNV5.1/lib64:/usr/local/cuda-7.5-cudNNV5.1/extras/CUPTI/lib64"
@@ -58,6 +62,9 @@ source $NNFLOWINSTALLDIR/bin/activate
 
 pip install --upgrade  rootpy          # If PyROOT is not installed on your machine, skip these two points.
 pip install --upgrade  root_numpy      # In this case, you can not perform step 1 of the preprocessing.
+
+pip install --upgrade tensorflow       # Use this, if CUDA is not installed on your machine.
+pip install --upgrade tensorflow-gpu   # Use this, if CUDA is installed on your machine.
 
 pip install git+http://github.com/kit-cn-cms/NNFlow.git#egg=NNFlow
 
