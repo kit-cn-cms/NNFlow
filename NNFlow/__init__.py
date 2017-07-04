@@ -3,4 +3,4 @@ from __future__ import absolute_import, division, print_function
 from .neural_network_training.interface_functions import train_neural_network
 from .session_config.session_config import SessionConfig
 from .model_analyser.binary_model_analyser import BinaryModelAnalyser
-from .model_analyser.one-hot_model_analyser import OneHotModelAnalyser
+from .model_analyser.onehot_model_analyser import OneHotModelAnalyser
