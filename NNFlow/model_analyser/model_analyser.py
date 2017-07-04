@@ -25,7 +25,7 @@ class ModelAnalyser(object):
         self._number_of_output_neurons  = number_of_output_neurons
         self._batch_size_classification = batch_size_classification
 
-        if session_config is not None
+        if session_config is not None:
             self._session_config = session_config
         else:
             self._session_config = SessionConfig()
