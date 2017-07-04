@@ -28,8 +28,8 @@ wget https://bootstrap.pypa.io/get-pip.py
 python get-pip.py --target=$PIPTARGETDIR
 rm get-pip.py
 
-pytohn -m pip install --target=$PIPTARGETDIR --upgrade rootpy
-pytohn -m pip install --target=$PIPTARGETDIR --upgrade root_numpy
+python -m pip install --target=$PIPTARGETDIR --upgrade rootpy
+python -m pip install --target=$PIPTARGETDIR --upgrade root_numpy
 python -m pip install --target=$PIPTARGETDIR git+http://github.com/kit-cn-cms/NNFlow.git#egg=NNFlow
 
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/cuda-7.5-cudNNV5.1/lib64:/usr/local/cuda-7.5-cudNNV5.1/extras/CUPTI/lib64"
