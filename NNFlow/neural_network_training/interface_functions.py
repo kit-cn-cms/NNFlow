@@ -1,6 +1,6 @@
 from __future__ import absolute_import, division, print_function
 
-from NNFlow import SessionConfig
+from NNFlow.session_config.session_config import SessionConfig
 from .neural_network_trainer import NeuralNetworkTrainer
 
 
