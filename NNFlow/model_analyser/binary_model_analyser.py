@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from model_analyser.model_analyser import ModelAnalyser
+from .model_analyser import ModelAnalyser
 
 
 

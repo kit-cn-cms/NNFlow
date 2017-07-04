@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function
 
 import numpy as np
 
-from model_analyser.model_analyser import ModelAnalyser
+from .model_analyser import ModelAnalyser
 
 
 class OneHotModelAnalyser(ModelAnalyser):
