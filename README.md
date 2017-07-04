@@ -11,49 +11,6 @@ The framework is based on a framework for binary classification by Max Welsch an
 
 
 ## Install NNFlow
-### In a CMSSW environment
-```
-export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
-source $VO_CMS_SW_DIR/cmsset_default.sh
-
-export SCRAM_ARCH="slc6_amd64_gcc700"
-export CMSSW_VERSION="CMSSW_9_2_0"
-export CMSSWINSTALLDIR=$PWD"/"$CMSSW_VERSION
-export PIPTARGETDIR=$CMSSWINSTALLDIR"/lib/"$SCRAM_ARCH
-scram project $CMSSW_VERSION
-cd $CMSSW_VERSION"/src"
-cmsenv
-
-wget https://bootstrap.pypa.io/get-pip.py
-python get-pip.py --target=$PIPTARGETDIR
-rm get-pip.py
-
-python -m pip install --target=$PIPTARGETDIR --upgrade rootpy
-python -m pip install --target=$PIPTARGETDIR --upgrade root_numpy
-
-python -m pip install --target=$PIPTARGETDIR --upgrade tensorflow      # Use this, if CUDA is not installed on your machine.
-python -m pip install --target=$PIPTARGETDIR --upgrade tensorflow-gpu  # Use this, if CUDA is installed on your machine.
-
-python -m pip install --target=$PIPTARGETDIR git+http://github.com/kit-cn-cms/NNFlow.git#egg=NNFlow
-
-export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/cuda-7.5-cudNNV5.1/lib64:/usr/local/cuda-7.5-cudNNV5.1/extras/CUPTI/lib64"
-export CUDA_HOME=/usr/local/cuda-7.5-cudNNV5.1
-```
-
-Activate environment in a new shell:
-```
-export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
-source $VO_CMS_SW_DIR/cmsset_default.sh
-
-cd /path/to/CMSSW_9_2_0
-cd src
-cmsenv
-
-export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/cuda-7.5-cudNNV5.1/lib64:/usr/local/cuda-7.5-cudNNV5.1/extras/CUPTI/lib64"
-export CUDA_HOME=/usr/local/cuda-7.5-cudNNV5.1
-```
-
-
 ### In a virtual environment
 ```
 export NNFLOWINSTALLDIR=$PWD"/NNFlow"
@@ -78,6 +35,41 @@ export NNFLOWINSTALLDIR=/path/to/NNFlow
 source $NNFLOWINSTALLDIR/bin/activate
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/cuda-7.5-cudNNV5.1/lib64:/usr/local/cuda-7.5-cudNNV5.1/extras/CUPTI/lib64"
 export CUDA_HOME=/usr/local/cuda-7.5-cudNNV5.1
+```
+
+
+### In a CMSSW environment
+If PyROOT is not installed on your machine, you can use a CMSSW environment to perform the preprocessing. It is not possible to use TensorFlow in this environment.
+```
+export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
+source $VO_CMS_SW_DIR/cmsset_default.sh
+
+export SCRAM_ARCH="slc6_amd64_gcc530"
+export CMSSW_VERSION="CMSSW_9_2_4"
+export CMSSWINSTALLDIR=$PWD"/"$CMSSW_VERSION
+export PIPTARGETDIR=$CMSSWINSTALLDIR"/lib/"$SCRAM_ARCH
+scram project $CMSSW_VERSION
+cd $CMSSW_VERSION"/src"
+cmsenv
+
+wget https://bootstrap.pypa.io/get-pip.py
+python get-pip.py --target=$PIPTARGETDIR
+rm get-pip.py
+
+python -m pip install --target=$PIPTARGETDIR --upgrade rootpy
+python -m pip install --target=$PIPTARGETDIR --upgrade root_numpy
+
+python -m pip install --target=$PIPTARGETDIR git+http://github.com/kit-cn-cms/NNFlow.git#egg=NNFlow
+```
+
+Activate environment in a new shell:
+```
+export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
+source $VO_CMS_SW_DIR/cmsset_default.sh
+
+cd /path/to/CMSSW_9_2_0
+cd src
+cmsenv
 ```
 
 

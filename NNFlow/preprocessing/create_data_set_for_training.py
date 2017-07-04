@@ -6,7 +6,7 @@ import sys
 import numpy as np
 import pandas as pd
 
-from NNFlow.definitions import definitions
+from NNFlow.ttH_ttbb_definitions import definitions
 
 
 
