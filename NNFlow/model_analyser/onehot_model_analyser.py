@@ -25,6 +25,7 @@ class OneHotModelAnalyser(ModelAnalyser):
 
 
         array_predicted_true = self._get_predicted_true_matrix(path_to_input_file)
+        array_predicted_true *= 10000
 
 
         cmap = matplotlib.cm.RdYlBu_r
@@ -49,7 +50,7 @@ class OneHotModelAnalyser(ModelAnalyser):
 
         for yit in range(array.shape[0]):
             for xit in range(array.shape[1]):
-                plt.text(xit + 0.5, yit + 0.5, '%d' % array[yit, xit], horizontalalignment='center', verticalalignment='center')
+                plt.text(xit + 0.5, yit + 0.5, '{:.1f}'.format(array[yit, xit]), horizontalalignment='center', verticalalignment='center')
 
         ax = plt.gca()
         ax.set_xticks(np.arange((x.shape[0] - 1)) + 0.5, minor=False)
