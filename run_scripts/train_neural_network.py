@@ -7,7 +7,7 @@ from __future__ import absolute_import, division, print_function
 import os
 import sys
 
-import NNFlow
+from NNFlow import train_neural_network
 #----------------------------------------------------------------------------------------------------
 
 
@@ -89,4 +89,4 @@ train_dict = {'save_path'                   : save_path,
               }
 
 
-NNFlow.train_neural_network(**train_dict)
+train_neural_network(**train_dict)

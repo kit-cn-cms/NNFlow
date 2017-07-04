@@ -42,4 +42,4 @@ class BinaryModelAnalyser(ModelAnalyser):
         plt.xlabel('Network Output')
         plt.ylabel('Events (normalized)')
 
-        plt.savefig(save_path + file_name + '.pdf')
+        plt.savefig(os.path.join(save_path, file_name + '.pdf'))
