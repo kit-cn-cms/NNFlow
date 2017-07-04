@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, print_function
 
-from NNFlow import SessionConfig()
-from .neural_network_trainer import NeuralNetworkTrainer()
+from NNFlow import SessionConfig
+from .neural_network_trainer import NeuralNetworkTrainer
 
 
 
