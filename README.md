@@ -71,10 +71,4 @@ cmsenv
 
 
 ## Work flow
-### Preprocessing
-- Convert root files to HDF5 files.
-- Merge HDF5 files to one file.
-- Create a data set (Numpy 2D array) for the training.
-
-### Training
-- Train either a binary or a multinomial neural network.
+You can test the framework with the scripts in the folder "example_run_scripts". All you have to do is to add the pathes to the data sets and to your working directory. To get the data sets, please contact the authors.
