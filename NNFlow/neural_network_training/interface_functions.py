@@ -25,7 +25,7 @@ def train_neural_network(save_path,
 
 
     if session_config is None:
-        session_config = NNFlow.SessionConfig()
+        session_config = SessionConfig()
 
         
     neural_network_trainer = NeuralNetworkTrainer()
