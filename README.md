@@ -70,5 +70,5 @@ cmsenv
 ```
 
 
-## Work flow
+## Test the framework
 You can test the framework with the scripts in the folder "example_run_scripts". All you have to do is to add the pathes to the data sets and to your working directory. To get the data sets, please contact the authors.
