@@ -8,7 +8,7 @@ from NNFlow.ttH_ttbb_definitions import definitions
 #----------------------------------------------------------------------------------------------------
 
 
-workdir_base = '/storage/b/hilser/ML_Forum_Talk'
+workdir_base =
 name_subdir  = 'onehot_training'
 
 
