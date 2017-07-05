@@ -34,7 +34,7 @@ path_to_process_labels = os.path.join(workdir_base, name_subdir, 'training_data/
 
 #----------------------------------------------------------------------------------------------------
 with open(path_to_process_labels, 'r') as file_process_labels:
-    process_labels = [process.rstrip for process in file_process_labels.readlines()]
+    process_labels = [process.rstrip() for process in file_process_labels.readlines()]
 #----------------------------------------------------------------------------------------------------
 
 
