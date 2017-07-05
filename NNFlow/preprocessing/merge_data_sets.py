@@ -36,7 +36,7 @@ def merge_data_sets(path_to_inputfiles,
     #----------------------------------------------------------------------------------------------------
     # Create a list of variables that have to be dropped because they are not available in all input files.
 
-    processes = sorted(input_data_sets.keys())
+    processes = sorted(input_data_sets.keys(), key=str.lower)
 
     variables_in_input_files = dict()
     for process in processes:
