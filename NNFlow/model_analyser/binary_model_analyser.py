@@ -17,7 +17,7 @@ class BinaryModelAnalyser(ModelAnalyser):
                                  ):
 
 
-        labels, predictions, event_weights = self._get_labels_predictions_event_weights(path_to_val_data)
+        labels, predictions, event_weights = self._get_labels_predictions_event_weights(path_to_data)
 
         df_labels        = pd.DataFrame(labels,        columns=['label'])
         df_predictions   = pd.DataFrame(predictions,   columns=['prediction'])
