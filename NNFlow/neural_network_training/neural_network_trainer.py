@@ -227,7 +227,7 @@ class NeuralNetworkTrainer(object):
                                                                                                   dropout_keep_probability     = dropout_keep_probability,
                                                                                                   l2_regularization_beta       = l2_regularization_beta,
                                                                                                   early_stopping_interval      = early_stopping_intervall,
-                                                                                                  optimizer_options            = optimizer_options,
+                                                                                                  optimizer                    = optimizer,
                                                                                                   batch_size_training          = batch_size_training,
                                                                                                   early_stopping               = early_stopping,
                                                                                                   mean_training_time_per_epoch = np.mean(epoch_durations)
