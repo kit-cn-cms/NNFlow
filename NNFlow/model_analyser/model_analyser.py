@@ -75,7 +75,7 @@ class ModelAnalyser(object):
         graph = tf.Graph()
         with tf.Session(config=config, graph=graph) as sess:
             saver = tf.train.import_meta_graph(self._path_to_model + '.meta')
-            saver.restore(sess, path_to_model)
+            saver.restore(sess, self._path_to_model)
 
             input_data     = graph.get_tensor_by_name("input:0")
             network_output = graph.get_tensor_by_name("output:0")
