@@ -49,7 +49,7 @@ class OneHotModelAnalyser(ModelAnalyser):
 
         for yit in range(array_predicted_true.shape[0]):
             for xit in range(array_predicted_true.shape[1]):
-                plt.text(xit + 0.5, yit + 0.5, '{:.1f}'.format(array[yit, xit]), horizontalalignment='center', verticalalignment='center')
+                plt.text(xit + 0.5, yit + 0.5, '{:.1f}'.format(array_predicted_true[yit, xit]), horizontalalignment='center', verticalalignment='center')
 
         ax = plt.gca()
         ax.set_xticks(np.arange((x.shape[0] - 1)) + 0.5, minor=False)
