@@ -93,7 +93,7 @@ class ModelAnalyser(object):
 
 
             predictions           = np.concatenate(batch_predictions_list, axis=0)
-            labels, event_weights = validation_data_set.get_labels_event_weights()
+            labels, event_weights = data_set.get_labels_event_weights()
 
 
         return labels, predictions, event_weights
