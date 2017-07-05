@@ -42,7 +42,7 @@ class ModelAnalyser(object):
         graph = tf.Graph()
         with tf.Session(config=config, graph=graph) as sess:
              saver = tf.train.import_meta_graph(self._path_to_model + '.meta')
-             saver.restore(sess, path_to_model)
+             saver.restore(sess, self._path_to_model)
              weights = graph.get_tensor_by_name("W_1:0").eval()
 
         weight_abs = np.absolute(weights)
