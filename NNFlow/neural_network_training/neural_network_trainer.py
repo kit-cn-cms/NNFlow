@@ -37,9 +37,9 @@ class NeuralNetworkTrainer(object):
               ):
 
 
-        print('\n' + '============')
-        print(       'TRAINING MLP')
-        print(       '============' + '\n')
+        print('\n' + '=======================')
+        print(       'TRAINING NEURAL NETWORK')
+        print(       '=======================' + '\n')
 
  
         if not os.path.isdir(save_path):
