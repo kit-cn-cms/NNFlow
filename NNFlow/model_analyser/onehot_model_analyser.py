@@ -30,15 +30,15 @@ class OneHotModelAnalyser(ModelAnalyser):
         cmap = matplotlib.cm.RdYlBu_r
         cmap.set_bad(color='white')
 
-        minimum = np.min(array) / (np.pi**2.0 * np.exp(1.0)**2.0)
-        maximum = np.max(array) * np.pi**2.0 * np.exp(1.0)**2.0
+        minimum = np.min(array_predicted_true) / (np.pi**2.0 * np.exp(1.0)**2.0)
+        maximum = np.max(array_predicted_true) * np.pi**2.0 * np.exp(1.0)**2.0
 
         x = np.linspace(0, self._number_of_output_neurons, self._number_of_output_neurons+1)
         y = np.linspace(0, self._number_of_output_neurons, self._number_of_output_neurons+1)
 
         xn, yn = np.meshgrid(x,y)
 
-        plt.pcolormesh(xn, yn, array, cmap=cmap, norm=colors.LogNorm(vmin=max(minimum, 1e-6), vmax=maximum))
+        plt.pcolormesh(xn, yn, array_predicted_true, cmap=cmap, norm=colors.LogNorm(vmin=max(minimum, 1e-6), vmax=maximum))
         plt.colorbar()
 
         plt.xlim(0, self._number_of_output_neurons)
@@ -47,8 +47,8 @@ class OneHotModelAnalyser(ModelAnalyser):
         plt.xlabel("Predicted")
         plt.ylabel("True")
 
-        for yit in range(array.shape[0]):
-            for xit in range(array.shape[1]):
+        for yit in range(array_predicted_true.shape[0]):
+            for xit in range(array_predicted_true.shape[1]):
                 plt.text(xit + 0.5, yit + 0.5, '{:.1f}'.format(array[yit, xit]), horizontalalignment='center', verticalalignment='center')
 
         ax = plt.gca()
