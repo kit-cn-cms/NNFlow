@@ -39,7 +39,7 @@ export CUDA_HOME=/usr/local/cuda-7.5-cudNNV5.1
 
 
 ### In a CMSSW environment
-If PyROOT is not installed on your machine, you can use a CMSSW environment to perform the preprocessing. It is not possible to use TensorFlow in this environment.
+If PyROOT is not installed on your machine, you can use a CMSSW environment to perform the preprocessing. It is not possible to perform the training in this environment.
 ```
 export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
 source $VO_CMS_SW_DIR/cmsset_default.sh
