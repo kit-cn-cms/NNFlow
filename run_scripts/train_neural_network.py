@@ -7,7 +7,7 @@ from __future__ import absolute_import, division, print_function
 import os
 import sys
 
-from NNFlow import train_neural_network
+import NNFlow
 #----------------------------------------------------------------------------------------------------
 
 
