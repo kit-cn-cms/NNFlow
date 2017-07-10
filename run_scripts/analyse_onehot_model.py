@@ -24,7 +24,7 @@ path_to_data =
 #----------------------------------------------------------------------------------------------------
 
 
-save_dir = os.path.join(workdir_base, name_subdir, 'model_properties')
+save_dir = os.path.join(workdir_base, name_subdir, 'model/model_properties')
 
 
 path_to_model = os.path.join(workdir_base, name_subdir, 'model', file_name_model)
@@ -35,10 +35,6 @@ path_to_process_labels = os.path.join(workdir_base, name_subdir, 'training_data/
 #----------------------------------------------------------------------------------------------------
 with open(path_to_process_labels, 'r') as file_process_labels:
     process_labels = [process.rstrip() for process in file_process_labels.readlines()]
-#----------------------------------------------------------------------------------------------------
-if not os.path.isdir(save_dir):
-    if os.path.isdir(os.path.dirname(save_dir)):
-        os.mkdir(save_dir)
 #----------------------------------------------------------------------------------------------------
 model_analyser = OneHotModelAnalyser(path_to_model, number_of_output_neurons)
 
