@@ -2,6 +2,7 @@ from __future__ import absolute_import, division, print_function
 
 import os
 import sys
+from collections import OrderedDict
 
 from NNFlow.preprocessing import merge_data_sets
 #----------------------------------------------------------------------------------------------------
@@ -12,13 +13,13 @@ workdir_base =
 
 ### The input data sets have to be provided as a dictionary in the following format:
 ### input_datasets = {'process_name':['filename1', 'filename2', ...]}
-input_data_sets = {'ttH'     : ['ttH.hdf'],
-                   'ttbb'    : ['ttbar_ttbb.hdf'],
-                   'tt2b'    : ['ttbar_tt2b.hdf'],
-                   'ttb'     : ['ttbar_ttb.hdf'],
-                   'ttcc'    : ['ttbar_ttcc.hdf'],
-                   'ttlight' : ['ttbar_ttlight.hdf']
-                   }
+input_data_sets = OrderedDict([('ttH'     , ['ttH.hdf']),
+                               ('ttbb'    , ['ttbar_ttbb.hdf']),
+                               ('tt2b'    , ['ttbar_tt2b.hdf']),
+                               ('ttb'     , ['ttbar_ttb.hdf']),
+                               ('ttcc'    , ['ttbar_ttcc.hdf']),
+                               ('ttlight' , ['ttbar_ttlight.hdf'])
+                               ])
 
 
 cutbased_event_selection = False
