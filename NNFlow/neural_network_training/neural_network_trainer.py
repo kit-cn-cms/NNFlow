@@ -7,6 +7,7 @@ import datetime
 import itertools
 
 import numpy as np
+import matplotlib.pyplot as plt
 import tensorflow as tf
 from sklearn.metrics import roc_auc_score
 
@@ -266,6 +267,8 @@ class NeuralNetworkTrainer(object):
         with open(os.path.join(directory_model_properties, 'training_development.txt'), 'w') as training_development_output_file:
             training_development_output_file.write(training_development)
 
+        self._plot_training_development(directory_model_properties, network_type, training_accuracies, validation_accuracies, early_stopping)
+
 
         print('\n' + '========')
         print(       'FINISHED')
@@ -450,3 +453,38 @@ class NeuralNetworkTrainer(object):
 
 
         return network_and_training_properties
+
+
+
+
+    def _plot_training_development(self,
+                                   directory_model_properties,
+                                   network_type,
+                                   training_accuracies,
+                                   validation_accuracies,
+                                   early_stopping,
+                                   ):
+
+
+        plt.clf()
+
+
+        plt.plot(range(1, len(training_accuracies)  +1), training_accuracies,   color='#1f77b4', label='Training',   ls='', marker='o')
+        plt.plot(range(1, len(validation_accuracies)+1), validation_accuracies, color='#ff7f0e', label='Validation', ls='', marker='o')
+
+        plt.axvline(x=early_stopping['epoch'], color='r')
+
+
+        plt.xlabel('Epoch')
+        if network_type == 'binary':
+            plt.ylabel('ROC AUC')
+        elif network_type == 'one-hot':
+            plt.ylabel('Accuracy')
+
+        plt.legend(loc='best', frameon=False)
+
+
+        plt.savefig(os.path.join(directory_model_properties, 'training_development.pdf'))
+
+
+        plt.clf()
