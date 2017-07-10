@@ -14,10 +14,11 @@ file_name_model = 'binary_training.ckpt'
 number_of_output_neurons = 1
 
 
-path_to_data = os.path.join(workdir_base, name_subdir, 'training_data/val.npy')
-
-
 #----------------------------------------------------------------------------------------------------
+
+
+path_to_training_data_set   = os.path.join(workdir_base, name_subdir, 'training_data/train.npy')
+path_to_validation_data_set = os.path.join(workdir_base, name_subdir, 'training_data/val.npy')
 
 
 save_dir = os.path.join(workdir_base, name_subdir, 'model/model_properties')
@@ -34,4 +35,4 @@ model_analyser = BinaryModelAnalyser(path_to_model, number_of_output_neurons)
 
 
 model_analyser.save_variable_ranking(save_dir, path_to_variablelist)
-model_analyser.plot_output_distribution(path_to_data, save_dir, 'output_distribution')
+model_analyser.plot_training_validation_output_distribution(path_to_training_data_set, path_to_validation_data_set, save_dir, 'training_validation_output_distribution')
