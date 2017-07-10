@@ -52,7 +52,11 @@ class NeuralNetworkTrainer(object):
             sys.exit("File '" + path_to_validation_data_set + "' doesn't exist." + "\n")
  
  
-        path_to_model_file = os.path.join(save_path, '{}.ckpt'.format(model_name))
+        path_to_model_file         = os.path.join(save_path, '{}.ckpt'.format(model_name))
+        directory_model_properties = os.path.join(save_path, 'model_properties')
+
+        if not os.path.isdir(directory_model_properties):
+            os.mkdir(directory_model_properties)
 
 
         #----------------------------------------------------------------------------------------------------
@@ -118,15 +122,23 @@ class NeuralNetworkTrainer(object):
             training_losses       = list()
             early_stopping        = {'validation_accuracy': -1.0, 'epoch': 0}
             epoch_durations       = list()
+            training_development  = str()
 
 
-            print('\n', end='')
-            print(110*'-')
+            output_separator = 110*'-' + '\n'
             if network_type == 'binary':
-                print('{:^25} | {:^25} | {:^25} | {:^25}'.format('Epoch', 'Training data: loss', 'Training data: ROC AUC', 'Validation data: ROC AUC'))
+                training_development_heading = '{:^25} | {:^25} | {:^25} | {:^25}\n'.format('Epoch', 'Training data: loss', 'Training data: ROC AUC', 'Validation data: ROC AUC')
             elif network_type == 'one-hot':
-                print('{:^25} | {:^25} | {:^25} | {:^25}'.format('Epoch', 'Training data: loss', 'Training data: accuracy', 'Validation data: accuracy'))
-            print(110*'-')
+                training_development_heading = '{:^25} | {:^25} | {:^25} | {:^25}\n'.format('Epoch', 'Training data: loss', 'Training data: accuracy', 'Validation data: accuracy')
+
+            print('\n',                         end='')
+            print(output_separator,             end='')
+            print(training_development_heading, end='')
+            print(output_separator,             end='')
+
+            training_development += output_separator
+            training_development += training_development_heading
+            training_development += output_separator
 
 
             for epoch in itertools.count(start=1, step=1):
@@ -191,8 +203,12 @@ class NeuralNetworkTrainer(object):
 
                 #----------------------------------------------------------------------------------------------------
 
-                print('{:^25} | {:^25.4e} | {:^25.4f} | {:^25.4f}'.format(epoch, training_losses[-1], training_accuracies[-1], validation_accuracies[-1]))
+                training_development_epoch = '{:^25} | {:^25.4e} | {:^25.4f} | {:^25.4f}\n'.format(epoch, training_losses[-1], training_accuracies[-1], validation_accuracies[-1])
+                print(training_development_epoch, end='')
+                training_development += training_development_epoch
 
+
+                #----------------------------------------------------------------------------------------------------
 
                 epoch_end = time.time()
                 epoch_durations.append(epoch_end - epoch_start)
@@ -209,12 +225,19 @@ class NeuralNetworkTrainer(object):
  
  
                 elif (epoch - early_stopping['epoch']) >= early_stopping_intervall:
-                    print(110*'-')
                     if network_type == 'binary':
-                        print('ROC AUC on validation data has not increased for {} epochs. Achieved best ROC AUC of {:.4f} in epoch {}'.format(early_stopping_intervall, early_stopping['validation_accuracy'], early_stopping['epoch']))
+                        training_development_early_stop = 'ROC AUC on validation data has not increased for {} epochs. Achieved best ROC AUC of {:.4f} in epoch {}.\n'.format(early_stopping_intervall, early_stopping['validation_accuracy'], early_stopping['epoch'])
                     elif network_type == 'one-hot':
-                        print('Accuracy on validation data has not increased for {} epochs. Achieved best accuracy of {:.4f} in epoch {}'.format(early_stopping_intervall, early_stopping['validation_accuracy'], early_stopping['epoch']))
+                        training_development_early_stop = 'Accuracy on validation data has not increased for {} epochs. Achieved best accuracy of {:.4f} in epoch {}.\n'.format(early_stopping_intervall, early_stopping['validation_accuracy'], early_stopping['epoch'])
                     
+                    print(output_separator,                end='')
+                    print(training_development_early_stop, end='')
+                    print(output_separator,                end='')
+
+                    training_development += output_separator
+                    training_development += training_development_early_stop
+                    training_development += output_separator
+
                     break
 
 
@@ -233,12 +256,15 @@ class NeuralNetworkTrainer(object):
                                                                                                   mean_training_time_per_epoch = np.mean(epoch_durations)
                                                                                                   )
 
-        with open(os.path.join(save_path, 'NN_Info.txt'), 'w') as NN_Info_output_file:
+        with open(os.path.join(directory_model_properties, 'NN_Info.txt'), 'w') as NN_Info_output_file:
             NN_Info_output_file.write(network_and_training_properties_string)
 
-        print(110*'-')
         print(network_and_training_properties_string, end='')
-        print(110*'-')
+        print(output_separator,                       end='')
+
+
+        with open(os.path.join(directory_model_properties, 'training_development.txt'), 'w') as training_development_output_file:
+            training_development_output_file.write(training_development)
 
 
         print('\n' + '========')
