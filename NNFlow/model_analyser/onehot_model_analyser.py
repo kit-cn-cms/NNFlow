@@ -15,12 +15,34 @@ from .model_analyser import ModelAnalyser
 class OneHotModelAnalyser(ModelAnalyser):
 
 
+    def __init__(self,
+                 path_to_model,
+                 batch_size_classification = 200000,
+                 session_config            = None,
+                 ):
+
+
+        ModelAnalyser.__init__(self, path_to_model, batch_size_classification, session_config)
+
+
+        config = self._session_config.get_config()
+        graph = tf.Graph()
+        with tf.Session(config=config, graph=graph) as sess:
+            saver = tf.train.import_meta_graph(self._path_to_model + '.meta')
+            saver.restore(sess, self._path_to_model)
+            self._names_output_neurons = graph.get_tensor_by_name('names_output_neurons').eval()
+
+
+
+
     def plot_heatmap(self,
                      save_path,
                      filename_outputfile,
                      path_to_input_file,
-                     processes,
                      ):
+
+
+        plt.clf()
 
 
         array_predicted_true = self._get_predicted_true_matrix(path_to_input_file)
@@ -54,10 +76,13 @@ class OneHotModelAnalyser(ModelAnalyser):
         ax = plt.gca()
         ax.set_xticks(np.arange((x.shape[0] - 1)) + 0.5, minor=False)
         ax.set_yticks(np.arange((y.shape[0] - 1)) + 0.5, minor=False)
-        ax.set_xticklabels(processes)
-        ax.set_yticklabels(processes)
+        ax.set_xticklabels(self._names_output_neurons)
+        ax.set_yticklabels(self._names_output_neurons)
 
         plt.savefig(os.path.join(save_path, filename_outputfile + '.pdf'))
+
+
+        plt.clf()
 
 
 

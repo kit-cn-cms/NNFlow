@@ -15,7 +15,6 @@ class ModelAnalyser(object):
     
     def __init__(self,
                  path_to_model,
-                 number_of_output_neurons,
                  batch_size_classification = 200000,
                  session_config            = None,
                  ):
@@ -31,11 +30,20 @@ class ModelAnalyser(object):
             self._session_config = SessionConfig()
 
 
+        config = self._session_config.get_config()
+        graph = tf.Graph()
+        with tf.Session(config=config, graph=graph) as sess:
+            saver = tf.train.import_meta_graph(self._path_to_model + '.meta')
+            saver.restore(sess, self._path_to_model)
+            self._number_of_output_neurons = len(graph.get_tensor_by_name("B_out:0").eval())
+            self._names_input_neurons = graph.get_tensor_by_name("names_input_neurons").eval()
+
+
 
 
     def save_variable_ranking(self,
                               save_dir,
-                              path_to_variablelist):
+                              ):
 
 
         config = self._session_config.get_config()
@@ -43,15 +51,12 @@ class ModelAnalyser(object):
         with tf.Session(config=config, graph=graph) as sess:
              saver = tf.train.import_meta_graph(self._path_to_model + '.meta')
              saver.restore(sess, self._path_to_model)
-             weights = graph.get_tensor_by_name("W_1:0").eval()
+             weights      = graph.get_tensor_by_name("W_1:0").eval()
 
         weight_abs = np.absolute(weights)
         weight_abs_mean = np.mean(weight_abs, axis=1)
-        
-        with open(path_to_variablelist, 'r') as file_variablelist:
-            variablelist = [variable.rstrip() for variable in file_variablelist.readlines()]
 
-        variable_ranking = pd.Series(weight_abs_mean, index=variablelist)
+        variable_ranking = pd.Series(weight_abs_mean, index=self._names_input_neurons)
         variable_ranking.sort_values(inplace=True)
 
         with open(os.path.join(save_dir, 'variable_ranking.txt'), 'w') as outfile:

@@ -109,7 +109,7 @@ class NeuralNetworkTrainer(object):
             train_step                = tf_optimizer.minimize(loss, global_step=global_step)
 
 
-            names_input_neurons  = tf.Variable(training_data_set.get_variables(), trainable=False, name='names_input_neurons')
+            names_input_neurons = tf.Variable(training_data_set.get_variables(), trainable=False, name='names_input_neurons')
             if network_type == 'one-hot':
                 names_output_neurons = tf.Variable(training_data_set.get_processes(), trainable=False, name='names_output_neurons')
 
