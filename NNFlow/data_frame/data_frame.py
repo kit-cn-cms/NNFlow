@@ -15,10 +15,10 @@ class DataFrame(object):
 
         with pd.HDFStore(path_to_input_file, mode='r') as store_input:
             array           =      store_input.select('data').values
-            self._variables = list(store_input.select('variables').values)
+            self._variables = store_input.select('variables')
 
             if network_type == 'one-hot':
-                self._processes = list(store_input.select('processes').values)
+                self._processes = store_input.select('processes').values
 
         self._number_of_input_neurons = len(self._variables)
 

@@ -107,8 +107,18 @@ class NeuralNetworkTrainer(object):
  
             tf_optimizer, global_step = optimizer.get_optimizer_global_step()
             train_step                = tf_optimizer.minimize(loss, global_step=global_step)
- 
-            saver = tf.train.Saver(weights + biases + [feature_scaling_mean, feature_scaling_std])
+
+
+            names_input_neurons  = tf.Variable(training_data_set.get_variables(), trainable=False, name='names_input_neurons')
+            if network_type == 'one-hot':
+                names_output_neurons = tf.Variable(training_data_set.get_processes(), trainable=False, name='names_output_neurons')
+
+
+            if network_type == 'binary':
+                saver = tf.train.Saver(weights + biases + [feature_scaling_mean, feature_scaling_std, names_input_neurons])
+
+            elif network_type == 'one-hot':
+                saver = tf.train.Saver(weights + biases + [feature_scaling_mean, feature_scaling_std, names_input_neurons, names_output_neurons])
  
 
         #----------------------------------------------------------------------------------------------------
