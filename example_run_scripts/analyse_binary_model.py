@@ -14,8 +14,8 @@ file_name_model = 'binary_training.ckpt'
 #----------------------------------------------------------------------------------------------------
 
 
-path_to_training_data_set   = os.path.join(workdir_base, name_subdir, 'training_data/train.npy')
-path_to_validation_data_set = os.path.join(workdir_base, name_subdir, 'training_data/val.npy')
+path_to_training_data_set   = os.path.join(workdir_base, name_subdir, 'training_data/train.hdf')
+path_to_validation_data_set = os.path.join(workdir_base, name_subdir, 'training_data/val.hdf')
 
 
 save_dir = os.path.join(workdir_base, name_subdir, 'model/model_properties')

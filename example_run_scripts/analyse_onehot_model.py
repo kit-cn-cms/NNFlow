@@ -11,7 +11,7 @@ name_subdir     = 'onehot_training'
 file_name_model = 'onehot_training.ckpt'
 
 
-path_to_data = os.path.join(workdir_base, name_subdir, 'training_data/val.npy')
+path_to_data = os.path.join(workdir_base, name_subdir, 'training_data/val.hdf')
 
 
 #----------------------------------------------------------------------------------------------------
