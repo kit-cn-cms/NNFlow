@@ -13,7 +13,7 @@ class DataFrame(object):
                  ):
 
 
-        with pd.HDFStore(os.path.join(path_to_inputfile), mode='r') as store_input:
+        with pd.HDFStore(path_to_inputfile, mode='r') as store_input:
             array           =      store_input.select('data').values
             self._variables = list(store_input.select('variables').values)
 
