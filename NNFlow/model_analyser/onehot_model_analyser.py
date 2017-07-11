@@ -86,6 +86,8 @@ class OneHotModelAnalyser(ModelAnalyser):
         ax.set_xticklabels(self._names_output_neurons)
         ax.set_yticklabels(self._names_output_neurons)
 
+        plt.tight_layout()
+
         plt.savefig(os.path.join(save_path, filename_outputfile + '.pdf'))
 
 
