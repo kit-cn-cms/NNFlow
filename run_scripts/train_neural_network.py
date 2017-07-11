@@ -89,4 +89,4 @@ train_dict = {'save_path'                   : save_path,
               }
 
 
-train_neural_network(**train_dict)
+NNFlow.train_neural_network(**train_dict)
