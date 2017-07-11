@@ -6,6 +6,7 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
+import tensorflow as tf
 
 from .model_analyser import ModelAnalyser
 
