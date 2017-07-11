@@ -21,7 +21,6 @@ class ModelAnalyser(object):
 
 
         self._path_to_model             = path_to_model
-        self._number_of_output_neurons  = number_of_output_neurons
         self._batch_size_classification = batch_size_classification
 
         if session_config is not None:
