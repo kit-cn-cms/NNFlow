@@ -8,24 +8,35 @@ class DataFrame(object):
 
     def __init__(self,
                  path_to_input_file,
-                 number_of_output_neurons
+                 network_type,
                  ):
 
 
-        array = np.load(path_to_input_file)
+        with pd.HDFStore(os.path.join(path_to_inputfile), mode='r') as store_input:
+            array           =      store_input.select('data').values
+            self._variables = list(store_input.select('variables').values)
+
+            if network_type == 'one-hot':
+                self._processes = list(store_input.select('processes').values)
+
+        self._number_of_input_neurons = len(self._variables)
+
+        if network_type == 'one-hot':
+            self._number_of_output_neurons = len(self._processes)
+        elif network_type == 'binary':
+            self._number_of_output_neurons = 1
 
 
-        self._data          = array[:, number_of_output_neurons:-1]
+        self._data          = array[:, self._number_of_output_neurons:-1]
         self._event_weights = array[:, -1]
 
-        if number_of_output_neurons == 1:
+        if self._number_of_output_neurons == 1:
             self._labels = array[:, 0]
         else:
-            self._labels = array[:, :number_of_output_neurons]
+            self._labels = array[:, :self._number_of_output_neurons]
 
 
         self._number_of_events    = self._data.shape[0]
-        self._number_of_variables = self._data.shape[1]
 
 
 
@@ -92,7 +103,31 @@ class DataFrame(object):
 
 
 
-    def get_number_of_variables(self):
+    def get_number_of_output_neurons(self):
 
 
-        return self._number_of_variables
+        return self._number_of_output_neurons
+
+
+
+
+    def get_number_of_input_neurons(self):
+
+
+        return self._number_of_input_neurons
+
+
+
+
+    def get_processes(self):
+
+
+        return self._processes
+
+
+
+
+    def get_variables(self):
+
+
+        return self._variables

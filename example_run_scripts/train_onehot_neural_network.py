@@ -52,18 +52,6 @@ path_to_training_data_set   = os.path.join(workdir_base, name_subdir, 'training_
 path_to_validation_data_set = os.path.join(workdir_base, name_subdir, 'training_data/val.npy')
 
 
-if network_type == 'one-hot':
-    path_to_process_names = os.path.join(workdir_base, name_subdir, 'training_data/process_labels.txt')
-
-
-#----------------------------------------------------------------------------------------------------
-if network_type == 'binary':
-    number_of_output_neurons = 1
-
-elif network_type == 'one-hot':
-    with open(path_to_process_names, 'r') as file_process_names:
-        process_names = file_process_names.readlines()
-    number_of_output_neurons = len(process_names)
 #----------------------------------------------------------------------------------------------------
 if not os.path.isdir(save_path):
     if os.path.isdir(os.path.dirname(save_path)):
@@ -72,7 +60,6 @@ if not os.path.isdir(save_path):
 train_dict = {'save_path'                   : save_path,
               'model_name'                  : model_name,
               'network_type'                : network_type,
-              'number_of_output_neurons'    : number_of_output_neurons,
               'hidden_layers'               : hidden_layers,
               'activation_function_name'    : activation_function_name,
               'dropout_keep_probability'    : dropout_keep_probability,
