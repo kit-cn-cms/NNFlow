@@ -24,6 +24,7 @@ class BinaryModelAnalyser(ModelAnalyser):
 
 
         self._network_type = 'binary'
+        self._number_of_output_neurons = 1
 
 
 

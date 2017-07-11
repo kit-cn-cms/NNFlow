@@ -37,6 +37,9 @@ class OneHotModelAnalyser(ModelAnalyser):
             self._names_output_neurons = graph.get_tensor_by_name('names_output_neurons:0').eval()
 
 
+        self._number_of_output_neurons = len(self._names_output_neurons)
+
+
 
 
     def plot_heatmap(self,
