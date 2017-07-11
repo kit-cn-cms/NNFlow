@@ -14,8 +14,8 @@ class DataFrame(object):
 
 
         with pd.HDFStore(path_to_input_file, mode='r') as store_input:
-            array           =      store_input.select('data').values
-            self._variables = store_input.select('variables')
+            array           = store_input.select('data').values
+            self._variables = store_input.select('variables').values
 
             if network_type == 'one-hot':
                 self._processes = store_input.select('processes').values
