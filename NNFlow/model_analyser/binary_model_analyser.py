@@ -12,6 +12,22 @@ from .model_analyser import ModelAnalyser
 
 class BinaryModelAnalyser(ModelAnalyser):
 
+
+    def __init__(self,
+                 path_to_model,
+                 batch_size_classification = 200000,
+                 session_config            = None,
+                 ):
+
+
+        ModelAnalyser.__init__(self, path_to_model, batch_size_classification, session_config)
+
+
+        self._network_type = 'binary'
+
+
+
+
     def plot_output_distribution(self,
                                  path_to_data,
                                  save_path,

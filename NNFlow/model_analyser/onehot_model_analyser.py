@@ -25,6 +25,9 @@ class OneHotModelAnalyser(ModelAnalyser):
         ModelAnalyser.__init__(self, path_to_model, batch_size_classification, session_config)
 
 
+        self._network_type = 'one-hot'
+
+
         config = self._session_config.get_config()
         graph = tf.Graph()
         with tf.Session(config=config, graph=graph) as sess:

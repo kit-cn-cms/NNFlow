@@ -71,8 +71,8 @@ class ModelAnalyser(object):
                                               path_to_input_file):
 
 
-        data_set = DataFrame(path_to_input_file       = path_to_input_file,
-                             number_of_output_neurons = self._number_of_output_neurons)
+        data_set = DataFrame(path_to_input_file = path_to_input_file,
+                             network_type       = self._network_type)
 
 
         config = self._session_config.get_config()
