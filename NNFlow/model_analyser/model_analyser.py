@@ -35,7 +35,7 @@ class ModelAnalyser(object):
             saver = tf.train.import_meta_graph(self._path_to_model + '.meta')
             saver.restore(sess, self._path_to_model)
             self._number_of_output_neurons = len(graph.get_tensor_by_name("B_out:0").eval())
-            self._names_input_neurons = graph.get_tensor_by_name("names_input_neurons").eval()
+            self._names_input_neurons = graph.get_tensor_by_name("names_input_neurons:0").eval()
 
 
 

@@ -30,7 +30,7 @@ class OneHotModelAnalyser(ModelAnalyser):
         with tf.Session(config=config, graph=graph) as sess:
             saver = tf.train.import_meta_graph(self._path_to_model + '.meta')
             saver.restore(sess, self._path_to_model)
-            self._names_output_neurons = graph.get_tensor_by_name('names_output_neurons').eval()
+            self._names_output_neurons = graph.get_tensor_by_name('names_output_neurons:0').eval()
 
 
 
