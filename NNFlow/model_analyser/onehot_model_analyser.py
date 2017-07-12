@@ -1,6 +1,7 @@
 from __future__ import absolute_import, division, print_function
 
 import os
+from collections import OrderedDict
 
 import numpy as np
 import matplotlib
@@ -59,6 +60,31 @@ class OneHotModelAnalyser(ModelAnalyser):
 
 
         return accuracy
+
+
+
+
+    def get_signal_over_background(self,
+                                   path_to_data,
+                                   cross_sections,
+                                   ):
+
+
+        labels, network_output, event_weights = self._get_labels_network_output_event_weights(path_to_data)
+
+        array_predicted_true = self.onehot_output_processor.get_predicted_true_matrix(labels, network_output, event_weights, cross_sections)
+
+
+        signal_over_background = OrderedDict()
+
+        for j in range(self._number_of_output_neurons):
+            s = np.diagonal(array_predicted_true)[j]
+            b = array_predicted_true[:, j].sum() - s
+
+            signal_over_background[self._names_output_neurons[j]] = s/b
+
+
+        return signal_over_background
 
 
 
