@@ -20,6 +20,7 @@ class OneHotOutputProcessor(object):
                                   labels,
                                   network_outputs,
                                   event_weights,
+                                  cross_sections = None,
                                   ):
 
 
@@ -33,6 +34,19 @@ class OneHotOutputProcessor(object):
             index_predicted = self.get_prediction(network_outputs[i])
 
             array_predicted_true[index_true][index_predicted] += event_weights[i]
+
+
+        for j in range(number_of_output_neurons):
+            array_predicted_true[j] /= array_predicted_true[j].sum()
+
+
+        if cross_sections is None:
+            array_predicted_true *= number_of_output_neurons
+            array_predicted_true *= 100
+
+        else:
+            for j in range(number_of_output_neurons):
+                array_predicted_true[j] *= cross_sections[j]
 
 
         return array_predicted_true
