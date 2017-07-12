@@ -49,7 +49,7 @@ class ModelAnalyser(object):
         with tf.Session(config=config, graph=graph) as sess:
              saver = tf.train.import_meta_graph(self._path_to_model + '.meta')
              saver.restore(sess, self._path_to_model)
-             weights      = graph.get_tensor_by_name("W_1:0").eval()
+             weights = graph.get_tensor_by_name("W_1:0").eval()
 
         weight_abs = np.absolute(weights)
         weight_abs_mean = np.mean(weight_abs, axis=1)
@@ -80,8 +80,8 @@ class ModelAnalyser(object):
             saver = tf.train.import_meta_graph(self._path_to_model + '.meta')
             saver.restore(sess, self._path_to_model)
 
-            input_data     = graph.get_tensor_by_name("input:0")
-            network_output = graph.get_tensor_by_name("output:0")
+            input_data                = graph.get_tensor_by_name("input:0")
+            network_output_calculator = graph.get_tensor_by_name("output:0")
 
 
             batch_network_output_list = list()
@@ -90,7 +90,7 @@ class ModelAnalyser(object):
                                                                                                                    sort_events_randomly       = False,
                                                                                                                    include_smaller_last_batch = True,
                                                                                                                    ):
-                batch_network_output = sess.run(network_output, {input_data : batch_data})
+                batch_network_output = sess.run(network_output_calculator, {input_data : batch_data})
 
                 batch_network_output_list.append(batch_network_output)
 

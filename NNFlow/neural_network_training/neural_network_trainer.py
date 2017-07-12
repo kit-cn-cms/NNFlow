@@ -87,8 +87,8 @@ class NeuralNetworkTrainer(object):
             if network_type == 'binary':
                 labels = tf.placeholder(tf.float32, [None])
 
-                logits         =               tf.reshape(self._get_model(input_data_scaled, weights, biases, activation_function_name, dropout_keep_probability=dropout_keep_probability), [-1])
-                network_output = tf.nn.sigmoid(tf.reshape(self._get_model(input_data_scaled, weights, biases, activation_function_name, dropout_keep_probability=1), [-1]), name='output')
+                logits                    =               tf.reshape(self._get_model(input_data_scaled,weights,biases,activation_function_name,dropout_keep_probability=dropout_keep_probability), [-1])
+                network_output_calculator = tf.nn.sigmoid(tf.reshape(self._get_model(input_data_scaled,weights,biases,activation_function_name,dropout_keep_probability=1), [-1]), name='output')
 
                 cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=labels)
 
@@ -96,8 +96,8 @@ class NeuralNetworkTrainer(object):
             elif network_type == 'one-hot':
                 labels = tf.placeholder(tf.float32, [None, number_of_output_neurons])
 
-                logits         =               self._get_model(input_data_scaled, weights, biases, activation_function_name, dropout_keep_probability=dropout_keep_probability)
-                network_output = tf.nn.softmax(self._get_model(input_data_scaled, weights, biases, activation_function_name, dropout_keep_probability=1), name='output')
+                logits                    =               self._get_model(input_data_scaled, weights, biases, activation_function_name, dropout_keep_probability=dropout_keep_probability)
+                network_output_calculator = tf.nn.softmax(self._get_model(input_data_scaled, weights, biases, activation_function_name, dropout_keep_probability=1), name='output')
 
                 cross_entropy = tf.nn.softmax_cross_entropy_with_logits(labels=labels, logits=logits)
 
@@ -178,9 +178,9 @@ class NeuralNetworkTrainer(object):
                                                                                                                                 sort_events_randomly       = False,
                                                                                                                                 include_smaller_last_batch = True
                                                                                                                                 ):
-                    batch_network_output, batch_loss = sess.run([network_output, loss], {input_data    : batch_data,
-                                                                                         labels        : batch_labels,
-                                                                                         event_weights : batch_event_weights})
+                    batch_network_output, batch_loss = sess.run([network_output_calculator, loss], {input_data    : batch_data,
+                                                                                                    labels        : batch_labels,
+                                                                                                    event_weights : batch_event_weights})
  
                     training_batch_network_output_list.append(batch_network_output)
                     training_batch_loss_list.append(batch_loss)
@@ -202,7 +202,7 @@ class NeuralNetworkTrainer(object):
                                                                                                                                   sort_events_randomly       = False,
                                                                                                                                   include_smaller_last_batch = True
                                                                                                                                   ):
-                    batch_network_output = sess.run(network_output, {input_data : batch_data})
+                    batch_network_output = sess.run(network_output_calculator, {input_data : batch_data})
 
                     validation_batch_network_output_list.append(batch_network_output)
 
