@@ -35,7 +35,7 @@ class BinaryModelAnalyser(ModelAnalyser):
                     ):
     
 
-        labels, network_output, event_weights = self._get_labels_network_output_event_weights(path_to_data)
+        labels, network_output, event_weights = self.get_labels_network_output_event_weights(path_to_data)
 
         roc_auc = roc_auc_score(y_true = labels, y_score = network_output, sample_weight = event_weights)
 
@@ -52,7 +52,7 @@ class BinaryModelAnalyser(ModelAnalyser):
                                  ):
 
 
-        labels, network_output, event_weights = self._get_labels_network_output_event_weights(path_to_data)
+        labels, network_output, event_weights = self.get_labels_network_output_event_weights(path_to_data)
 
         df_labels         = pd.DataFrame(labels,         columns=['label'])
         df_network_output = pd.DataFrame(network_output, columns=['network_output'])
@@ -94,8 +94,8 @@ class BinaryModelAnalyser(ModelAnalyser):
                                                      ):
 
 
-        training_labels,   training_network_output,   training_event_weights   = self._get_labels_network_output_event_weights(path_to_training_data)
-        validation_labels, validation_network_output, validation_event_weights = self._get_labels_network_output_event_weights(path_to_validation_data)
+        training_labels,   training_network_output,   training_event_weights   = self.get_labels_network_output_event_weights(path_to_training_data)
+        validation_labels, validation_network_output, validation_event_weights = self.get_labels_network_output_event_weights(path_to_validation_data)
 
 
         df_training_labels         = pd.DataFrame(training_labels,         columns=['label'])

@@ -66,8 +66,8 @@ class ModelAnalyser(object):
 
 
 
-    def _get_labels_network_output_event_weights(self,
-                                                 path_to_input_file):
+    def get_labels_network_output_event_weights(self,
+                                                path_to_input_file):
 
 
         data_set = DataFrame(path_to_input_file = path_to_input_file,

@@ -52,7 +52,7 @@ class OneHotModelAnalyser(ModelAnalyser):
                      ):
 
 
-        labels, network_output, event_weights = self._get_labels_network_output_event_weights(path_to_data)
+        labels, network_output, event_weights = self.get_labels_network_output_event_weights(path_to_data)
 
         array_predicted_true = self.onehot_output_processor.get_predicted_true_matrix(labels, network_output, event_weights)
 
@@ -70,7 +70,7 @@ class OneHotModelAnalyser(ModelAnalyser):
                                    ):
 
 
-        labels, network_output, event_weights = self._get_labels_network_output_event_weights(path_to_data)
+        labels, network_output, event_weights = self.get_labels_network_output_event_weights(path_to_data)
 
         array_predicted_true = self.onehot_output_processor.get_predicted_true_matrix(labels, network_output, event_weights, cross_sections)
 
@@ -100,7 +100,7 @@ class OneHotModelAnalyser(ModelAnalyser):
         plt.clf()
 
 
-        labels, network_output, event_weights = self._get_labels_network_output_event_weights(path_to_input_file)
+        labels, network_output, event_weights = self.get_labels_network_output_event_weights(path_to_input_file)
         array_predicted_true = self.onehot_output_processor.get_predicted_true_matrix(labels, network_output, event_weights, cross_sections)
 
 
