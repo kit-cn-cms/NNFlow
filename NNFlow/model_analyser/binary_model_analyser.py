@@ -5,6 +5,7 @@ import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from sklearn.metrics import roc_auc_score
 
 from .model_analyser import ModelAnalyser
 
@@ -25,6 +26,21 @@ class BinaryModelAnalyser(ModelAnalyser):
 
         self._network_type = 'binary'
         self._number_of_output_neurons = 1
+
+
+
+
+    def get_roc_auc(self,
+                    path_to_data,
+                    ):
+    
+
+        labels, network_output, event_weights = self._get_labels_network_output_event_weights(path_to_data)
+
+        roc_auc = roc_auc_score(y_true = labels, y_score = network_output, sample_weight = event_weights)
+
+
+        return roc_auc
 
 
 
