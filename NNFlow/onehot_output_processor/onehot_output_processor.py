@@ -18,7 +18,7 @@ class OneHotOutputProcessor(object):
 
     def get_predicted_true_matrix(self,
                                   labels,
-                                  network_outputs,
+                                  network_output,
                                   event_weights,
                                   cross_sections = None,
                                   ):
@@ -31,22 +31,22 @@ class OneHotOutputProcessor(object):
 
         for i in range(number_of_events):
             index_true      = np.argmax(labels[i])
-            index_predicted = self.get_prediction(network_outputs[i])
+            index_predicted = self.get_prediction(network_output[i])
 
             array_predicted_true[index_true][index_predicted] += event_weights[i]
 
 
-        for j in range(number_of_output_neurons):
-            array_predicted_true[j] /= array_predicted_true[j].sum()
-
-
-        if cross_sections is None:
-            array_predicted_true *= number_of_output_neurons
-            array_predicted_true *= 100
-
-        else:
+        if cross_sections is not None:
             for j in range(number_of_output_neurons):
-                array_predicted_true[j] *= cross_sections[j]
+                array_predicted_true[j] /= array_predicted_true[j].sum()
+
+            if cross_sections == 'equal':
+                array_predicted_true *= number_of_output_neurons
+                array_predicted_true *= 100
+
+            else:
+                for j in range(number_of_output_neurons):
+                    array_predicted_true[j] *= cross_sections[j]
 
 
         return array_predicted_true

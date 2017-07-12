@@ -12,11 +12,20 @@ import tensorflow as tf
 from sklearn.metrics import roc_auc_score
 
 from NNFlow.data_frame.data_frame import DataFrame
+from NNFlow.onehot_output_processor.onehot_output_processor import OneHotOutputProcessor
 
 
 
 
 class NeuralNetworkTrainer(object):
+
+
+    def __init__(self):
+
+
+        self._onehot_output_processor = OneHotOutputProcessor()
+
+
 
 
     def train(self,
@@ -299,15 +308,9 @@ class NeuralNetworkTrainer(object):
             accuracy = roc_auc_score(y_true = labels, y_score = network_output, sample_weight = event_weights)
 
         elif network_type == 'one-hot':
-            array_true_prediction = np.zeros((labels.shape[1], labels.shape[1]), dtype=np.float32)
-            
-            index_true        = np.argmax(labels, axis=1)
-            index_predictions = np.argmax(network_output, axis=1)
-
-            for i in range(index_true.shape[0]):
-                array_true_prediction[index_true[i]][index_predictions[i]] += event_weights[i]
+            array_predicted_true = self._onehot_output_processor.get_predicted_true_matrix(labels, network_output, event_weights)
      
-            accuracy = np.diagonal(array_true_prediction).sum() / array_true_prediction.sum()
+            accuracy = np.diagonal(array_predicted_true).sum() / array_predicted_true.sum()
      
      
         return accuracy
