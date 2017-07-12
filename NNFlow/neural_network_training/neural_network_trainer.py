@@ -87,8 +87,8 @@ class NeuralNetworkTrainer(object):
             if network_type == 'binary':
                 labels = tf.placeholder(tf.float32, [None])
 
-                logits      =               tf.reshape(self._get_model(input_data_scaled, weights, biases, activation_function_name, dropout_keep_probability=dropout_keep_probability), [-1])
-                predictions = tf.nn.sigmoid(tf.reshape(self._get_model(input_data_scaled, weights, biases, activation_function_name, dropout_keep_probability=1), [-1]), name='output')
+                logits         =               tf.reshape(self._get_model(input_data_scaled, weights, biases, activation_function_name, dropout_keep_probability=dropout_keep_probability), [-1])
+                network_output = tf.nn.sigmoid(tf.reshape(self._get_model(input_data_scaled, weights, biases, activation_function_name, dropout_keep_probability=1), [-1]), name='output')
 
                 cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=labels)
 
@@ -96,8 +96,8 @@ class NeuralNetworkTrainer(object):
             elif network_type == 'one-hot':
                 labels = tf.placeholder(tf.float32, [None, number_of_output_neurons])
 
-                logits      =               self._get_model(input_data_scaled, weights, biases, activation_function_name, dropout_keep_probability=dropout_keep_probability)
-                predictions = tf.nn.softmax(self._get_model(input_data_scaled, weights, biases, activation_function_name, dropout_keep_probability=1), name='output')
+                logits         =               self._get_model(input_data_scaled, weights, biases, activation_function_name, dropout_keep_probability=dropout_keep_probability)
+                network_output = tf.nn.softmax(self._get_model(input_data_scaled, weights, biases, activation_function_name, dropout_keep_probability=1), name='output')
 
                 cross_entropy = tf.nn.softmax_cross_entropy_with_logits(labels=labels, logits=logits)
 
@@ -169,47 +169,47 @@ class NeuralNetworkTrainer(object):
 
 
                 #----------------------------------------------------------------------------------------------------
-                # Make predictions for training data set.
+                # Calculate network_output for training data set.
 
-                training_batch_predictions_list = list()
-                training_batch_loss_list        = list()
+                training_batch_network_output_list = list()
+                training_batch_loss_list           = list()
 
                 for batch_data, batch_labels, batch_event_weights in training_data_set.get_data_labels_event_weights_as_batches(batch_size                 = batch_size_classification,
                                                                                                                                 sort_events_randomly       = False,
                                                                                                                                 include_smaller_last_batch = True
                                                                                                                                 ):
-                    batch_predictions, batch_loss = sess.run([predictions, loss], {input_data    : batch_data,
-                                                                                   labels        : batch_labels,
-                                                                                   event_weights : batch_event_weights})
+                    batch_network_output, batch_loss = sess.run([network_output, loss], {input_data    : batch_data,
+                                                                                         labels        : batch_labels,
+                                                                                         event_weights : batch_event_weights})
  
-                    training_batch_predictions_list.append(batch_predictions)
+                    training_batch_network_output_list.append(batch_network_output)
                     training_batch_loss_list.append(batch_loss)
  
 
-                training_predictions                    = np.concatenate(training_batch_predictions_list, axis=0)
+                training_network_output                 = np.concatenate(training_batch_network_output_list, axis=0)
                 training_labels, training_event_weights = training_data_set.get_labels_event_weights()
-                training_accuracies.append(self._get_accuracy(training_labels, training_predictions, training_event_weights, network_type))
+                training_accuracies.append(self._get_accuracy(training_labels, training_network_output, training_event_weights, network_type))
 
                 training_losses.append(np.mean(training_batch_loss_list))
 
 
                 #----------------------------------------------------------------------------------------------------
-                # Make predictions for validation data set.
+                # Calculate network_output for validation data set.
 
-                validation_batch_predictions_list = list()
+                validation_batch_network_output_list = list()
 
                 for batch_data, batch_labels, batch_event_weights in validation_data_set.get_data_labels_event_weights_as_batches(batch_size                 = batch_size_classification,
                                                                                                                                   sort_events_randomly       = False,
                                                                                                                                   include_smaller_last_batch = True
                                                                                                                                   ):
-                    batch_predictions = sess.run(predictions, {input_data : batch_data})
+                    batch_network_output = sess.run(network_output, {input_data : batch_data})
 
-                    validation_batch_predictions_list.append(batch_predictions)
+                    validation_batch_network_output_list.append(batch_network_output)
 
 
-                validation_predictions                      = np.concatenate(validation_batch_predictions_list, axis=0)
+                validation_network_output                   = np.concatenate(validation_batch_network_output_list, axis=0)
                 validation_labels, validation_event_weights = validation_data_set.get_labels_event_weights()
-                validation_accuracies.append(self._get_accuracy(validation_labels, validation_predictions, validation_event_weights, network_type))
+                validation_accuracies.append(self._get_accuracy(validation_labels, validation_network_output, validation_event_weights, network_type))
 
 
                 #----------------------------------------------------------------------------------------------------
@@ -289,20 +289,20 @@ class NeuralNetworkTrainer(object):
 
     def _get_accuracy(self,
                       labels,
-                      predictions,
+                      network_output,
                       event_weights,
                       network_type
                       ):
  
 
         if network_type == 'binary':
-            accuracy = roc_auc_score(y_true = labels, y_score = predictions, sample_weight = event_weights)
+            accuracy = roc_auc_score(y_true = labels, y_score = network_output, sample_weight = event_weights)
 
         elif network_type == 'one-hot':
             array_true_prediction = np.zeros((labels.shape[1], labels.shape[1]), dtype=np.float32)
             
             index_true        = np.argmax(labels, axis=1)
-            index_predictions = np.argmax(predictions, axis=1)
+            index_predictions = np.argmax(network_output, axis=1)
 
             for i in range(index_true.shape[0]):
                 array_true_prediction[index_true[i]][index_predictions[i]] += event_weights[i]

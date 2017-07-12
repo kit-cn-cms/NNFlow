@@ -101,13 +101,13 @@ class OneHotModelAnalyser(ModelAnalyser):
                                    ):
 
 
-        labels, predictions, event_weights = self._get_labels_predictions_event_weights(path_to_input_file)
+        labels, network_output, event_weights = self._get_labels_network_output_event_weights(path_to_input_file)
 
         array_predicted_true = np.zeros((self._number_of_output_neurons, self._number_of_output_neurons), dtype=np.float32)
 
 
         index_true        = np.argmax(labels, axis=1)
-        index_predictions = np.argmax(predictions, axis=1)
+        index_predictions = np.argmax(network_output, axis=1)
 
 
         for i in range(index_true.shape[0]):

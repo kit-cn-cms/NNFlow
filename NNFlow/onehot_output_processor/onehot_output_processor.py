@@ -18,7 +18,7 @@ class OneHotOutputProcessor(object):
 
     def get_predicted_true_matrix(self,
                                   labels,
-                                  predictions,
+                                  network_outputs,
                                   event_weights,
                                   ):
 
@@ -30,7 +30,7 @@ class OneHotOutputProcessor(object):
 
         for i in range(number_of_events):
             index_true      = np.argmax(labels[i])
-            index_predicted = self.get_prediction(predictions[i])
+            index_predicted = self.get_prediction(network_outputs[i])
 
             array_predicted_true[index_true][index_predicted] += event_weights[i]
 

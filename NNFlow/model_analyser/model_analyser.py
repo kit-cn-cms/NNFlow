@@ -66,8 +66,8 @@ class ModelAnalyser(object):
 
 
 
-    def _get_labels_predictions_event_weights(self,
-                                              path_to_input_file):
+    def _get_labels_network_output_event_weights(self,
+                                                 path_to_input_file):
 
 
         data_set = DataFrame(path_to_input_file = path_to_input_file,
@@ -84,19 +84,19 @@ class ModelAnalyser(object):
             network_output = graph.get_tensor_by_name("output:0")
 
 
-            batch_predictions_list = list()
+            batch_network_output_list = list()
 
             for batch_data, batch_labels, batch_event_weights in data_set.get_data_labels_event_weights_as_batches(batch_size                 = self._batch_size_classification,
                                                                                                                    sort_events_randomly       = False,
                                                                                                                    include_smaller_last_batch = True,
                                                                                                                    ):
-                batch_predictions = sess.run(network_output, {input_data : batch_data})
+                batch_network_output = sess.run(network_output, {input_data : batch_data})
 
-                batch_predictions_list.append(batch_predictions)
+                batch_network_output_list.append(batch_network_output)
 
 
-            predictions           = np.concatenate(batch_predictions_list, axis=0)
+            network_output        = np.concatenate(batch_network_output_list, axis=0)
             labels, event_weights = data_set.get_labels_event_weights()
 
 
-        return labels, predictions, event_weights
+        return labels, network_output, event_weights
