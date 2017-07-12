@@ -46,6 +46,23 @@ class OneHotModelAnalyser(ModelAnalyser):
 
 
 
+    def get_accuracy(self,
+                     path_to_data,
+                     ):
+
+
+        labels, network_output, event_weights = self._get_labels_network_output_event_weights(path_to_data)
+
+        array_predicted_true = self.onehot_output_processor.get_predicted_true_matrix(labels, network_output, event_weights)
+
+        accuracy = np.diagonal(array_predicted_true).sum() / array_predicted_true.sum()
+
+
+        return accuracy
+
+
+
+
     def plot_heatmap(self,
                      save_path,
                      filename_outputfile,
