@@ -31,11 +31,11 @@ class BinaryModelAnalyser(ModelAnalyser):
 
 
     def get_roc_auc(self,
-                    labels,
-                    network_output,
-                    event_weights,
+                    path_to_data,
                     ):
     
+
+        labels, network_output, event_weights = self.get_labels_network_output_event_weights(path_to_data)
 
         roc_auc = roc_auc_score(y_true = labels, y_score = network_output, sample_weight = event_weights)
 
@@ -46,13 +46,13 @@ class BinaryModelAnalyser(ModelAnalyser):
 
 
     def plot_output_distribution(self,
-                                 labels,
-                                 network_output,
-                                 event_weights,
+                                 path_to_data,
                                  save_path,
                                  file_name
                                  ):
 
+
+        labels, network_output, event_weights = self.get_labels_network_output_event_weights(path_to_data)
 
         df_labels         = pd.DataFrame(labels,         columns=['label'])
         df_network_output = pd.DataFrame(network_output, columns=['network_output'])
