@@ -9,6 +9,7 @@ import matplotlib.colors as colors
 import tensorflow as tf
 
 from .model_analyser import ModelAnalyser
+from NNFlow.onehot_output_processor.onehot_output_processor import OneHotOutputProcessor
 
 
 
@@ -40,20 +41,24 @@ class OneHotModelAnalyser(ModelAnalyser):
         self._number_of_output_neurons = len(self._names_output_neurons)
 
 
+        self.onehot_output_processor = OneHotOutputProcessor()
+
+
 
 
     def plot_heatmap(self,
                      save_path,
                      filename_outputfile,
                      path_to_input_file,
+                     cross_sections = 'equal',
                      ):
 
 
         plt.clf()
 
 
-        array_predicted_true = self._get_predicted_true_matrix(path_to_input_file)
-        array_predicted_true *= 10000
+        labels, network_output, event_weights = self._get_labels_network_output_event_weights(path_to_input_file)
+        array_predicted_true = self.onehot_output_processor.get_predicted_true_matrix(labels, network_output, event_weights, cross_sections)
 
 
         cmap = matplotlib.cm.RdYlBu_r
@@ -92,26 +97,3 @@ class OneHotModelAnalyser(ModelAnalyser):
 
 
         plt.clf()
-
-
-
-
-    def _get_predicted_true_matrix(self,
-                                   path_to_input_file
-                                   ):
-
-
-        labels, network_output, event_weights = self._get_labels_network_output_event_weights(path_to_input_file)
-
-        array_predicted_true = np.zeros((self._number_of_output_neurons, self._number_of_output_neurons), dtype=np.float32)
-
-
-        index_true        = np.argmax(labels, axis=1)
-        index_predictions = np.argmax(network_output, axis=1)
-
-
-        for i in range(index_true.shape[0]):
-            array_predicted_true[index_true[i]][index_predictions[i]] += event_weights[i]
-
-
-        return array_predicted_true
