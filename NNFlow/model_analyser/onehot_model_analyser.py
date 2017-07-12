@@ -48,11 +48,11 @@ class OneHotModelAnalyser(ModelAnalyser):
 
 
     def get_accuracy(self,
-                     path_to_data,
+                     labels,
+                     network_output,
+                     event_weights,
                      ):
 
-
-        labels, network_output, event_weights = self.get_labels_network_output_event_weights(path_to_data)
 
         array_predicted_true = self.onehot_output_processor.get_predicted_true_matrix(labels, network_output, event_weights)
 
@@ -65,12 +65,12 @@ class OneHotModelAnalyser(ModelAnalyser):
 
 
     def get_signal_over_background(self,
-                                   path_to_data,
+                                   labels,
+                                   network_output,
+                                   event_weights,
                                    cross_sections,
                                    ):
 
-
-        labels, network_output, event_weights = self.get_labels_network_output_event_weights(path_to_data)
 
         array_predicted_true = self.onehot_output_processor.get_predicted_true_matrix(labels, network_output, event_weights, cross_sections)
 
@@ -90,10 +90,12 @@ class OneHotModelAnalyser(ModelAnalyser):
 
 
     def plot_heatmap(self,
+                     labels,
+                     network_output,
+                     event_weights,
+                     cross_sections,
                      save_path,
                      filename_outputfile,
-                     path_to_input_file,
-                     cross_sections = 'equal',
                      ):
 
 
