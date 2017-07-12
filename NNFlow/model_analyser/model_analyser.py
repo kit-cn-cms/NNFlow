@@ -39,33 +39,6 @@ class ModelAnalyser(object):
 
 
 
-    def save_variable_ranking(self,
-                              save_dir,
-                              ):
-
-
-        config = self._session_config.get_config()
-        graph = tf.Graph()
-        with tf.Session(config=config, graph=graph) as sess:
-             saver = tf.train.import_meta_graph(self._path_to_model + '.meta')
-             saver.restore(sess, self._path_to_model)
-             weights = graph.get_tensor_by_name("W_1:0").eval()
-
-        weight_abs = np.absolute(weights)
-        weight_abs_mean = np.mean(weight_abs, axis=1)
-
-        variable_ranking = pd.Series(weight_abs_mean, index=self._names_input_neurons)
-        variable_ranking.sort_values(inplace=True)
-
-        with open(os.path.join(save_dir, 'variable_ranking.txt'), 'w') as outfile:
-            for variable in variable_ranking.index:
-                outfile.write('{:60} {}\n'.format(variable, str(variable_ranking[variable])))
-
-        variable_ranking.to_msgpack(os.path.join(save_dir, 'variable_ranking.msg'))
-
-
-
-
     def get_labels_network_output_event_weights(self,
                                                 path_to_input_file):
 
@@ -100,3 +73,30 @@ class ModelAnalyser(object):
 
 
         return labels, network_output, event_weights
+
+
+
+
+    def save_variable_ranking(self,
+                              save_dir,
+                              ):
+
+
+        config = self._session_config.get_config()
+        graph = tf.Graph()
+        with tf.Session(config=config, graph=graph) as sess:
+             saver = tf.train.import_meta_graph(self._path_to_model + '.meta')
+             saver.restore(sess, self._path_to_model)
+             weights = graph.get_tensor_by_name("W_1:0").eval()
+
+        weight_abs = np.absolute(weights)
+        weight_abs_mean = np.mean(weight_abs, axis=1)
+
+        variable_ranking = pd.Series(weight_abs_mean, index=self._names_input_neurons)
+        variable_ranking.sort_values(inplace=True)
+
+        with open(os.path.join(save_dir, 'variable_ranking.txt'), 'w') as outfile:
+            for variable in variable_ranking.index:
+                outfile.write('{:60} {}\n'.format(variable, str(variable_ranking[variable])))
+
+        variable_ranking.to_msgpack(os.path.join(save_dir, 'variable_ranking.msg'))
