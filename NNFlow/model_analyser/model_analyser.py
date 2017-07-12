@@ -37,10 +37,18 @@ class ModelAnalyser(object):
             self._names_input_neurons = graph.get_tensor_by_name("names_input_neurons:0").eval()
 
 
+        self._labels_network_output_event_weights = dict()
+
+
 
 
     def get_labels_network_output_event_weights(self,
-                                                path_to_input_file):
+                                                path_to_input_file,
+                                                ):
+
+
+        if path_to_input_file in self._labels_network_output_event_weights.keys():
+            return self._labels_network_output_event_weights[path_to_input_file]
 
 
         data_set = DataFrame(path_to_input_file = path_to_input_file,
@@ -70,6 +78,9 @@ class ModelAnalyser(object):
 
             network_output        = np.concatenate(batch_network_output_list, axis=0)
             labels, event_weights = data_set.get_labels_event_weights()
+
+
+        self._labels_network_output_event_weights[path_to_input_file] = (labels, network_output, event_weights)
 
 
         return labels, network_output, event_weights
