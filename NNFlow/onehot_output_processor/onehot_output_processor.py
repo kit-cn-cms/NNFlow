@@ -84,7 +84,7 @@ class AdvancedOneHotOutputProcessor(OneHotOutputProcessor):
 
         elif self._mode == 'min_output_to_accept':
             if np.argmax(network_output) == self._min_output_to_accept_index:
-                if network_output[self._min_output_to_accept_index] > self._min_output_to_accept_value
+                if network_output[self._min_output_to_accept_index] > self._min_output_to_accept_value:
                     prediction = self._min_output_to_accept_index
 
                 else:
