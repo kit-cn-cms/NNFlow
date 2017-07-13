@@ -10,7 +10,7 @@ import matplotlib.colors as colors
 import tensorflow as tf
 
 from .model_analyser import ModelAnalyser
-from NNFlow.onehot_output_processor.onehot_output_processor import OneHotOutputProcessor
+from NNFlow.onehot_output_processor.onehot_output_processor import AdvancedOneHotOutputProcessor
 
 
 
@@ -42,7 +42,7 @@ class OneHotModelAnalyser(ModelAnalyser):
         self._number_of_output_neurons = len(self._names_output_neurons)
 
 
-        self.onehot_output_processor = OneHotOutputProcessor()
+        self.onehot_output_processor = AdvancedOneHotOutputProcessor(self._names_output_neurons)
 
 
 

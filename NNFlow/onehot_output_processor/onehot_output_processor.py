@@ -8,14 +8,6 @@ import numpy as np
 class OneHotOutputProcessor(object):
 
 
-    def __init__(self):
-
-
-        self.set_mode_max_output()
-
-
-
-
     def get_predicted_true_matrix(self,
                                   labels,
                                   network_output,
@@ -50,6 +42,33 @@ class OneHotOutputProcessor(object):
 
 
         return array_predicted_true
+
+
+
+
+    def get_prediction(self,
+                       network_output,
+                       ):
+
+
+        prediction = np.argmax(network_output)
+
+        return prediction
+
+
+
+
+class AdvancedOneHotOutputProcessor(OneHotOutputProcessor):
+
+
+    def __init__(self,
+                 processes,
+                 ):
+
+
+        self.set_mode_max_output()
+
+        self._processes = list(processes)
 
 
 
@@ -98,26 +117,30 @@ class OneHotOutputProcessor(object):
 
 
     def set_mode_min_output_to_accept(self,
-                                      index,
+                                      process,
                                       value,
                                       ):
 
 
         self._mode = 'min_output_to_accept'
 
-        self._min_output_to_accept_index = process
-        self._min_output_to_accept_value = value
+        self._min_output_to_accept_process = process
+        self._min_output_to_accept_index   = self._processes.index(process)
+
+        self._min_output_to_accept_value   = value
 
 
 
 
     def set_mode_min_output_to_reject(self,
-                                      index,
+                                      process,
                                       value,
                                       ):
 
 
         self._mode = 'max_output_to_reject'
 
-        self._max_output_to_reject_index = index
-        self._max_output_to_reject_value = value
+        self._max_output_to_reject_process = process
+        self._max_output_to_reject_index   = self._processes.index(process)
+
+        self._max_output_to_reject_value   = value
