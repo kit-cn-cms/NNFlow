@@ -15,10 +15,10 @@ name_subdir     =
 file_name_model =
 
 
-path_to_data =
-
-
 #----------------------------------------------------------------------------------------------------
+
+
+path_to_validation_data_set = os.path.join(workdir_base, name_subdir, 'training_data/val.hdf')
 
 
 save_dir = os.path.join(workdir_base, name_subdir, 'model/model_properties')
@@ -33,3 +33,8 @@ model_analyser = OneHotModelAnalyser(path_to_model)
 
 model_analyser.save_variable_ranking(save_dir)
 model_analyser.plot_heatmap(save_dir, 'heatmap', path_to_data)
+
+print()
+print('Validation accuracy: ', end='')
+print(model_analyser.get_accuracy(path_to_validation_data_set))
+print()

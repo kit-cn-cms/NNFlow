@@ -33,4 +33,10 @@ model_analyser = BinaryModelAnalyser(path_to_model)
 
 
 model_analyser.save_variable_ranking(save_dir)
+model_analyser.plot_output_distribution(path_to_validation_data_set, save_dir, 'validation_output_distribution')
 model_analyser.plot_training_validation_output_distribution(path_to_training_data_set, path_to_validation_data_set, save_dir, 'training_validation_output_distribution')
+
+print()
+print('Validation ROC AUC: ', end='')
+print(model_analyser.get_roc_auc(path_to_validation_data_set))
+print()
