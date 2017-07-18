@@ -46,7 +46,7 @@ class Optimizer(object):
         if self._learning_rate_decay:
             optimizer_properties['learning_rate_decay']       = 'Yes'
             optimizer_properties['learning_rate_decay_rate']  = self._learning_rate_decay_rate
-            optimizer_properties['learning_rate_dacay_steps'] = self._learning_rate_dacay_steps
+            optimizer_properties['learning_rate_decay_steps'] = self._learning_rate_dacay_steps
 
         else:
             optimizer_properties['learning_rate_decay'] = 'No'
