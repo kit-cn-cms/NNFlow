@@ -16,16 +16,15 @@ class OneHotOutputProcessor(object):
 
 
         number_of_events         = labels.shape[0]
-        number_of_output_neurons = labels.shape[1]
 
-        array_network_output_true = np.zeros((number_of_output_neurons, number_of_output_neurons), dtype=np.float32)
+        network_output_true_node = list()
 
         for i in range(number_of_events):
             index_true = np.argmax(labels[i])
 
-            array_network_output_true[index_true] += network_output[i] * event_weights[i]
+            network_output_true_node.append(network_output[i][index_true])
 
-        score = np.diagonal(array_network_output_true).sum() / array_network_output_true.sum()
+        score = np.sum(np.array(network_output_true_node) * event_weights / event_weights.sum())
 
 
         return score
