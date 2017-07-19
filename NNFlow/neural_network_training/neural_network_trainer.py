@@ -308,7 +308,7 @@ class NeuralNetworkTrainer(object):
             score = roc_auc_score(y_true = labels, y_score = network_output, sample_weight = event_weights)
 
         elif network_type == 'one-hot':
-            score = self._onehot_output_processor.get_predicted_true_matrix(labels, network_output, event_weights)
+            score = self._onehot_output_processor.get_score(labels, network_output, event_weights)
      
      
         return score
