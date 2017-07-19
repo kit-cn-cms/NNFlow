@@ -32,7 +32,7 @@ model_analyser = OneHotModelAnalyser(path_to_model)
 
 
 model_analyser.save_variable_ranking(save_dir)
-model_analyser.plot_heatmap(save_dir, 'heatmap', path_to_data)
+model_analyser.plot_heatmap(save_dir, 'heatmap', path_to_validation_data_set)
 
 print()
 print('Validation accuracy: ', end='')
