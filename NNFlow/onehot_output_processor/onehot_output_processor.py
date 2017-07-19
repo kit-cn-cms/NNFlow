@@ -8,6 +8,30 @@ import numpy as np
 class OneHotOutputProcessor(object):
 
 
+    def get_score(self,
+                  labels,
+                  network_output,
+                  event_weights
+                  ):
+
+
+        number_of_events = labels.shape[0]
+
+        array_network_output_true = np.zeros((number_of_output_neurons, number_of_output_neurons), dtype=np.float32)
+
+        for i in range(number_of_events):
+            index_true = np.argmax(labels[i])
+
+            array_network_output_true[index_true] += network_output[i] * event_weights[i]
+
+        score = np.diagonal(array_network_output_true).sum() / array_network_output_true.sum()
+
+
+        return score
+
+
+
+
     def get_predicted_true_matrix(self,
                                   labels,
                                   network_output,
