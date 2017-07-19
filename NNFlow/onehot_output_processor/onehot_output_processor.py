@@ -15,7 +15,8 @@ class OneHotOutputProcessor(object):
                   ):
 
 
-        number_of_events = labels.shape[0]
+        number_of_events         = labels.shape[0]
+        number_of_output_neurons = labels.shape[1]
 
         array_network_output_true = np.zeros((number_of_output_neurons, number_of_output_neurons), dtype=np.float32)
 
