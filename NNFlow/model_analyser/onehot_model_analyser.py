@@ -64,6 +64,20 @@ class OneHotModelAnalyser(ModelAnalyser):
 
 
 
+    def get_score(self,
+                  path_to_data,
+                  ):
+
+
+        labels, network_output, event_weights = self.get_labels_network_output_event_weights(path_to_data)
+
+        score = self.onehot_output_processor.get_score(labels, network_output, event_weights)
+
+        return score
+
+
+
+
     def get_signal_over_background(self,
                                    path_to_data,
                                    cross_sections,
