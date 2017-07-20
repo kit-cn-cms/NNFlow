@@ -402,7 +402,7 @@ class NeuralNetworkTrainer(object):
                                                     ):
         
 
-        column_width = 55
+        column_width = 60
 
 
         network_and_training_properties = str()
