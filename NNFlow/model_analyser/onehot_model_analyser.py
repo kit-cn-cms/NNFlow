@@ -64,16 +64,16 @@ class OneHotModelAnalyser(ModelAnalyser):
 
 
 
-    def get_score(self,
-                  path_to_data,
-                  ):
+    def get_mean_roc_auc(self,
+                         path_to_data,
+                         ):
 
 
         labels, network_output, event_weights = self.get_labels_network_output_event_weights(path_to_data)
 
-        score = self.onehot_output_processor.get_score(labels, network_output, event_weights)
+        mean_roc_auc = self.onehot_output_processor.get_mean_roc_auc(labels, network_output, event_weights)
 
-        return score
+        return mean_roc_auc
 
 
 

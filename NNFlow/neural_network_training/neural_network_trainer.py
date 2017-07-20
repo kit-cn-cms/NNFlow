@@ -137,19 +137,19 @@ class NeuralNetworkTrainer(object):
             sess.run(tf.global_variables_initializer())
  
  
-            training_accuracies   = list()
-            validation_accuracies = list()
+            training_roc_auc      = list()
+            validation_roc_auc    = list()
             training_losses       = list()
-            early_stopping        = {'validation_score': -1.0, 'epoch': 0}
+            early_stopping        = {'validation_roc_auc': -1.0, 'epoch': 0}
             epoch_durations       = list()
             training_development  = str()
 
 
-            output_separator = 110*'-' + '\n'
+            output_separator = 130*'-' + '\n'
             if network_type == 'binary':
-                training_development_heading = '{:^25} | {:^25} | {:^25} | {:^25}\n'.format('Epoch', 'Training data: loss', 'Training data: ROC AUC', 'Validation data: ROC AUC')
+                training_development_heading = '{:^30} | {:^30} | {:^30} | {:^30}\n'.format('Epoch', 'Training Data: Loss', 'Training Data: ROC AUC', 'Validation Data: ROC AUC')
             elif network_type == 'one-hot':
-                training_development_heading = '{:^25} | {:^25} | {:^25} | {:^25}\n'.format('Epoch', 'Training data: loss', 'Training data: score', 'Validation data: score')
+                training_development_heading = '{:^30} | {:^30} | {:^30} | {:^30}\n'.format('Epoch', 'Training Data: Loss', 'Training Data: Mean ROC AUC', 'Validation Data: Mean ROC AUC')
 
             print('\n',                         end='')
             print(output_separator,             end='')
@@ -197,7 +197,7 @@ class NeuralNetworkTrainer(object):
 
                 training_network_output                 = np.concatenate(training_batch_network_output_list, axis=0)
                 training_labels, training_event_weights = training_data_set.get_labels_event_weights()
-                training_accuracies.append(self._get_score(training_labels, training_network_output, training_event_weights, network_type))
+                training_roc_auc.append(self._get_mean_roc_auc(training_labels, training_network_output, training_event_weights, network_type))
 
                 training_losses.append(np.mean(training_batch_loss_list))
 
@@ -218,12 +218,12 @@ class NeuralNetworkTrainer(object):
 
                 validation_network_output                   = np.concatenate(validation_batch_network_output_list, axis=0)
                 validation_labels, validation_event_weights = validation_data_set.get_labels_event_weights()
-                validation_accuracies.append(self._get_score(validation_labels, validation_network_output, validation_event_weights, network_type))
+                validation_roc_auc.append(self._get_mean_roc_auc(validation_labels, validation_network_output, validation_event_weights, network_type))
 
 
                 #----------------------------------------------------------------------------------------------------
 
-                training_development_epoch = '{:^25} | {:^25.4e} | {:^25.4f} | {:^25.4f}\n'.format(epoch, training_losses[-1], training_accuracies[-1], validation_accuracies[-1])
+                training_development_epoch = '{:^30} | {:^30.4e} | {:^30.4f} | {:^30.4f}\n'.format(epoch, training_losses[-1], training_roc_auc[-1], validation_roc_auc[-1])
                 print(training_development_epoch, end='')
                 training_development += training_development_epoch
 
@@ -237,18 +237,18 @@ class NeuralNetworkTrainer(object):
                 #----------------------------------------------------------------------------------------------------
                 # Early stopping.
 
-                if validation_accuracies[-1] > early_stopping['validation_score']:
+                if validation_roc_auc[-1] > early_stopping['validation_roc_auc']:
                     saver.save(sess, path_to_model_file)
  
-                    early_stopping['validation_score'] = validation_accuracies[-1]
-                    early_stopping['epoch']            = epoch
+                    early_stopping['validation_roc_auc'] = validation_roc_auc[-1]
+                    early_stopping['epoch']              = epoch
  
  
                 elif (epoch - early_stopping['epoch']) >= early_stopping_intervall:
                     if network_type == 'binary':
-                        training_development_early_stop = 'ROC AUC on validation data has not increased for {} epochs. Achieved best ROC AUC of {:.4f} in epoch {}.\n'.format(early_stopping_intervall, early_stopping['validation_score'], early_stopping['epoch'])
+                        training_development_early_stop = 'ROC AUC on validation data has not increased for {} epochs. Achieved best ROC AUC of {:.4f} in epoch {}.\n'.format(early_stopping_intervall, early_stopping['validation_roc_auc'], early_stopping['epoch'])
                     elif network_type == 'one-hot':
-                        training_development_early_stop = 'Score on validation data has not increased for {} epochs. Achieved best score of {:.4f} in epoch {}.\n'.format(early_stopping_intervall, early_stopping['validation_score'], early_stopping['epoch'])
+                        training_development_early_stop = 'Mean ROC AUC on validation data has not increased for {} epochs. Achieved best mean_roc_auc of {:.4f} in epoch {}.\n'.format(early_stopping_intervall, early_stopping['validation_roc_auc'], early_stopping['epoch'])
                     
                     print(output_separator,                end='')
                     print(training_development_early_stop, end='')
@@ -286,7 +286,7 @@ class NeuralNetworkTrainer(object):
         with open(os.path.join(directory_model_properties, 'training_development.txt'), 'w') as training_development_output_file:
             training_development_output_file.write(training_development)
 
-        self._plot_training_development(directory_model_properties, network_type, training_accuracies, validation_accuracies, early_stopping)
+        self._plot_training_development(directory_model_properties, network_type, training_roc_auc, validation_roc_auc, early_stopping)
 
 
         print('\n' + '========')
@@ -296,22 +296,22 @@ class NeuralNetworkTrainer(object):
 
 
 
-    def _get_score(self,
-                   labels,
-                   network_output,
-                   event_weights,
-                   network_type
-                   ):
+    def _get_mean_roc_auc(self,
+                          labels,
+                          network_output,
+                          event_weights,
+                          network_type
+                          ):
  
 
         if network_type == 'binary':
-            score = roc_auc_score(y_true = labels, y_score = network_output, sample_weight = event_weights)
+            roc_auc = roc_auc_score(y_true = labels, y_score = network_output, sample_weight = event_weights)
 
         elif network_type == 'one-hot':
-            score = self._onehot_output_processor.get_score(labels, network_output, event_weights)
+            roc_auc = self._onehot_output_processor.get_mean_roc_auc(labels, network_output, event_weights)
      
      
-        return score
+        return roc_auc
 
 
 
@@ -452,10 +452,10 @@ class NeuralNetworkTrainer(object):
         network_and_training_properties += '{:{width}} {}\n'.format('Early stopping epoch:', early_stopping['epoch'], width=column_width)
 
         if network_type == 'binary':
-            network_and_training_properties += '{:{width}} {:.4f}\n'.format('ROC AUC (validation data set, early stopping epoch):', early_stopping['validation_score'], width=column_width)
+            network_and_training_properties += '{:{width}} {:.4f}\n'.format('ROC AUC (validation data set, early stopping epoch):', early_stopping['validation_roc_auc'], width=column_width)
 
         elif network_type == 'one-hot':
-            network_and_training_properties += '{:{width}} {:.4f}\n'.format('Score (validation data set, early stopping epoch):', early_stopping['validation_score'], width=column_width)
+            network_and_training_properties += '{:{width}} {:.4f}\n'.format('Mean ROC AUC (validation data set, early stopping epoch):', early_stopping['validation_roc_auc'], width=column_width)
 
         network_and_training_properties += '\n'
 
@@ -471,8 +471,8 @@ class NeuralNetworkTrainer(object):
     def _plot_training_development(self,
                                    directory_model_properties,
                                    network_type,
-                                   training_accuracies,
-                                   validation_accuracies,
+                                   training_roc_auc,
+                                   validation_roc_auc,
                                    early_stopping,
                                    ):
 
@@ -480,8 +480,8 @@ class NeuralNetworkTrainer(object):
         plt.clf()
 
 
-        plt.plot(range(1, len(training_accuracies)  +1), training_accuracies,   color='#1f77b4', label='Training',   ls='', marker='o')
-        plt.plot(range(1, len(validation_accuracies)+1), validation_accuracies, color='#ff7f0e', label='Validation', ls='', marker='o')
+        plt.plot(range(1, len(training_roc_auc)  +1), training_roc_auc,   color='#1f77b4', label='Training',   ls='', marker='o')
+        plt.plot(range(1, len(validation_roc_auc)+1), validation_roc_auc, color='#ff7f0e', label='Validation', ls='', marker='o')
 
         plt.axvline(x=early_stopping['epoch'], color='r')
 
@@ -490,7 +490,7 @@ class NeuralNetworkTrainer(object):
         if network_type == 'binary':
             plt.ylabel('ROC AUC')
         elif network_type == 'one-hot':
-            plt.ylabel('Score')
+            plt.ylabel('Mean ROC AUC')
 
         plt.legend(loc='best', frameon=False)
 

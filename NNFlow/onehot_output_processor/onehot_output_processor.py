@@ -10,11 +10,11 @@ from sklearn.metrics import roc_auc_score
 class OneHotOutputProcessor(object):
 
 
-    def get_score(self,
-                  labels,
-                  network_output,
-                  event_weights
-                  ):
+    def get_mean_roc_auc(self,
+                         labels,
+                         network_output,
+                         event_weights
+                         ):
 
 
         number_of_output_neurons = labels.shape[1]
@@ -30,10 +30,10 @@ class OneHotOutputProcessor(object):
             roc_auc_list.append(roc_auc)
 
 
-        score = np.mean(roc_auc_list)
+        mean_roc_auc = np.mean(roc_auc_list)
 
 
-        return score
+        return mean_roc_auc
 
 
 
