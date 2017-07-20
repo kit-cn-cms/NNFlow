@@ -6,7 +6,7 @@ from __future__ import absolute_import, division, print_function
 
 import os
 
-from NNFlow import OneHotModelAnalyser
+from NNFlow import MulticlassModelAnalyser
 #----------------------------------------------------------------------------------------------------
 
 
@@ -28,7 +28,7 @@ path_to_model = os.path.join(workdir_base, name_subdir, 'model', file_name_model
 
 
 #----------------------------------------------------------------------------------------------------
-model_analyser = OneHotModelAnalyser(path_to_model)
+model_analyser = MulticlassModelAnalyser(path_to_model)
 
 
 model_analyser.save_variable_ranking(save_dir)

@@ -15,7 +15,7 @@ workdir_base =
 name_subdir  =
 
 
-### Network type: 'binary' or 'one-hot'
+### Network type: 'binary' or 'multiclass'
 network_type =
 
 

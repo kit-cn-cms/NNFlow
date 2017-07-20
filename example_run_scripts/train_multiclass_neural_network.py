@@ -8,11 +8,11 @@ import NNFlow
 
 
 workdir_base =
-name_subdir  = 'onehot_training'
+name_subdir  = 'multiclass_training'
 
 
-### Network type: 'binary' or 'one-hot'
-network_type = 'one-hot'
+### Network type: 'binary' or 'multiclass'
+network_type = 'multiclass'
 
 
 number_of_hidden_layers     = 4

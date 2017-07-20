@@ -10,12 +10,12 @@ import matplotlib.colors as colors
 import tensorflow as tf
 
 from .model_analyser import ModelAnalyser
-from NNFlow.onehot_output_processor.onehot_output_processor import AdvancedOneHotOutputProcessor
+from NNFlow.softmax_output_processor.softmax_output_processor import AdvancedSoftmaxOutputProcessor
 
 
 
 
-class OneHotModelAnalyser(ModelAnalyser):
+class MulticlassModelAnalyser(ModelAnalyser):
 
 
     def __init__(self,
@@ -28,7 +28,7 @@ class OneHotModelAnalyser(ModelAnalyser):
         ModelAnalyser.__init__(self, path_to_model, batch_size_classification, session_config)
 
 
-        self._network_type = 'one-hot'
+        self._network_type = 'multiclass'
 
 
         config = self._session_config.get_config()
@@ -42,7 +42,7 @@ class OneHotModelAnalyser(ModelAnalyser):
         self._number_of_output_neurons = len(self._names_output_neurons)
 
 
-        self.onehot_output_processor = AdvancedOneHotOutputProcessor(self._names_output_neurons)
+        self.softmax_output_processor = AdvancedSoftmaxOutputProcessor(self._names_output_neurons)
 
 
 
@@ -54,7 +54,7 @@ class OneHotModelAnalyser(ModelAnalyser):
 
         labels, network_output, event_weights = self.get_labels_network_output_event_weights(path_to_data)
 
-        array_predicted_true = self.onehot_output_processor.get_predicted_true_matrix(labels, network_output, event_weights)
+        array_predicted_true = self.softmax_output_processor.get_predicted_true_matrix(labels, network_output, event_weights)
 
         accuracy = np.diagonal(array_predicted_true).sum() / array_predicted_true.sum()
 
@@ -71,7 +71,7 @@ class OneHotModelAnalyser(ModelAnalyser):
 
         labels, network_output, event_weights = self.get_labels_network_output_event_weights(path_to_data)
 
-        mean_roc_auc = self.onehot_output_processor.get_mean_roc_auc(labels, network_output, event_weights)
+        mean_roc_auc = self.softmax_output_processor.get_mean_roc_auc(labels, network_output, event_weights)
 
         return mean_roc_auc
 
@@ -86,7 +86,7 @@ class OneHotModelAnalyser(ModelAnalyser):
 
         labels, network_output, event_weights = self.get_labels_network_output_event_weights(path_to_data)
 
-        array_predicted_true = self.onehot_output_processor.get_predicted_true_matrix(labels, network_output, event_weights, cross_sections)
+        array_predicted_true = self.softmax_output_processor.get_predicted_true_matrix(labels, network_output, event_weights, cross_sections)
 
 
         signal_over_background = OrderedDict()
@@ -115,7 +115,7 @@ class OneHotModelAnalyser(ModelAnalyser):
 
 
         labels, network_output, event_weights = self.get_labels_network_output_event_weights(path_to_input_file)
-        array_predicted_true = self.onehot_output_processor.get_predicted_true_matrix(labels, network_output, event_weights, cross_sections)
+        array_predicted_true = self.softmax_output_processor.get_predicted_true_matrix(labels, network_output, event_weights, cross_sections)
 
 
         cmap = matplotlib.cm.RdYlBu_r

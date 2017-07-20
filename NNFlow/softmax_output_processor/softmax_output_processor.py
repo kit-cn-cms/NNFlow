@@ -7,7 +7,7 @@ from sklearn.metrics import roc_auc_score
 
 
 
-class OneHotOutputProcessor(object):
+class SoftmaxOutputProcessor(object):
 
 
     def get_mean_roc_auc(self,
@@ -88,7 +88,7 @@ class OneHotOutputProcessor(object):
 
 
 
-class AdvancedOneHotOutputProcessor(OneHotOutputProcessor):
+class AdvancedSoftmaxOutputProcessor(SoftmaxOutputProcessor):
 
 
     def __init__(self,

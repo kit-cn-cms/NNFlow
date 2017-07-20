@@ -15,4 +15,4 @@ if tensorflow_available:
     from .neural_network_training.interface_functions import train_neural_network
     from .session_config.session_config import SessionConfig
     from .model_analyser.binary_model_analyser import BinaryModelAnalyser
-    from .model_analyser.onehot_model_analyser import OneHotModelAnalyser
+    from .model_analyser.multiclass_model_analyser import MulticlassModelAnalyser

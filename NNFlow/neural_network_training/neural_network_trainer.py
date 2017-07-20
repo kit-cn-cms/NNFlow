@@ -12,7 +12,7 @@ import tensorflow as tf
 from sklearn.metrics import roc_auc_score
 
 from NNFlow.data_frame.data_frame import DataFrame
-from NNFlow.onehot_output_processor.onehot_output_processor import OneHotOutputProcessor
+from NNFlow.softmax_output_processor.softmax_output_processor import SoftmaxOutputProcessor
 
 
 
@@ -23,7 +23,7 @@ class NeuralNetworkTrainer(object):
     def __init__(self):
 
 
-        self._onehot_output_processor = OneHotOutputProcessor()
+        self._softmax_output_processor = SoftmaxOutputProcessor()
 
 
 
@@ -102,7 +102,7 @@ class NeuralNetworkTrainer(object):
                 cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=labels)
 
 
-            elif network_type == 'one-hot':
+            elif network_type == 'multiclass':
                 labels = tf.placeholder(tf.float32, [None, number_of_output_neurons])
 
                 logits                    =               self._get_model(input_data_scaled, weights, biases, activation_function_name, dropout_keep_probability=dropout_keep_probability)
@@ -119,14 +119,14 @@ class NeuralNetworkTrainer(object):
 
 
             names_input_neurons = tf.Variable(training_data_set.get_variables(), trainable=False, name='names_input_neurons')
-            if network_type == 'one-hot':
+            if network_type == 'multiclass':
                 names_output_neurons = tf.Variable(training_data_set.get_processes(), trainable=False, name='names_output_neurons')
 
 
             if network_type == 'binary':
                 saver = tf.train.Saver(weights + biases + [feature_scaling_mean, feature_scaling_std, names_input_neurons])
 
-            elif network_type == 'one-hot':
+            elif network_type == 'multiclass':
                 saver = tf.train.Saver(weights + biases + [feature_scaling_mean, feature_scaling_std, names_input_neurons, names_output_neurons])
  
 
@@ -148,7 +148,7 @@ class NeuralNetworkTrainer(object):
             output_separator = 130*'-' + '\n'
             if network_type == 'binary':
                 training_development_heading = '{:^30} | {:^30} | {:^30} | {:^30}\n'.format('Epoch', 'Training Data: Loss', 'Training Data: ROC AUC', 'Validation Data: ROC AUC')
-            elif network_type == 'one-hot':
+            elif network_type == 'multiclass':
                 training_development_heading = '{:^30} | {:^30} | {:^30} | {:^30}\n'.format('Epoch', 'Training Data: Loss', 'Training Data: Mean ROC AUC', 'Validation Data: Mean ROC AUC')
 
             print('\n',                         end='')
@@ -247,7 +247,7 @@ class NeuralNetworkTrainer(object):
                 elif (epoch - early_stopping['epoch']) >= early_stopping_intervall:
                     if network_type == 'binary':
                         training_development_early_stop = 'ROC AUC on validation data has not increased for {} epochs. Achieved best ROC AUC of {:.4f} in epoch {}.\n'.format(early_stopping_intervall, early_stopping['validation_roc_auc'], early_stopping['epoch'])
-                    elif network_type == 'one-hot':
+                    elif network_type == 'multiclass':
                         training_development_early_stop = 'Mean ROC AUC on validation data has not increased for {} epochs. Achieved best mean_roc_auc of {:.4f} in epoch {}.\n'.format(early_stopping_intervall, early_stopping['validation_roc_auc'], early_stopping['epoch'])
                     
                     print(output_separator,                end='')
@@ -307,8 +307,8 @@ class NeuralNetworkTrainer(object):
         if network_type == 'binary':
             roc_auc = roc_auc_score(y_true = labels, y_score = network_output, sample_weight = event_weights)
 
-        elif network_type == 'one-hot':
-            roc_auc = self._onehot_output_processor.get_mean_roc_auc(labels, network_output, event_weights)
+        elif network_type == 'multiclass':
+            roc_auc = self._softmax_output_processor.get_mean_roc_auc(labels, network_output, event_weights)
      
      
         return roc_auc
@@ -454,7 +454,7 @@ class NeuralNetworkTrainer(object):
         if network_type == 'binary':
             network_and_training_properties += '{:{width}} {:.4f}\n'.format('ROC AUC (validation data set, early stopping epoch):', early_stopping['validation_roc_auc'], width=column_width)
 
-        elif network_type == 'one-hot':
+        elif network_type == 'multiclass':
             network_and_training_properties += '{:{width}} {:.4f}\n'.format('Mean ROC AUC (validation data set, early stopping epoch):', early_stopping['validation_roc_auc'], width=column_width)
 
         network_and_training_properties += '\n'
@@ -489,7 +489,7 @@ class NeuralNetworkTrainer(object):
         plt.xlabel('Epoch')
         if network_type == 'binary':
             plt.ylabel('ROC AUC')
-        elif network_type == 'one-hot':
+        elif network_type == 'multiclass':
             plt.ylabel('Mean ROC AUC')
 
         plt.legend(loc='best', frameon=False)

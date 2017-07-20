@@ -17,12 +17,12 @@ class DataFrame(object):
             array           = store_input.select('data').values
             self._variables = store_input.select('variables').values
 
-            if network_type == 'one-hot':
+            if network_type == 'multiclass':
                 self._processes = store_input.select('processes').values
 
         self._number_of_input_neurons = len(self._variables)
 
-        if network_type == 'one-hot':
+        if network_type == 'multiclass':
             self._number_of_output_neurons = len(self._processes)
         elif network_type == 'binary':
             self._number_of_output_neurons = 1
