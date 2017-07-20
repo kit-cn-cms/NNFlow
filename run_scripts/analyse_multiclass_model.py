@@ -32,4 +32,4 @@ model_analyser = MulticlassModelAnalyser(path_to_model)
 
 
 model_analyser.save_variable_ranking(save_dir)
-model_analyser.plot_heatmap(save_dir, 'heatmap', path_to_validation_data_set)
+model_analyser.plot_confusion_matrix(save_dir, 'confusion_matrix', path_to_validation_data_set)

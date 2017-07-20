@@ -21,9 +21,9 @@ class SoftmaxOutputProcessor(object):
 
         roc_auc_list = list()
 
-        for i in range(number_of_output_neurons):
-            y_true  = labels[:, i]
-            y_score = network_output[:, i]
+        for j in range(number_of_output_neurons):
+            y_true  = labels[:, j]
+            y_score = network_output[:, j]
 
             roc_auc = roc_auc_score(y_true=y_true, y_score=y_score, sample_weight=event_weights)
 
@@ -38,40 +38,40 @@ class SoftmaxOutputProcessor(object):
 
 
 
-    def get_predicted_true_matrix(self,
-                                  labels,
-                                  network_output,
-                                  event_weights,
-                                  cross_sections = None,
-                                  ):
+    def get_confusion_matrix(self,
+                             labels,
+                             network_output,
+                             event_weights,
+                             cross_sections = None,
+                             ):
 
 
         number_of_events         = labels.shape[0]
         number_of_output_neurons = labels.shape[1]
 
-        array_predicted_true = np.zeros((number_of_output_neurons, number_of_output_neurons), dtype=np.float32)
+        confusion_matrix = np.zeros((number_of_output_neurons, number_of_output_neurons), dtype=np.float32)
 
         for i in range(number_of_events):
             index_true      = np.argmax(labels[i])
             index_predicted = self.get_prediction(network_output[i])
 
-            array_predicted_true[index_true][index_predicted] += event_weights[i]
+            confusion_matrix[index_true][index_predicted] += event_weights[i]
 
 
         if cross_sections is not None:
             for j in range(number_of_output_neurons):
-                array_predicted_true[j] /= array_predicted_true[j].sum()
+                confusion_matrix[j] /= confusion_matrix[j].sum()
 
             if cross_sections == 'equal':
-                array_predicted_true *= number_of_output_neurons
-                array_predicted_true *= 100
+                confusion_matrix *= number_of_output_neurons
+                confusion_matrix *= 100
 
             else:
                 for j in range(number_of_output_neurons):
-                    array_predicted_true[j] *= cross_sections[j]
+                    confusion_matrix[j] *= cross_sections[j]
 
 
-        return array_predicted_true
+        return confusion_matrix
 
 
 
