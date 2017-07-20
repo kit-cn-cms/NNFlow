@@ -18,8 +18,8 @@ file_name_model =
 #----------------------------------------------------------------------------------------------------
 
 
-path_to_training_data_set   = os.path.join(workdir_base, name_subdir, 'training_data/train.hdf')
-path_to_validation_data_set = os.path.join(workdir_base, name_subdir, 'training_data/val.hdf')
+path_to_training_data_set   = os.path.join(workdir_base, name_subdir, 'data_sets/train.hdf')
+path_to_validation_data_set = os.path.join(workdir_base, name_subdir, 'data_sets/val.hdf')
 
 
 save_dir = os.path.join(workdir_base, name_subdir, 'model/model_properties')
