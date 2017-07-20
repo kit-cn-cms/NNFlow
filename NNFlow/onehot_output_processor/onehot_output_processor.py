@@ -2,6 +2,8 @@ from __future__ import absolute_import, division, print_function
 
 import numpy as np
 
+from sklearn.metrics import roc_auc_score
+
 
 
 
@@ -15,16 +17,20 @@ class OneHotOutputProcessor(object):
                   ):
 
 
-        number_of_events         = labels.shape[0]
+        number_of_output_neurons = labels.shape[1]
 
-        network_output_true_node = list()
+        roc_auc_list = list()
 
-        for i in range(number_of_events):
-            index_true = np.argmax(labels[i])
+        for i in range(number_of_output_neurons):
+            y_true  = labels[:, i]
+            y_score = network_output[:, i]
 
-            network_output_true_node.append(network_output[i][index_true])
+            roc_auc = roc_auc_score(y_true=y_true, y_score=y_score, sample_weight=event_weights)
 
-        score = np.sum(np.array(network_output_true_node) * event_weights / event_weights.sum())
+            roc_auc_list.append(roc_auc)
+
+
+        score = np.mean(roc_auc_list)
 
 
         return score
