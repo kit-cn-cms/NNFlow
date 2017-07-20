@@ -226,13 +226,13 @@ def create_data_set_for_training(save_path,
     #----------------------------------------------------------------------------------------------------
     # Save additional information.
 
-    with open(os.path.join(save_path, 'variables.txt'), 'w') as outputfile_variables:
+    with open(os.path.join(save_path, 'inputVariables.txt'), 'w') as outputfile_variables:
         for variable in columns_to_save:
             if variable not in processes:
                 outputfile_variables.write(variable + '\n')
 
     if not binary_classification:
-        with open(os.path.join(save_path, 'process_labels.txt'), 'w') as outputfile_process_labels:
+        with open(os.path.join(save_path, 'outputLabels.txt'), 'w') as outputfile_process_labels:
             for process in processes:
                 outputfile_process_labels.write(process + '\n')
 
