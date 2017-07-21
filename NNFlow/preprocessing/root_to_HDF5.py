@@ -181,6 +181,9 @@ def root_to_HDF5(save_path,
             df_validation = df_training_validation.tail(number_of_validation_events).copy()
             df_training   = df_training_validation.head(number_of_training_events).copy()
 
+            del df
+            del df_training_validation
+
             #--------------------------------------------------------------------------------------------
             # Split data set and save data.
             if not split_data_set:
