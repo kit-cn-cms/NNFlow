@@ -7,7 +7,7 @@ The framework is based on a framework for binary classification by Max Welsch an
 
 ## Mirroring
 - This repository is hosted on gitlab.cern.ch and all PR should go to this repository.
-- In addition, this repository is also mirrored to Github.
+- In addition, this repository is mirrored to Github.
 
 
 ## Install NNFlow
