@@ -190,7 +190,7 @@ def create_data_set_for_training(save_path,
                 for weight in weights_to_be_applied:
                     df['Training_Weight'] *= df_weight[weight]
 
-                if data_set == 'train':
+                if data_set == 'training':
                     sum_of_weights['signal'] = df.query(binary_classification_signal + '==1')['Training_Weight'].sum()
                     sum_of_weights['background'] = df.query(binary_classification_signal + '!=1')['Training_Weight'].sum()
 
@@ -204,7 +204,7 @@ def create_data_set_for_training(save_path,
                 for weight in weights_to_be_applied:
                     df['Training_Weight'] *= df_weight[weight]
                 
-                if data_set == 'train':
+                if data_set == 'training':
                     for process in processes:
                         sum_of_weights[process] = df.query(process + '==1')['Training_Weight'].sum()
 
