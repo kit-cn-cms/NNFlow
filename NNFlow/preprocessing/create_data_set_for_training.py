@@ -35,6 +35,9 @@ def create_data_set_for_training(save_path,
     if not os.path.isdir(save_path):
         sys.exit("Directory '" + save_path + "' doesn't exist." + "\n")
 
+    if not os.path.isdir(os.path.join(save_path, 'data_sets')):
+        os.mkdir(os.path.join(save_path, 'data_sets'))
+
     if not os.path.isfile(path_to_merged_data_set):
         sys.exit("File '" + path_to_merged_data_set + "' doesn't exist." + "\n")
     
@@ -42,6 +45,19 @@ def create_data_set_for_training(save_path,
         weights_to_be_applied = [weights_to_be_applied]
 
 
+    #----------------------------------------------------------------------------------------------------
+    # Remove old output files
+
+    if os.path.isfile(os.path.join(save_path, 'data_sets', + 'training_data_set.hdf')):
+        os.remove(os.path.join(save_path, 'data_sets', + 'training_data_set.hdf'))
+
+    if os.path.isfile(os.path.join(save_path, 'data_sets', + 'validation_data_set.hdf')):
+        os.remove(os.path.join(save_path, 'data_sets', + 'validation_data_set.hdf'))
+
+    if os.path.isfile(os.path.join(save_path, 'data_sets', + 'test_data_set.hdf')):
+        os.remove(os.path.join(save_path, 'data_sets', + 'test_data_set.hdf'))
+
+    sys.exit()
     #----------------------------------------------------------------------------------------------------
     # Get processes, weights and variables in data set.
   
@@ -215,7 +231,7 @@ def create_data_set_for_training(save_path,
 
 
             del df_weight
-            with pd.HDFStore(os.path.join(save_path, data_set+'_data_set.hdf')) as store_output:
+            with pd.HDFStore(os.path.join(save_path, 'data_sets', data_set+'_data_set.hdf')) as store_output:
                 store_output.put('data', df, format='fixed')
                 store_output.put('variables', pd.Series([variable for variable in columns_to_save if variable not in processes]), format='fixed')
                 if not binary_classification:
