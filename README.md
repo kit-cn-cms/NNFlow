@@ -64,7 +64,7 @@ Activate environment in a new shell:
 export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
 source $VO_CMS_SW_DIR/cmsset_default.sh
 
-cd /path/to/CMSSW_9_2_0
+cd /path/to/CMSSW_9_0_3
 cd src
 cmsenv
 ```
