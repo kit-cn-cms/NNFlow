@@ -1,8 +1,8 @@
 # NNFlow
 
-A framework to train binary and multinomial neural networks for the separation of ttbar subprocesses and ttH.
+A framework to train binary and multiclass neural networks for classification of events in particle physics.
 
-The framework is based on a framework for binary classification by Max Welsch and a framework for multinomial classification by Martin Lang.
+The framework is based on a framework for binary classification by Max Welsch and a framework for multiclass classification by Martin Lang.
 
 
 ## Mirroring
@@ -11,6 +11,9 @@ The framework is based on a framework for binary classification by Max Welsch an
 
 
 ## Install NNFlow
+The framework is designed to be used with Python2.7.
+
+
 ### In a virtual environment
 ```
 export NNFLOWINSTALLDIR=$PWD"/NNFlow"
