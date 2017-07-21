@@ -121,16 +121,16 @@ class NeuralNetworkTrainer(object):
             train_step                = tf_optimizer.minimize(loss, global_step=global_step)
 
 
-            names_input_neurons = tf.Variable(training_data_set.get_variables(), trainable=False, name='names_input_neurons')
+            input_variables = tf.Variable(training_data_set.get_variables(), trainable=False, name='inputVariables')
             if network_type == 'multiclass':
-                names_output_neurons = tf.Variable(training_data_set.get_processes(), trainable=False, name='names_output_neurons')
+                output_labels = tf.Variable(training_data_set.get_processes(), trainable=False, name='outputLabels')
 
 
             if network_type == 'binary':
-                saver = tf.train.Saver(weights + biases + [feature_scaling_mean, feature_scaling_std, names_input_neurons])
+                saver = tf.train.Saver(weights + biases + [feature_scaling_mean, feature_scaling_std, input_variables])
 
             elif network_type == 'multiclass':
-                saver = tf.train.Saver(weights + biases + [feature_scaling_mean, feature_scaling_std, names_input_neurons, names_output_neurons])
+                saver = tf.train.Saver(weights + biases + [feature_scaling_mean, feature_scaling_std, input_variables, output_labels])
  
 
         #----------------------------------------------------------------------------------------------------

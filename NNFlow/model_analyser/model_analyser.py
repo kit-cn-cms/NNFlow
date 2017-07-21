@@ -34,7 +34,7 @@ class ModelAnalyser(object):
         with tf.Session(config=config, graph=graph) as sess:
             saver = tf.train.import_meta_graph(self._path_to_model + '.meta')
             saver.restore(sess, self._path_to_model)
-            self._names_input_neurons = graph.get_tensor_by_name("names_input_neurons:0").eval()
+            self._input_variables = graph.get_tensor_by_name("inputVariables:0").eval()
 
 
         self._labels_network_output_event_weights = dict()
@@ -103,7 +103,7 @@ class ModelAnalyser(object):
         weight_abs = np.absolute(weights)
         weight_abs_mean = np.mean(weight_abs, axis=1)
 
-        variable_ranking = pd.Series(weight_abs_mean, index=self._names_input_neurons)
+        variable_ranking = pd.Series(weight_abs_mean, index=self._input_variables)
         variable_ranking.sort_values(inplace=True)
 
         with open(os.path.join(save_dir, 'variable_ranking.txt'), 'w') as outfile:

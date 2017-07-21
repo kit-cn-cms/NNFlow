@@ -38,13 +38,13 @@ class MulticlassModelAnalyser(ModelAnalyser):
         with tf.Session(config=config, graph=graph) as sess:
             saver = tf.train.import_meta_graph(self._path_to_model + '.meta')
             saver.restore(sess, self._path_to_model)
-            self._names_output_neurons = graph.get_tensor_by_name('names_output_neurons:0').eval()
+            self._output_labels = graph.get_tensor_by_name('outputLabels:0').eval()
 
 
-        self._number_of_output_neurons = len(self._names_output_neurons)
+        self._number_of_output_neurons = len(self._output_labels)
 
 
-        self.softmax_output_processor = AdvancedSoftmaxOutputProcessor(self._names_output_neurons)
+        self.softmax_output_processor = AdvancedSoftmaxOutputProcessor(self._output_labels)
 
 
 
@@ -97,7 +97,7 @@ class MulticlassModelAnalyser(ModelAnalyser):
             s = np.diagonal(confusion_matrix)[j]
             b = confusion_matrix[:, j].sum() - s
 
-            signal_over_background[self._names_output_neurons[j]] = s/b
+            signal_over_background[self._output_labels[j]] = s/b
 
 
         return signal_over_background
@@ -147,8 +147,8 @@ class MulticlassModelAnalyser(ModelAnalyser):
         ax = plt.gca()
         ax.set_xticks(np.arange((x.shape[0] - 1)) + 0.5, minor=False)
         ax.set_yticks(np.arange((y.shape[0] - 1)) + 0.5, minor=False)
-        ax.set_xticklabels(self._names_output_neurons)
-        ax.set_yticklabels(self._names_output_neurons)
+        ax.set_xticklabels(self._output_labels)
+        ax.set_yticklabels(self._output_labels)
 
         plt.tight_layout()
 
