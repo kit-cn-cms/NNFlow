@@ -9,7 +9,7 @@ from NNFlow.ttH_ttbb_definitions import definitions
 
 
 workdir_base =
-name_subdir  = 'onehot_training'
+name_subdir  = 'multiclass_training'
 
 
 ### You can choose from categories defined in definitions.definitions.jet_btag_category
