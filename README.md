@@ -14,7 +14,7 @@ The framework is based on a framework for binary classification by Max Welsch an
 The framework is designed to be used with Python2.7.
 
 
-### In a virtual environment
+### Installation in a virtual environment
 ```
 export NNFLOWINSTALLDIR=$PWD"/NNFlow"
 virtualenv --system-site-packages $NNFLOWINSTALLDIR
@@ -41,7 +41,7 @@ export CUDA_HOME=/usr/local/cuda-7.5-cudNNV5.1
 ```
 
 
-### In a CMSSW environment
+### Installation in a CMSSW environment
 If PyROOT is not installed on your machine, you can use a CMSSW environment to perform the preprocessing. It is not possible to perform the training in this environment.
 ```
 export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
