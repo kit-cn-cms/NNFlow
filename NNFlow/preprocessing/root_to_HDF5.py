@@ -172,7 +172,7 @@ def root_to_HDF5(save_path,
             df_training_validation = df.query(definitions.train_test_data_set()['conditions']['train']).copy()
             df_test                = df.query(definitions.train_test_data_set()['conditions']['test']).copy()
 
-            df_training_validation.index = np.random.permutation(df_training.shape[0])
+            df_training_validation.index = np.random.permutation(df_training_validation.shape[0])
             df_training_validation.sort_index(inplace=True)
 
             number_of_validation_events = int(np.floor(percentage_validation/100*df_training.shape[0]))
