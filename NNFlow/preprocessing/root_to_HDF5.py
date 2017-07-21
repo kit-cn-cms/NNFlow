@@ -168,43 +168,45 @@ def root_to_HDF5(save_path,
             df.drop(vector_variables_jet, axis=1, inplace=True)
 
             #--------------------------------------------------------------------------------------------
-            # Split train, val and test data set.
-            df_train = df.query(definitions.train_test_data_set()['conditions']['train']).copy()
-            df_test  = df.query(definitions.train_test_data_set()['conditions']['test']).copy()
+            # Split training, validation and test data set.
+            df_training_validation = df.query(definitions.train_test_data_set()['conditions']['train']).copy()
+            df_test                = df.query(definitions.train_test_data_set()['conditions']['test']).copy()
 
-            df_train.index = np.random.permutation(df_train.shape[0])
-            df_train.sort_index(inplace=True)
-            number_of_validation_events = int(np.floor(percentage_validation/100*df_train.shape[0]))
-            number_of_training_events = df_train.shape[0] - number_of_validation_events
-            df_val = df_train.tail(number_of_validation_events).copy()
-            df_train = df_train.head(number_of_training_events).copy()
+            df_training_validation.index = np.random.permutation(df_training.shape[0])
+            df_training_validation.sort_index(inplace=True)
+
+            number_of_validation_events = int(np.floor(percentage_validation/100*df_training.shape[0]))
+            number_of_training_events   = df_training.shape[0] - number_of_validation_events
+
+            df_validation = df_training_validation.tail(number_of_validation_events).copy()
+            df_training   = df_training_validation.head(number_of_training_events).copy()
 
             #--------------------------------------------------------------------------------------------
             # Split data set and save data.
             if not split_data_set:
-                df_train.drop(variables_for_splitting, axis=1, inplace=True)
-                df_val.drop(variables_for_splitting, axis=1, inplace=True)
+                df_training.drop(variables_for_splitting, axis=1, inplace=True)
+                df_validation.drop(variables_for_splitting, axis=1, inplace=True)
                 df_test.drop(variables_for_splitting, axis=1, inplace=True)
                
                 with pd.HDFStore(os.path.join(save_path, filename_outputfile + '.hdf')) as store:
-                    store.append('df_train', df_train, format = 'table', append=True)
-                    store.append('df_val', df_val, format = 'table', append=True)
-                    store.append('df_test', df_test, format = 'table', append=True)
+                    store.append('df_training',   df_training,   format = 'table', append=True)
+                    store.append('df_validation', df_validation, format = 'table', append=True)
+                    store.append('df_test',       df_test,       format = 'table', append=True)
 
             else:
                 for process in conditions_for_splitting['conditions'].keys():
-                    df_train_process = df_train.query(conditions_for_splitting['conditions'][process]).copy()
-                    df_val_process = df_val.query(conditions_for_splitting['conditions'][process]).copy()
-                    df_test_process = df_test.query(conditions_for_splitting['conditions'][process]).copy()
+                    df_training_process   = df_training.query(conditions_for_splitting['conditions'][process]).copy()
+                    df_validation_process = df_validation.query(conditions_for_splitting['conditions'][process]).copy()
+                    df_test_process       = df_test.query(conditions_for_splitting['conditions'][process]).copy()
 
-                    df_train_process.drop(variables_for_splitting, axis=1, inplace=True)
-                    df_val_process.drop(variables_for_splitting, axis=1, inplace=True)
+                    df_training_process.drop(variables_for_splitting, axis=1, inplace=True)
+                    df_validation_process.drop(variables_for_splitting, axis=1, inplace=True)
                     df_test_process.drop(variables_for_splitting, axis=1, inplace=True)
 
                     with pd.HDFStore(os.path.join(save_path, filename_outputfile + '_' + process + '.hdf')) as store:
-                        store.append('df_train', df_train_process, format = 'table', append=True)
-                        store.append('df_val', df_val_process, format = 'table', append=True)
-                        store.append('df_test', df_test_process, format = 'table', append=True)
+                        store.append('df_training',   df_training_process,   format = 'table', append=True)
+                        store.append('df_validation', df_validation_process, format = 'table', append=True)
+                        store.append('df_test',       df_test_process,       format = 'table', append=True)
 
 
     #----------------------------------------------------------------------------------------------------

@@ -48,7 +48,7 @@ def create_data_set_for_training(save_path,
     with pd.HDFStore(path_to_merged_data_set, mode='r') as store:
         processes = list(store.get('processes_in_data_set').values)
         weights_in_data_set = list(store.get('weights_in_data_set').values)
-        df = store.select('df_train', start=0, stop=1)
+        df = store.select('df_training', start=0, stop=1)
         variables_in_data_set = [variable for variable in df.columns if variable not in (processes + weights_in_data_set)]
     del df
 
@@ -83,15 +83,15 @@ def create_data_set_for_training(save_path,
     where_condition = dict()
 
     if len(where_condition_list_train) == 0:
-        where_condition['train'] = None
+        where_condition['training'] = None
     else:
-        where_condition['train'] = str.join(' and ', where_condition_list_train)
+        where_condition['training'] = str.join(' and ', where_condition_list_train)
 
     if len(where_condition_list) == 0:
-        where_condition['val'] = None
+        where_condition['validation'] = None
         where_condition['test'] = None
     else:
-        where_condition['val'] = str.join(' and ', where_condition_list)
+        where_condition['validation'] = str.join(' and ', where_condition_list)
         where_condition['test'] = str.join(' and ', where_condition_list)
 
 
@@ -102,8 +102,8 @@ def create_data_set_for_training(save_path,
     standard_deviation_zero_variables = list()
     not_all_events_variables = list()
     with pd.HDFStore(path_to_merged_data_set, mode='r') as store:
-        df_train = store.select('df_train', where=where_condition['train'], columns=variables_in_data_set)
-        df_val = store.select('df_val', where=where_condition['val'], columns=variables_in_data_set)
+        df_training   = store.select('df_training',   where=where_condition['training'],   columns=variables_in_data_set)
+        df_validation = store.select('df_validation', where=where_condition['validation'], columns=variables_in_data_set)
 
         for variable in variables_in_data_set:
             if df_train[variable].std()==0 or df_val[variable].std()==0:
@@ -112,8 +112,8 @@ def create_data_set_for_training(save_path,
             elif df_train[variable].isnull().any() or df_val[variable].isnull().any():
                 not_all_events_variables.append(variable)
         
-        del df_train
-        del df_val
+        del df_training
+        del df_validation
     
     print('\n', end='')
 
@@ -165,13 +165,13 @@ def create_data_set_for_training(save_path,
     columns_to_save_old = columns_to_save
     if create_new_process_labels:
         for new_label in new_process_labels.keys():
-            processes = [new_label] + [process for process in processes if process not in new_process_labels[new_label]]
-            columns_to_save = [new_label] + [column for column in columns_to_save if column not in new_process_labels[new_label]]
+            processes =       [new_label] + [process for process in processes       if process not in new_process_labels[new_label]]
+            columns_to_save = [new_label] + [column  for column  in columns_to_save if column  not in new_process_labels[new_label]]
     
     sum_of_weights = dict()
 
     with pd.HDFStore(path_to_merged_data_set, mode='r') as store:
-        for data_set in ['train', 'val', 'test']:
+        for data_set in ['training', 'validation', 'test']:
             df_weight = store.select('df_'+data_set, where=where_condition[data_set], columns=weights_to_be_applied)
             df = store.select('df_'+data_set, where=where_condition[data_set], columns=columns_to_save_old)
 
@@ -215,7 +215,7 @@ def create_data_set_for_training(save_path,
 
 
             del df_weight
-            with pd.HDFStore(os.path.join(save_path, data_set+'.hdf')) as store_output:
+            with pd.HDFStore(os.path.join(save_path, data_set+'_data_set.hdf')) as store_output:
                 store_output.put('data', df, format='fixed')
                 store_output.put('variables', pd.Series([variable for variable in columns_to_save if variable not in processes]), format='fixed')
                 if not binary_classification:

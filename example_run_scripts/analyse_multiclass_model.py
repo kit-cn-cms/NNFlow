@@ -11,7 +11,7 @@ name_subdir     = 'multiclass_training'
 file_name_model = 'multiclass_training.ckpt'
 
 
-path_to_data = os.path.join(workdir_base, name_subdir, 'training_data/val.hdf')
+path_to_data = os.path.join(workdir_base, name_subdir, 'training_data/validation_data_set.hdf')
 
 
 #----------------------------------------------------------------------------------------------------

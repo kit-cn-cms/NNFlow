@@ -42,7 +42,7 @@ def merge_data_sets(path_to_inputfiles,
     for process in processes:
         for input_file in input_data_sets[process]:
             with pd.HDFStore(os.path.join(path_to_inputfiles, input_file), mode='r') as store_input:
-                df = store_input.select('df_train', stop=1)
+                df = store_input.select('df_training', stop=1)
                 variables_in_input_files[input_file] = set(df.columns)
 
     common_variables = set.intersection(*variables_in_input_files.values())
@@ -71,7 +71,7 @@ def merge_data_sets(path_to_inputfiles,
             for input_file in input_data_sets[process]:
                 print('Processing ' + input_file)
                 with pd.HDFStore(os.path.join(path_to_inputfiles, input_file), mode='r') as store_input:
-                    for data_set in ['df_train', 'df_val', 'df_test']:
+                    for data_set in ['df_training', 'df_validation', 'df_test']:
                         for df_input in store_input.select(data_set, chunksize=10000):
                             df = df_input.copy()
 
@@ -85,7 +85,7 @@ def merge_data_sets(path_to_inputfiles,
 
         print('\n', end='')
         
-        for data_set in ['df_train', 'df_val', 'df_test']:
+        for data_set in ['df_training', 'df_validation', 'df_test']:
             store_output.create_table_index(data_set)
 
         with pd.HDFStore(os.path.join(path_to_inputfiles, input_data_sets[processes[0]][0]), mode='r') as store_input:
