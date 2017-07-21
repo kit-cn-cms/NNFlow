@@ -20,6 +20,9 @@ from .merge_data_sets              import merge_data_sets
 from .create_data_set_for_training import create_data_set_for_training
 
 
+del root2array_available
+
+
 
 
 del absolute_import

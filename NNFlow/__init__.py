@@ -22,6 +22,9 @@ if tensorflow_available:
     from .model_analyser.multiclass_model_analyser import MulticlassModelAnalyser
 
 
+del tensorflow_available
+
+
 
 
 del absolute_import
