@@ -3,10 +3,12 @@ from __future__ import absolute_import, division, print_function
 import os
 from collections import OrderedDict
 
-import numpy as np
 import matplotlib
+matplotlib.use('PDF')
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
+
+import numpy as np
 import tensorflow as tf
 
 from .model_analyser import ModelAnalyser

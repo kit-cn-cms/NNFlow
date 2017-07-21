@@ -6,8 +6,11 @@ import time
 import datetime
 import itertools
 
-import numpy as np
+import matplotlib
+matplotlib.use('PDF')
 import matplotlib.pyplot as plt
+
+import numpy as np
 import tensorflow as tf
 from sklearn.metrics import roc_auc_score
 

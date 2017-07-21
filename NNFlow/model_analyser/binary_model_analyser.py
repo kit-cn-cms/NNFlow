@@ -2,9 +2,12 @@ from __future__ import absolute_import, division, print_function
 
 import os
 
+import matplotlib
+matplotlib.use('PDF')
+import matplotlib.pyplot as plt
+
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 from sklearn.metrics import roc_auc_score
 
 from .model_analyser import ModelAnalyser
