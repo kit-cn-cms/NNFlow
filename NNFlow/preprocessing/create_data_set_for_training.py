@@ -106,10 +106,10 @@ def create_data_set_for_training(save_path,
         df_validation = store.select('df_validation', where=where_condition['validation'], columns=variables_in_data_set)
 
         for variable in variables_in_data_set:
-            if df_train[variable].std()==0 or df_val[variable].std()==0:
+            if df_training[variable].std()==0 or df_validation[variable].std()==0:
                 standard_deviation_zero_variables.append(variable)
 
-            elif df_train[variable].isnull().any() or df_val[variable].isnull().any():
+            elif df_training[variable].isnull().any() or df_validation[variable].isnull().any():
                 not_all_events_variables.append(variable)
         
         del df_training
