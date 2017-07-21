@@ -48,14 +48,14 @@ def create_data_set_for_training(save_path,
     #----------------------------------------------------------------------------------------------------
     # Remove old output files
 
-    if os.path.isfile(os.path.join(save_path, 'data_sets', + 'training_data_set.hdf')):
-        os.remove(os.path.join(save_path, 'data_sets', + 'training_data_set.hdf'))
+    if os.path.isfile(os.path.join(save_path, 'data_sets', 'training_data_set.hdf')):
+        os.remove(os.path.join(save_path, 'data_sets', 'training_data_set.hdf'))
 
-    if os.path.isfile(os.path.join(save_path, 'data_sets', + 'validation_data_set.hdf')):
-        os.remove(os.path.join(save_path, 'data_sets', + 'validation_data_set.hdf'))
+    if os.path.isfile(os.path.join(save_path, 'data_sets', 'validation_data_set.hdf')):
+        os.remove(os.path.join(save_path, 'data_sets', 'validation_data_set.hdf'))
 
-    if os.path.isfile(os.path.join(save_path, 'data_sets', + 'test_data_set.hdf')):
-        os.remove(os.path.join(save_path, 'data_sets', + 'test_data_set.hdf'))
+    if os.path.isfile(os.path.join(save_path, 'data_sets', 'test_data_set.hdf')):
+        os.remove(os.path.join(save_path, 'data_sets', 'test_data_set.hdf'))
 
 
     #----------------------------------------------------------------------------------------------------
