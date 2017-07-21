@@ -7,7 +7,7 @@ import datetime
 import itertools
 
 import matplotlib
-matplotlib.use('PDF')
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 import numpy as np

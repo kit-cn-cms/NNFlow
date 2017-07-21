@@ -4,7 +4,7 @@ import os
 from collections import OrderedDict
 
 import matplotlib
-matplotlib.use('PDF')
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 
