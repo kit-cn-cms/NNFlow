@@ -57,7 +57,7 @@ def create_data_set_for_training(save_path,
     if os.path.isfile(os.path.join(save_path, 'data_sets', + 'test_data_set.hdf')):
         os.remove(os.path.join(save_path, 'data_sets', + 'test_data_set.hdf'))
 
-    sys.exit()
+
     #----------------------------------------------------------------------------------------------------
     # Get processes, weights and variables in data set.
   
