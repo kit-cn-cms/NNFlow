@@ -200,7 +200,7 @@ class NeuralNetworkTrainer(object):
 
                 training_network_output                 = np.concatenate(training_batch_network_output_list, axis=0)
                 training_labels, training_event_weights = training_data_set.get_labels_event_weights()
-                training_roc_auc.append(self._get_mean_roc_auc(training_labels, training_network_output, training_event_weights, network_type))
+                training_roc_auc.append(self._get_roc_auc(training_labels, training_network_output, training_event_weights, network_type))
 
                 training_losses.append(np.mean(training_batch_loss_list))
 
@@ -221,7 +221,7 @@ class NeuralNetworkTrainer(object):
 
                 validation_network_output                   = np.concatenate(validation_batch_network_output_list, axis=0)
                 validation_labels, validation_event_weights = validation_data_set.get_labels_event_weights()
-                validation_roc_auc.append(self._get_mean_roc_auc(validation_labels, validation_network_output, validation_event_weights, network_type))
+                validation_roc_auc.append(self._get_roc_auc(validation_labels, validation_network_output, validation_event_weights, network_type))
 
 
                 #----------------------------------------------------------------------------------------------------
@@ -299,12 +299,12 @@ class NeuralNetworkTrainer(object):
 
 
 
-    def _get_mean_roc_auc(self,
-                          labels,
-                          network_output,
-                          event_weights,
-                          network_type
-                          ):
+    def _get_roc_auc(self,
+                     labels,
+                     network_output,
+                     event_weights,
+                     network_type
+                     ):
  
 
         if network_type == 'binary':
