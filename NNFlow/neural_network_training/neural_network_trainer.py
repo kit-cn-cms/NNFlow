@@ -99,8 +99,8 @@ class NeuralNetworkTrainer(object):
             if network_type == 'binary':
                 labels = tf.placeholder(tf.float32, [None])
 
-                logits                    =               tf.reshape(self._get_model(input_data_scaled,weights,biases,activation_function_name,dropout_keep_probability=dropout_keep_probability), [-1])
-                network_output_calculator = tf.nn.sigmoid(tf.reshape(self._get_model(input_data_scaled,weights,biases,activation_function_name,dropout_keep_probability=1), [-1]), name='output')
+                logits                    =               tf.reshape(self._get_logits(input_data_scaled,weights,biases,activation_function_name,dropout_keep_probability=dropout_keep_probability),[-1])
+                network_output_calculator = tf.nn.sigmoid(tf.reshape(self._get_logits(input_data_scaled,weights,biases,activation_function_name,dropout_keep_probability=1), [-1]), name='output')
 
                 cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=labels)
 
@@ -108,8 +108,8 @@ class NeuralNetworkTrainer(object):
             elif network_type == 'multiclass':
                 labels = tf.placeholder(tf.float32, [None, number_of_output_neurons])
 
-                logits                    =               self._get_model(input_data_scaled, weights, biases, activation_function_name, dropout_keep_probability=dropout_keep_probability)
-                network_output_calculator = tf.nn.softmax(self._get_model(input_data_scaled, weights, biases, activation_function_name, dropout_keep_probability=1), name='output')
+                logits                    =               self._get_logits(input_data_scaled, weights, biases, activation_function_name, dropout_keep_probability=dropout_keep_probability)
+                network_output_calculator = tf.nn.softmax(self._get_logits(input_data_scaled, weights, biases, activation_function_name, dropout_keep_probability=1), name='output')
 
                 cross_entropy = tf.nn.softmax_cross_entropy_with_logits(labels=labels, logits=logits)
 
@@ -365,13 +365,13 @@ class NeuralNetworkTrainer(object):
 
 
 
-    def _get_model(self,
-                   data,
-                   weights,
-                   biases,
-                   activation_function_name,
-                   dropout_keep_probability
-                   ):
+    def _get_logits(self,
+                    data,
+                    weights,
+                    biases,
+                    activation_function_name,
+                    dropout_keep_probability
+                    ):
 
 
         activation_function = self._get_activation_function(activation_function_name)
@@ -382,10 +382,10 @@ class NeuralNetworkTrainer(object):
         for i in range(1, len(weights)-1):
             layers.append( tf.nn.dropout(activation_function(tf.add(tf.matmul(layers[i-1], weights[i]), biases[i])), dropout_keep_probability) )
 
-        logit = tf.add(tf.matmul(layers[-1], weights[-1]), biases[-1])
+        logits = tf.add(tf.matmul(layers[-1], weights[-1]), biases[-1])
 
 
-        return logit
+        return logits
 
 
 
