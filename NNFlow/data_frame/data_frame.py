@@ -15,10 +15,10 @@ class DataFrame(object):
 
         with pd.HDFStore(path_to_input_file, mode='r') as store_input:
             array           = store_input.select('data').values
-            self._variables = store_input.select('variables').values
+            self._variables = store_input.select('inputVariables').values
 
             if network_type == 'multiclass':
-                self._processes = store_input.select('processes').values
+                self._processes = store_input.select('outputLabels').values
 
         self._number_of_input_neurons = len(self._variables)
 
@@ -37,7 +37,7 @@ class DataFrame(object):
             self._labels = array[:, :self._number_of_output_neurons]
 
 
-        self._number_of_events    = self._data.shape[0]
+        self._number_of_events = self._data.shape[0]
 
 
 
