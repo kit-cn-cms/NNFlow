@@ -188,7 +188,7 @@ class AdvancedSoftmaxOutputProcessor(SoftmaxOutputProcessor):
 
 
 
-    def set_mode_min_output_to_reject(self,
+    def set_mode_max_output_to_reject(self,
                                       process,
                                       value,
                                       ):
