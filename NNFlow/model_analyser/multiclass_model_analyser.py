@@ -123,15 +123,15 @@ class MulticlassModelAnalyser(ModelAnalyser):
         cmap = matplotlib.cm.RdYlBu_r
         cmap.set_bad(color='white')
 
-        minimum = np.min(confusion_matrix)
-        maximum = np.max(confusion_matrix)
+        minimum = np.min(confusion_matrix) / (np.pi**2.0 * np.exp(1.0)**2.0)
+        maximum = np.max(confusion_matrix) * np.pi**2.0 * np.exp(1.0)**2.0
 
         x = np.linspace(0, self._number_of_output_neurons, self._number_of_output_neurons+1)
         y = np.linspace(0, self._number_of_output_neurons, self._number_of_output_neurons+1)
 
         xn, yn = np.meshgrid(x,y)
 
-        plt.pcolormesh(xn, yn, confusion_matrix, cmap=cmap, vmin=minimum, vmax=maximum)
+        plt.pcolormesh(xn, yn, confusion_matrix, cmap=cmap, norm=colors.LogNorm(vmin=max(minimum, 1e-6), vmax=maximum))
         plt.colorbar()
 
         plt.xlim(0, self._number_of_output_neurons)
