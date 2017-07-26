@@ -62,9 +62,10 @@ class SoftmaxOutputProcessor(object):
             for j in range(number_of_output_neurons):
                 confusion_matrix[j] /= confusion_matrix[j].sum()
 
-            if cross_sections == 'equal':
-                confusion_matrix *= number_of_output_neurons
-                confusion_matrix *= 100
+            if isinstance(cross_sections, basestring):
+                if cross_sections == 'equal':
+                    confusion_matrix *= number_of_output_neurons
+                    confusion_matrix *= 100
 
             else:
                 for j in range(number_of_output_neurons):
