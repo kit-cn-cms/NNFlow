@@ -251,7 +251,7 @@ class NeuralNetworkTrainer(object):
                     if network_type == 'binary':
                         training_development_early_stop = 'ROC AUC on validation data has not increased for {} epochs. Achieved best ROC AUC of {:.4f} in epoch {}.\n'.format(early_stopping_intervall, early_stopping['validation_roc_auc'], early_stopping['epoch'])
                     elif network_type == 'multiclass':
-                        training_development_early_stop = 'Mean ROC AUC on validation data has not increased for {} epochs. Achieved best mean_roc_auc of {:.4f} in epoch {}.\n'.format(early_stopping_intervall, early_stopping['validation_roc_auc'], early_stopping['epoch'])
+                        training_development_early_stop = 'Mean ROC AUC on validation data has not increased for {} epochs. Achieved best mean ROC AUC of {:.4f} in epoch {}.\n'.format(early_stopping_intervall, early_stopping['validation_roc_auc'], early_stopping['epoch'])
                     
                     print(output_separator,                end='')
                     print(training_development_early_stop, end='')
