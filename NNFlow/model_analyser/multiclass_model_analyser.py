@@ -12,7 +12,7 @@ import numpy as np
 import tensorflow as tf
 
 from .model_analyser import ModelAnalyser
-from NNFlow.softmax_output_processor.softmax_output_processor import AdvancedSoftmaxOutputProcessor
+from NNFlow.softmax_output_processor.softmax_output_processor import SoftmaxOutputProcessor
 
 
 
