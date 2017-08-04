@@ -95,7 +95,7 @@ class ModelAnalyser(object):
 
         with open(os.path.join(save_dir, 'inputVariables.txt'), 'w') as outputfile_variables:
             for variable in self._input_variables:
-                outputfile_variables.write(variable + ',\n')
+                outputfile_variables.write(variable + '\n')
 
 
 
