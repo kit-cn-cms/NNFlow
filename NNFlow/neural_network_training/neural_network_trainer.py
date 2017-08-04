@@ -118,7 +118,7 @@ class NeuralNetworkTrainer(object):
             loss              = tf.add(tf.reduce_mean(tf.multiply(event_weights, cross_entropy)), l2_regularization)
  
             tf_optimizer, global_step = optimizer.get_optimizer_global_step()
-            train_step                = tf_optimizer.minimize(loss, global_step=global_step)
+            training_step             = tf_optimizer.minimize(loss, global_step=global_step)
 
 
             input_variables = tf.Variable(training_data_set.get_variables(), trainable=False, name='inputVariables')
@@ -175,9 +175,9 @@ class NeuralNetworkTrainer(object):
                                                                                                                                 sort_events_randomly       = True,
                                                                                                                                 include_smaller_last_batch = False
                                                                                                                                 ):
-                    sess.run(train_step, {input_data    : batch_data,
-                                          labels        : batch_labels,
-                                          event_weights : batch_event_weights})
+                    sess.run(training_step, {input_data    : batch_data,
+                                             labels        : batch_labels,
+                                             event_weights : batch_event_weights})
 
 
                 #----------------------------------------------------------------------------------------------------
