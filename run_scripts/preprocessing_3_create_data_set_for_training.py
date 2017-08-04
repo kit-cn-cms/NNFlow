@@ -54,7 +54,7 @@ drop_events_negative_weights = True
 #----------------------------------------------------------------------------------------------------
 
 
-save_path = os.path.join(workdir_base, name_subdir)
+save_path = os.path.join(workdir_base, name_subdir, 'data_sets')
 
 
 path_to_merged_data_set = os.path.join(workdir_base, 'HDF5_files/data_set_merged.hdf')

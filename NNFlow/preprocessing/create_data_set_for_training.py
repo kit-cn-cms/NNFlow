@@ -231,7 +231,7 @@ def create_data_set_for_training(save_path,
 
 
             del df_weight
-            with pd.HDFStore(os.path.join(save_path, 'data_sets', data_set+'_data_set.hdf')) as store_output:
+            with pd.HDFStore(os.path.join(save_path, data_set+'_data_set.hdf')) as store_output:
                 store_output.put('data', df, format='fixed')
                 store_output.put('inputVariables', pd.Series([variable for variable in columns_to_save if variable not in processes]), format='fixed')
                 if not binary_classification:

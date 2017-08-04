@@ -156,3 +156,15 @@ class MulticlassModelAnalyser(ModelAnalyser):
 
 
         plt.clf()
+
+
+
+
+    def save_output_labels(self,
+                           save_dir,
+                           ):
+
+
+        with open(os.path.join(save_dir, 'outputLabels.txt'), 'w') as outputfile_process_labels:
+            for process in self._output_labels:
+                outputfile_process_labels.write(process + '\n')
