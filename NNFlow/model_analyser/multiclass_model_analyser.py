@@ -44,7 +44,7 @@ class MulticlassModelAnalyser(ModelAnalyser):
         self._number_of_output_neurons = len(self._output_labels)
 
 
-        self.softmax_output_processor = AdvancedSoftmaxOutputProcessor(self._output_labels)
+        self.softmax_output_processor = SoftmaxOutputProcessor()
 
 
 

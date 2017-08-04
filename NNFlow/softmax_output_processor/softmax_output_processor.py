@@ -10,30 +10,10 @@ from sklearn.metrics import roc_auc_score
 class SoftmaxOutputProcessor(object):
 
 
-    def get_mean_roc_auc(self,
-                         labels,
-                         network_output,
-                         event_weights
-                         ):
+    def __init__(self):
 
 
-        number_of_output_neurons = labels.shape[1]
-
-        roc_auc_list = list()
-
-        for j in range(number_of_output_neurons):
-            y_true  = labels[:, j]
-            y_score = network_output[:, j]
-
-            roc_auc = roc_auc_score(y_true=y_true, y_score=y_score, sample_weight=event_weights)
-
-            roc_auc_list.append(roc_auc)
-
-
-        mean_roc_auc = np.mean(roc_auc_list)
-
-
-        return mean_roc_auc
+        self.set_mode_max_output()
 
 
 
@@ -77,29 +57,30 @@ class SoftmaxOutputProcessor(object):
 
 
 
-    def get_prediction(self,
-                       network_output,
-                       ):
+    def get_mean_roc_auc(self,
+                         labels,
+                         network_output,
+                         event_weights
+                         ):
 
 
-        prediction = np.argmax(network_output)
+        number_of_output_neurons = labels.shape[1]
 
-        return prediction
+        roc_auc_list = list()
 
+        for j in range(number_of_output_neurons):
+            y_true  = labels[:, j]
+            y_score = network_output[:, j]
 
+            roc_auc = roc_auc_score(y_true=y_true, y_score=y_score, sample_weight=event_weights)
 
-
-class AdvancedSoftmaxOutputProcessor(SoftmaxOutputProcessor):
-
-
-    def __init__(self,
-                 processes,
-                 ):
+            roc_auc_list.append(roc_auc)
 
 
-        self.set_mode_max_output()
+        mean_roc_auc = np.mean(roc_auc_list)
 
-        self._processes = list(processes)
+
+        return mean_roc_auc
 
 
 
@@ -112,53 +93,8 @@ class AdvancedSoftmaxOutputProcessor(SoftmaxOutputProcessor):
         if self._mode == 'max_output':
             prediction = np.argmax(network_output)
 
-
-        elif self._mode == 'min_output_to_accept':
-            if np.argmax(network_output) == self._min_output_to_accept_index:
-                if network_output[self._min_output_to_accept_index] > self._min_output_to_accept_value:
-                    prediction = self._min_output_to_accept_index
-
-                else:
-                    prediction = np.argsort(network_output)[-2]
-
-            else:
-                prediction = np.argmax(network_output)
-
-
-        elif self._mode == 'max_output_to_reject':
-            if network_output[self._max_output_to_reject_index] > self._max_output_to_reject_value:
-                prediction = self._max_output_to_reject_index
-
-            else:
-                prediction = np.argmax(network_output)
-
-
-        elif self._mode == 'min_difference_to_second_highest':
-            if np.argmax(network_output) == self._min_difference_to_second_highest_index:
-                highest_value        = np.sort(network_output)[-1]
-                second_highest_value = np.sort(network_output)[-2]
-
-                if highest_value - second_highest_value > self._min_difference_to_second_highest_value:
-                    prediction = np.argmax(network_output)
-                else:
-                    prediction = np.argsort(network_output)[-2]
-
-            else:
-                prediction = np.argmax(network_output)
-
-
-        elif self._mode == 'min_difference_to_process':
-            if np.argmax(network_output) != self._min_difference_to_process_index:
-                highest_value = np.sort(network_output)[-1]
-                value_process = network_output[self._min_difference_to_process_index]
-
-                if highest_value - value_process > self._min_difference_to_process_value:
-                    prediction = np.argmax(network_output)
-                else:
-                    prediction = self._min_difference_to_process_index
-
-            else:
-                prediction = np.argmax(network_output)
+        elif self._mode == 'custom_function':
+            prediction = self._predict_function(network_output)
 
 
         return prediction
@@ -173,63 +109,11 @@ class AdvancedSoftmaxOutputProcessor(SoftmaxOutputProcessor):
 
 
 
-    def set_mode_min_output_to_accept(self,
-                                      process,
-                                      value,
-                                      ):
+    def set_mode_custom_function(self,
+                                 function,
+                                 ):
 
 
-        self._mode = 'min_output_to_accept'
+        self._mode = 'custom_function'
 
-        self._min_output_to_accept_process = process
-        self._min_output_to_accept_index   = self._processes.index(process)
-
-        self._min_output_to_accept_value   = value
-
-
-
-
-    def set_mode_max_output_to_reject(self,
-                                      process,
-                                      value,
-                                      ):
-
-
-        self._mode = 'max_output_to_reject'
-
-        self._max_output_to_reject_process = process
-        self._max_output_to_reject_index   = self._processes.index(process)
-
-        self._max_output_to_reject_value   = value
-
-
-
-
-    def set_mode_min_difference_to_second_highest(self,
-                                                  process,
-                                                  value,
-                                                  ):
-
-
-        self._mode = 'min_difference_to_second_highest'
-
-        self._min_difference_to_second_highest_process = process
-        self._min_difference_to_second_highest_index   = self._processes.index(process)
-
-        self._min_difference_to_second_highest_value   = value
-
-
-
-
-    def set_mode_min_difference_to_process(self,
-                                           process,
-                                           value,
-                                           ):
-
-
-        self._mode = 'min_difference_to_process'
-
-        self._min_difference_to_process_process = process
-        self._min_difference_to_process_index   = self._processes.index(process)
-
-        self._min_difference_to_process_value   = value
+        self._predict_function = function
