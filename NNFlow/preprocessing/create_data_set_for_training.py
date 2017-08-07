@@ -35,9 +35,6 @@ def create_data_set_for_training(save_path,
     if not os.path.isdir(save_path):
         sys.exit("Directory '" + save_path + "' doesn't exist." + "\n")
 
-    if not os.path.isdir(os.path.join(save_path, 'data_sets')):
-        os.mkdir(os.path.join(save_path, 'data_sets'))
-
     if not os.path.isfile(path_to_merged_data_set):
         sys.exit("File '" + path_to_merged_data_set + "' doesn't exist." + "\n")
     
