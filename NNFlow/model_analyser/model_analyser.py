@@ -100,6 +100,32 @@ class ModelAnalyser(object):
 
 
 
+    def save_unit_test_data(self,
+                            path_to_input_file,
+                            save_dir,
+                            ):
+
+
+        data_set = DataFrame(path_to_input_file = path_to_input_file,
+                             network_type       = self._network_type)
+
+        data = data_set.get_data()[0]
+
+        network_output = get_labels_network_output_event_weights(path_to_input_file)[1][0]
+
+
+        with open(os.path.join(save_dir, 'unitTestInputValues.txt'), 'w') as file_input_values:
+            for input_value in data:
+                file_input_values.write(str('input_value') + '\n')
+
+
+        with open(os.path.join(save_dir, 'unitTestOutputValues.txt'), 'w') as file_output_values:
+            for output_value in network_output:
+                file_output_values.write(str('output_value') + '\n')
+
+
+
+
     def save_variable_ranking(self,
                               save_dir,
                               ):
