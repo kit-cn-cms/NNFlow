@@ -111,7 +111,7 @@ class ModelAnalyser(object):
 
         data = data_set.get_data()[0]
 
-        network_output = get_labels_network_output_event_weights(path_to_input_file)[1][0]
+        network_output = self.get_labels_network_output_event_weights(path_to_input_file)[1][0]
 
 
         with open(os.path.join(save_dir, 'unitTestInputValues.txt'), 'w') as file_input_values:
