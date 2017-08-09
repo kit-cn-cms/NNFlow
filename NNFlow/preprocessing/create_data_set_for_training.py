@@ -249,6 +249,13 @@ def create_data_set_for_training(save_path,
             for process in processes:
                 outputfile_process_labels.write(process + '\n')
 
+    with open(os.path.join(save_path, 'preselection.txt'), 'w') as outputfile_preselection:
+        if jet_btag_category != 'all':
+            outputfile_preselection.write(jet_btag_category_condition.replace('and', '&&').replace('or', '||') + '\n')
+        else:
+            outputfile_preselection.write('(true)\n')
+
+
 
     print('========')
     print('FINISHED')
