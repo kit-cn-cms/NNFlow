@@ -125,7 +125,7 @@ class ModelAnalyser(object):
 
             else:
                 for output_value in network_output:
-                    file_output_values.write(str('output_value') + '\n')
+                    file_output_values.write(str(output_value) + '\n')
 
 
 
