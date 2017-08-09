@@ -116,12 +116,16 @@ class ModelAnalyser(object):
 
         with open(os.path.join(save_dir, 'unitTestInputValues.txt'), 'w') as file_input_values:
             for input_value in data:
-                file_input_values.write(str('input_value') + '\n')
+                file_input_values.write(str(input_value) + '\n')
 
 
         with open(os.path.join(save_dir, 'unitTestOutputValues.txt'), 'w') as file_output_values:
-            for output_value in network_output:
-                file_output_values.write(str('output_value') + '\n')
+            if self._network_type == 'binary':
+                file_output_values.write(str(network_output) + '\n')
+
+            else:
+                for output_value in network_output:
+                    file_output_values.write(str('output_value') + '\n')
 
 
 
