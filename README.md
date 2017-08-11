@@ -62,7 +62,7 @@ rm get-pip.py
 
 python -m pip install --target=$PIPTARGETDIR virtualenv
 
-export NNFLOWINSTALLDIR=$PWD"/NNFlow_venv"
+export NNFLOWINSTALLDIR=$PWD"/NNFlow_venv_CMSSW"
 python -m virtualenv --system-site-packages $NNFLOWINSTALLDIR
 source $NNFLOWINSTALLDIR/bin/activate
 
@@ -80,7 +80,7 @@ source $VO_CMS_SW_DIR/cmsset_default.sh
 cd /path/to/CMSSW_9_0_3
 cd src
 cmsenv
-export NNFLOWINSTALLDIR=/path/to/NNFlow_venv
+export NNFLOWINSTALLDIR=/path/to/NNFlow_venv_CMSSW
 source $NNFLOWINSTALLDIR/bin/activate
 ```
 
