@@ -16,12 +16,12 @@ The framework is designed to be used with Python2.7.
 
 ### Installation in a virtual environment
 ```
-export NNFLOWINSTALLDIR=$PWD"/NNFlow"
+export NNFLOWINSTALLDIR=$PWD"/NNFlow_venv"
 virtualenv --system-site-packages $NNFLOWINSTALLDIR
 source $NNFLOWINSTALLDIR/bin/activate
 
-pip install --upgrade  rootpy          # If PyROOT is not installed on your machine, skip these two points.
-pip install --upgrade  root_numpy      # In this case, you can not perform step 1 of the preprocessing.
+pip install --upgrade rootpy           # If PyROOT is not installed on your machine, skip these two points.
+pip install --upgrade root_numpy       # In this case, you can not perform step 1 of the preprocessing.
 
 pip install --upgrade tensorflow       # Use this, if CUDA is not installed on your machine.
 pip install --upgrade tensorflow-gpu   # Use this, if CUDA is installed on your machine.
@@ -34,7 +34,7 @@ export CUDA_HOME=/usr/local/cuda-7.5-cudNNV5.1
 
 Activate environment in a new shell:
 ```
-export NNFLOWINSTALLDIR=/path/to/NNFlow
+export NNFLOWINSTALLDIR=/path/to/NNFlow_venv
 source $NNFLOWINSTALLDIR/bin/activate
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/cuda-7.5-cudNNV5.1/lib64:/usr/local/cuda-7.5-cudNNV5.1/extras/CUPTI/lib64"
 export CUDA_HOME=/usr/local/cuda-7.5-cudNNV5.1
@@ -54,12 +54,22 @@ export PIPTARGETDIR=$CMSSWINSTALLDIR"/lib/"$SCRAM_ARCH
 scram project $CMSSW_VERSION
 cd $CMSSW_VERSION"/src"
 cmsenv
+cd -
 
 wget https://bootstrap.pypa.io/get-pip.py
 python get-pip.py --target=$PIPTARGETDIR
 rm get-pip.py
 
-python -m pip install --target=$PIPTARGETDIR git+http://github.com/kit-cn-cms/NNFlow.git#egg=NNFlow
+python -m pip install --target=$PIPTARGETDIR virtualenv
+
+export NNFLOWINSTALLDIR=$PWD"/NNFlow_venv"
+python -m virtualenv --system-site-packages $NNFLOWINSTALLDIR
+source $NNFLOWINSTALLDIR/bin/activate
+
+pip install --upgrade rootpy
+pip install --upgrade root_numpy
+
+pip install git+http://github.com/kit-cn-cms/NNFlow.git#egg=NNFlow
 ```
 
 Activate environment in a new shell:
@@ -70,6 +80,8 @@ source $VO_CMS_SW_DIR/cmsset_default.sh
 cd /path/to/CMSSW_9_0_3
 cd src
 cmsenv
+export NNFLOWINSTALLDIR=/path/to/NNFlow_venv
+source $NNFLOWINSTALLDIR/bin/activate
 ```
 
 
