@@ -66,9 +66,12 @@ class NeuralNetworkTrainer(object):
  
         path_to_model_file         = os.path.join(save_path, '{}.ckpt'.format(model_name))
         directory_model_properties = os.path.join(save_path, 'model_properties')
+        directory_plots            = os.path.join(save_path, 'plots')
 
         if not os.path.isdir(directory_model_properties):
             os.mkdir(directory_model_properties)
+        if not os.path.isdir(directory_plots):
+            os.mkdir(directory_plots)
 
 
         #----------------------------------------------------------------------------------------------------
@@ -289,7 +292,7 @@ class NeuralNetworkTrainer(object):
         with open(os.path.join(directory_model_properties, 'training_development.txt'), 'w') as training_development_output_file:
             training_development_output_file.write(training_development)
 
-        self._plot_training_development(directory_model_properties, network_type, training_roc_auc, validation_roc_auc, early_stopping)
+        self._plot_training_development(directory_plots, network_type, training_roc_auc, validation_roc_auc, early_stopping)
 
 
         print('\n' + '========')
@@ -472,7 +475,7 @@ class NeuralNetworkTrainer(object):
 
 
     def _plot_training_development(self,
-                                   directory_model_properties,
+                                   directory_plots,
                                    network_type,
                                    training_roc_auc,
                                    validation_roc_auc,
@@ -498,7 +501,7 @@ class NeuralNetworkTrainer(object):
         plt.legend(loc='best', frameon=False)
 
 
-        plt.savefig(os.path.join(directory_model_properties, 'training_development.pdf'))
+        plt.savefig(os.path.join(directory_plots, 'training_development.pdf'))
 
 
         plt.clf()
