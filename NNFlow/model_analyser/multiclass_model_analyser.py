@@ -119,6 +119,8 @@ class MulticlassModelAnalyser(ModelAnalyser):
         labels, network_output, event_weights = self.get_labels_network_output_event_weights(path_to_input_file)
         confusion_matrix = self.softmax_output_processor.get_confusion_matrix(labels, network_output, event_weights, cross_sections)
 
+        y_range, x_range = confusion_matrix.shape
+
 
         cmap = matplotlib.cm.RdYlBu_r
         cmap.set_bad(color='white')
@@ -126,16 +128,16 @@ class MulticlassModelAnalyser(ModelAnalyser):
         minimum = np.min(confusion_matrix) / (np.pi**2.0 * np.exp(1.0)**2.0)
         maximum = np.max(confusion_matrix) * np.pi**2.0 * np.exp(1.0)**2.0
 
-        x = np.linspace(0, self._number_of_output_neurons, self._number_of_output_neurons+1)
-        y = np.linspace(0, self._number_of_output_neurons, self._number_of_output_neurons+1)
+        x = np.linspace(0, x_range, x_range+1)
+        y = np.linspace(0, y_range, y_range+1)
 
         xn, yn = np.meshgrid(x,y)
 
         plt.pcolormesh(xn, yn, confusion_matrix, cmap=cmap, norm=colors.LogNorm(vmin=max(minimum, 1e-6), vmax=maximum))
         plt.colorbar()
 
-        plt.xlim(0, self._number_of_output_neurons)
-        plt.ylim(0, self._number_of_output_neurons)
+        plt.xlim(0, x_range)
+        plt.ylim(0, y_range)
 
         plt.xlabel("Predicted")
         plt.ylabel("True")
@@ -147,8 +149,13 @@ class MulticlassModelAnalyser(ModelAnalyser):
         ax = plt.gca()
         ax.set_xticks(np.arange((x.shape[0] - 1)) + 0.5, minor=False)
         ax.set_yticks(np.arange((y.shape[0] - 1)) + 0.5, minor=False)
-        ax.set_xticklabels(self._output_labels)
-        ax.set_yticklabels(self._output_labels)
+
+        if x_range == y_range:
+            ax.set_xticklabels(self._output_labels)
+            ax.set_yticklabels(self._output_labels)
+        else:
+            ax.set_xticklabels(self._output_labels + ['0'])
+            ax.set_yticklabels(self._output_labels)
 
         plt.tight_layout()
 

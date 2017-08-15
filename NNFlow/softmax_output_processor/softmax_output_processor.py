@@ -29,7 +29,10 @@ class SoftmaxOutputProcessor(object):
         number_of_events         = labels.shape[0]
         number_of_output_neurons = labels.shape[1]
 
-        confusion_matrix = np.zeros((number_of_output_neurons, number_of_output_neurons), dtype=np.float32)
+        if self._additional_predicted_bin:
+            confusion_matrix = np.zeros((number_of_output_neurons, number_of_output_neurons+1), dtype=np.float32)
+        else:
+            confusion_matrix = np.zeros((number_of_output_neurons, number_of_output_neurons), dtype=np.float32)
 
         for i in range(number_of_events):
             index_true      = np.argmax(labels[i])
@@ -111,9 +114,11 @@ class SoftmaxOutputProcessor(object):
 
     def set_mode_custom_function(self,
                                  function,
+                                 additional_predicted_bin=False,
                                  ):
 
 
         self._mode = 'custom_function'
 
-        self._predict_function = function
+        self._predict_function         = function
+        self._additional_predicted_bin = additional_predicted_bin
