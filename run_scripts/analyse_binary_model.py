@@ -5,6 +5,7 @@
 from __future__ import absolute_import, division, print_function
 
 import os
+import sys
 
 from NNFlow import BinaryModelAnalyser
 #----------------------------------------------------------------------------------------------------
@@ -22,10 +23,10 @@ path_to_training_data_set   = os.path.join(workdir_base, name_subdir, 'data_sets
 path_to_validation_data_set = os.path.join(workdir_base, name_subdir, 'data_sets/validation_data_set.hdf')
 
 
-save_dir = os.path.join(workdir_base, name_subdir, 'model/model_properties')
+save_dir = os.path.join(workdir_base, name_subdir, sys.argv[1], 'model_properties')
 
 
-path_to_model = os.path.join(workdir_base, name_subdir, 'model', file_name_model)
+path_to_model = os.path.join(workdir_base, name_subdir, sys.argv[1], file_name_model)
 
 
 #----------------------------------------------------------------------------------------------------

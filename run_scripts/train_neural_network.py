@@ -6,6 +6,7 @@ from __future__ import absolute_import, division, print_function
 
 import os
 import sys
+import datetime
 
 import NNFlow
 #----------------------------------------------------------------------------------------------------
@@ -48,7 +49,7 @@ optimizer =
 #----------------------------------------------------------------------------------------------------
 
 
-save_path  = os.path.join(workdir_base, name_subdir, 'model')
+save_path  = os.path.join(workdir_base, name_subdir, 'model_' + datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S'))
 model_name = name_subdir
 
 
