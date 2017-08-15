@@ -36,7 +36,7 @@ class SoftmaxOutputProcessor(object):
 
         for i in range(number_of_events):
             index_true      = np.argmax(labels[i])
-            index_predicted = self.get_prediction(network_output[i])
+            index_predicted = self._predict_function(network_output[i])
 
             confusion_matrix[index_true][index_predicted] += event_weights[i]
 
@@ -88,26 +88,12 @@ class SoftmaxOutputProcessor(object):
 
 
 
-    def get_prediction(self,
-                       network_output,
-                       ):
-
-
-        if self._mode == 'max_output':
-            prediction = np.argmax(network_output)
-
-        elif self._mode == 'custom_function':
-            prediction = self._predict_function(network_output)
-
-
-        return prediction
-
-
-
-
     def set_mode_max_output(self):
 
         self._mode = 'max_output'
+
+        self._predict_function         = np.argmax
+        self._additional_predicted_bin = False
 
 
 
