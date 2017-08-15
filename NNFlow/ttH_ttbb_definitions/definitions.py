@@ -11,6 +11,7 @@ def jet_btag_category():
                        'j=5b=3'   : '(N_Jets == 5 and N_BTagsM == 3)',
                        'j=5b>=4'  : '(N_Jets == 5 and N_BTagsM >= 4)',
                        'j>=5b>=2' : '(N_Jets >= 5 and N_BTagsM >= 2)',
+                       'j>=5b=3'  : '(N_Jets >= 5 and N_BTagsM == 3)',
                        'j>=6b=2'  : '(N_Jets >= 6 and N_BTagsM == 2)',
                        'j>=6b>=2' : '(N_Jets >= 6 and N_BTagsM >= 2)',
                        'j>=6b=3'  : '(N_Jets >= 6 and N_BTagsM == 3)',
