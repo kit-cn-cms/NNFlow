@@ -154,8 +154,8 @@ class MulticlassModelAnalyser(ModelAnalyser):
             ax.set_xticklabels(self._output_labels)
             ax.set_yticklabels(self._output_labels)
         else:
-            ax.set_xticklabels(self._output_labels + ['0'])
-            ax.set_yticklabels(self._output_labels)
+            ax.set_xticklabels(list(self._output_labels) + ['0'])
+            ax.set_yticklabels(     self._output_labels)
 
         plt.tight_layout()
 
