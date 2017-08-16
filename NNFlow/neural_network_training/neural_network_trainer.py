@@ -125,13 +125,14 @@ class NeuralNetworkTrainer(object):
             tf_training_step             = tf_optimizer.minimize(tf_loss, global_step=tf_global_step)
 
 
-            tf_input_variables = tf.Variable(training_data_set.get_input_variables(), trainable=False, name='inputVariables')
-            tf_output_labels   = tf.Variable(training_data_set.get_output_labels(),   trainable=False, name='outputLabels')
+            tf_model_id        = tf.Variable(model_id,                                trainable=False, name='model_id')
+            tf_input_variables = tf.Variable(training_data_set.get_input_variables(), trainable=False, name='input_variables')
+            tf_output_labels   = tf.Variable(training_data_set.get_output_labels(),   trainable=False, name='output_labels')
             tf_network_type    = tf.Variable(training_data_set.get_network_type(),    trainable=False, name='network_type')
             tf_preselection    = tf.Variable(training_data_set.get_preselection(),    trainable=False, name='preselection')
 
 
-            tf_saver = tf.train.Saver(tf_weights + tf_biases + [tf_feature_scaling_mean, tf_feature_scaling_std, tf_input_variables, tf_output_labels, tf_network_type, tf_preselection])
+            tf_saver = tf.train.Saver(tf_weights + tf_biases + [tf_feature_scaling_mean, tf_feature_scaling_std, tf_model_id, tf_input_variables, tf_output_labels, tf_network_type, tf_preselection])
  
 
         #----------------------------------------------------------------------------------------------------
