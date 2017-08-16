@@ -87,57 +87,57 @@ class NeuralNetworkTrainer(object):
         #----------------------------------------------------------------------------------------------------
         # Graph.
 
-        graph = tf.Graph()
-        with graph.as_default():
-            input_data    = tf.placeholder(tf.float32, [None, number_of_input_neurons], name='input')
-            event_weights = tf.placeholder(tf.float32, [None])
+        tf_graph = tf.Graph()
+        with tf_graph.as_default():
+            tf_input_data    = tf.placeholder(tf.float32, [None, number_of_input_neurons], name='input')
+            tf_event_weights = tf.placeholder(tf.float32, [None])
  
-            feature_scaling_mean = tf.Variable(np.mean(training_data_set.get_data(), axis=0).astype(np.float32), trainable=False,  name='feature_scaling_mean')
-            feature_scaling_std  = tf.Variable(np.std(training_data_set.get_data(), axis=0).astype(np.float32), trainable=False,  name='feature_scaling_std')
-            input_data_scaled    = tf.div(tf.subtract(input_data, feature_scaling_mean), feature_scaling_std)
+            tf_feature_scaling_mean = tf.Variable(np.mean(training_data_set.get_data(), axis=0).astype(np.float32), trainable=False,  name='feature_scaling_mean')
+            tf_feature_scaling_std  = tf.Variable(np.std(training_data_set.get_data(), axis=0).astype(np.float32), trainable=False,  name='feature_scaling_std')
+            tf_input_data_scaled    = tf.div(tf.subtract(tf_input_data, tf_feature_scaling_mean), tf_feature_scaling_std)
  
-            weights, biases = self._get_initial_weights_biases(number_of_input_neurons, number_of_output_neurons, hidden_layers)
+            tf_weights, tf_biases = self._get_initial_tf_weights_tf_biases(number_of_input_neurons, number_of_output_neurons, hidden_layers)
 
 
             if network_type == 'binary':
-                labels = tf.placeholder(tf.float32, [None])
+                tf_labels = tf.placeholder(tf.float32, [None])
 
-                logits                    =               tf.reshape(self._get_logits(input_data_scaled,weights,biases,activation_function_name,dropout_keep_probability=dropout_keep_probability),[-1])
-                network_output_calculator = tf.nn.sigmoid(tf.reshape(self._get_logits(input_data_scaled,weights,biases,activation_function_name,dropout_keep_probability=1), [-1]), name='output')
+                tf_logits         =               tf.reshape(self._get_tf_logits(tf_input_data_scaled,tf_weights,tf_biases,activation_function_name,dropout_keep_probability),[-1])
+                tf_network_output = tf.nn.sigmoid(tf.reshape(self._get_tf_logits(tf_input_data_scaled,tf_weights,tf_biases,activation_function_name,dropout_keep_probability=1), [-1]), name='output')
 
-                cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=labels)
+                tf_cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(logits=tf_logits, labels=tf_labels)
 
 
             elif network_type == 'multiclass':
-                labels = tf.placeholder(tf.float32, [None, number_of_output_neurons])
+                tf_labels = tf.placeholder(tf.float32, [None, number_of_output_neurons])
 
-                logits                    =               self._get_logits(input_data_scaled, weights, biases, activation_function_name, dropout_keep_probability=dropout_keep_probability)
-                network_output_calculator = tf.nn.softmax(self._get_logits(input_data_scaled, weights, biases, activation_function_name, dropout_keep_probability=1), name='output')
+                tf_logits         =               self._get_tf_logits(tf_input_data_scaled, tf_weights, tf_biases, activation_function_name, dropout_keep_probability=dropout_keep_probability)
+                tf_network_output = tf.nn.softmax(self._get_tf_logits(tf_input_data_scaled, tf_weights, tf_biases, activation_function_name, dropout_keep_probability=1), name='output')
 
-                cross_entropy = tf.nn.softmax_cross_entropy_with_logits(labels=labels, logits=logits)
+                tf_cross_entropy = tf.nn.softmax_cross_entropy_with_logits(labels=tf_labels, logits=tf_logits)
 
 
-            l2_regularization = l2_regularization_beta * tf.add_n([tf.nn.l2_loss(w) for w in weights])
-            loss              = tf.add(tf.reduce_mean(tf.multiply(event_weights, cross_entropy)), l2_regularization)
+            tf_l2_regularization = l2_regularization_beta * tf.add_n([tf.nn.l2_loss(w) for w in tf_weights])
+            tf_loss              = tf.add(tf.reduce_mean(tf.multiply(tf_event_weights, tf_cross_entropy)), tf_l2_regularization)
  
-            tf_optimizer, global_step = optimizer.get_optimizer_global_step()
-            training_step             = tf_optimizer.minimize(loss, global_step=global_step)
+            tf_optimizer, tf_global_step = optimizer.get_tf_optimizer_tf_global_step()
+            tf_training_step             = tf_optimizer.minimize(tf_loss, global_step=tf_global_step)
 
 
-            input_variables = tf.Variable(training_data_set.get_input_variables(), trainable=False, name='inputVariables')
-            output_labels   = tf.Variable(training_data_set.get_output_labels(),   trainable=False, name='outputLabels')
-            tf_network_type = tf.Variable(training_data_set.get_network_type(),    trainable=False, name='network_type')
-            tf_preselection = tf.Variable(training_data_set.get_preselection(),    trainable=False, name='preselection')
+            tf_input_variables = tf.Variable(training_data_set.get_input_variables(), trainable=False, name='inputVariables')
+            tf_output_labels   = tf.Variable(training_data_set.get_output_labels(),   trainable=False, name='outputLabels')
+            tf_network_type    = tf.Variable(training_data_set.get_network_type(),    trainable=False, name='network_type')
+            tf_preselection    = tf.Variable(training_data_set.get_preselection(),    trainable=False, name='preselection')
 
 
-            saver = tf.train.Saver(weights + biases + [feature_scaling_mean, feature_scaling_std, input_variables, output_labels, tf_network_type, tf_preselection])
+            tf_saver = tf.train.Saver(tf_weights + tf_biases + [tf_feature_scaling_mean, tf_feature_scaling_std, tf_input_variables, tf_output_labels, tf_network_type, tf_preselection])
  
 
         #----------------------------------------------------------------------------------------------------
 
-        config = session_config.get_config()
-        with tf.Session(config=config, graph=graph) as sess:
-            sess.run(tf.global_variables_initializer())
+        tf_config = session_config.get_tf_config()
+        with tf.Session(config=tf_config, graph=tf_graph) as tf_session:
+            tf_session.run(tf.global_variables_initializer())
  
  
             training_roc_auc      = list()
@@ -175,9 +175,9 @@ class NeuralNetworkTrainer(object):
                                                                                                                                 sort_events_randomly       = True,
                                                                                                                                 include_smaller_last_batch = False
                                                                                                                                 ):
-                    sess.run(training_step, {input_data    : batch_data,
-                                             labels        : batch_labels,
-                                             event_weights : batch_event_weights})
+                    tf_session.run(tf_training_step, {tf_input_data    : batch_data,
+                                                      tf_labels        : batch_labels,
+                                                      tf_event_weights : batch_event_weights})
 
 
                 #----------------------------------------------------------------------------------------------------
@@ -190,9 +190,9 @@ class NeuralNetworkTrainer(object):
                                                                                                                                 sort_events_randomly       = False,
                                                                                                                                 include_smaller_last_batch = True
                                                                                                                                 ):
-                    batch_network_output, batch_loss = sess.run([network_output_calculator, loss], {input_data    : batch_data,
-                                                                                                    labels        : batch_labels,
-                                                                                                    event_weights : batch_event_weights})
+                    batch_network_output, batch_loss = tf_session.run([tf_network_output, tf_loss], {tf_input_data    : batch_data,
+                                                                                                     tf_labels        : batch_labels,
+                                                                                                     tf_event_weights : batch_event_weights})
  
                     training_batch_network_output_list.append(batch_network_output)
                     training_batch_loss_list.append(batch_loss)
@@ -214,7 +214,7 @@ class NeuralNetworkTrainer(object):
                                                                                                                                   sort_events_randomly       = False,
                                                                                                                                   include_smaller_last_batch = True
                                                                                                                                   ):
-                    batch_network_output = sess.run(network_output_calculator, {input_data : batch_data})
+                    batch_network_output = tf_session.run(tf_network_output, {tf_input_data : batch_data})
 
                     validation_batch_network_output_list.append(batch_network_output)
 
@@ -241,7 +241,7 @@ class NeuralNetworkTrainer(object):
                 # Early stopping.
 
                 if validation_roc_auc[-1] > early_stopping['validation_roc_auc']:
-                    saver.save(sess, path_to_model_file)
+                    tf_saver.save(tf_session, path_to_model_file)
  
                     early_stopping['validation_roc_auc'] = validation_roc_auc[-1]
                     early_stopping['epoch']              = epoch
@@ -313,93 +313,28 @@ class NeuralNetworkTrainer(object):
 
 
 
-    def _get_roc_auc(self,
-                     labels,
-                     network_output,
-                     event_weights,
-                     network_type
-                     ):
- 
-
-        if network_type == 'binary':
-            roc_auc = roc_auc_score(y_true = labels, y_score = network_output, sample_weight = event_weights)
-
-        elif network_type == 'multiclass':
-            roc_auc = self._softmax_output_processor.get_mean_roc_auc(labels, network_output, event_weights)
-     
-     
-        return roc_auc
+    def _get_initial_tf_weights_tf_biases(self,
+                                          number_of_input_neurons,
+                                          number_of_output_neurons,
+                                          hidden_layers
+                                          ):
 
 
-
-
-    def _get_activation_function(self,
-                                 activation_function_name
-                                 ):
-
-
-        activation_functions = {'tanh'    : tf.nn.tanh,
-                                'sigmoid' : tf.nn.sigmoid,
-                                'relu'    : tf.nn.relu,
-                                'elu'     : tf.nn.elu,
-                                'softplus': tf.nn.softplus
-                                }
-
-        if activation_function_name not in activation_functions.keys():
-            sys.exit('Choose activation function from ' + str.join(', ', activation_functions.keys()))
-
-        return activation_functions[activation_function_name]
-
-
-
-
-    def _get_initial_weights_biases(self,
-                                    number_of_input_neurons,
-                                    number_of_output_neurons,
-                                    hidden_layers
-                                    ):
-
-
-        weights = [tf.Variable(tf.random_normal([number_of_input_neurons, hidden_layers[0]], stddev=tf.sqrt(2.0/number_of_input_neurons)), name = 'W_1')]
-        biases  = [tf.Variable(tf.fill(dims=[hidden_layers[0]], value=0.1), name = 'B_1')]
+        tf_weights = [tf.Variable(tf.random_normal([number_of_input_neurons, hidden_layers[0]], stddev=tf.sqrt(2.0/number_of_input_neurons)), name = 'W_1')]
+        tf_biases  = [tf.Variable(tf.fill(dims=[hidden_layers[0]], value=0.1), name = 'B_1')]
 
 
         if len(hidden_layers) > 1:
             for i in range(1, len(hidden_layers)):
-                weights.append(tf.Variable(tf.random_normal(shape = [hidden_layers[i-1], hidden_layers[i]], stddev = tf.sqrt(2.0/hidden_layers[i-1])), name='W_{}'.format(i+1)))
-                biases.append(tf.Variable(tf.fill(dims=[hidden_layers[i]], value = 0.1), name='B_{}'.format(i+1)))
+                tf_weights.append(tf.Variable(tf.random_normal(shape = [hidden_layers[i-1], hidden_layers[i]], stddev = tf.sqrt(2.0/hidden_layers[i-1])), name='W_{}'.format(i+1)))
+                tf_biases.append(tf.Variable(tf.fill(dims=[hidden_layers[i]], value = 0.1), name='B_{}'.format(i+1)))
 
 
-        weights.append(tf.Variable(tf.random_normal([hidden_layers[-1], number_of_output_neurons], stddev=tf.sqrt(2.0/hidden_layers[-1])), name = 'W_out'))
-        biases.append(tf.Variable(tf.fill(dims=[number_of_output_neurons], value=0.1), name = 'B_out'))
+        tf_weights.append(tf.Variable(tf.random_normal([hidden_layers[-1], number_of_output_neurons], stddev=tf.sqrt(2.0/hidden_layers[-1])), name = 'W_out'))
+        tf_biases.append(tf.Variable(tf.fill(dims=[number_of_output_neurons], value=0.1), name = 'B_out'))
 
 
-        return weights, biases
-
-
-
-
-    def _get_logits(self,
-                    data,
-                    weights,
-                    biases,
-                    activation_function_name,
-                    dropout_keep_probability
-                    ):
-
-
-        activation_function = self._get_activation_function(activation_function_name)
-
-        layers = list()
-        layers.append( activation_function(tf.add(tf.matmul(data, weights[0]), biases[0])) )
-
-        for i in range(1, len(weights)-1):
-            layers.append( tf.nn.dropout(activation_function(tf.add(tf.matmul(layers[i-1], weights[i]), biases[i])), dropout_keep_probability) )
-
-        logits = tf.add(tf.matmul(layers[-1], weights[-1]), biases[-1])
-
-
-        return logits
+        return tf_weights, tf_biases
 
 
 
@@ -481,6 +416,71 @@ class NeuralNetworkTrainer(object):
 
 
         return network_and_training_properties
+
+
+
+
+    def _get_roc_auc(self,
+                     labels,
+                     network_output,
+                     event_weights,
+                     network_type
+                     ):
+ 
+
+        if network_type == 'binary':
+            roc_auc = roc_auc_score(y_true = labels, y_score = network_output, sample_weight = event_weights)
+
+        elif network_type == 'multiclass':
+            roc_auc = self._softmax_output_processor.get_mean_roc_auc(labels, network_output, event_weights)
+     
+     
+        return roc_auc
+
+
+
+
+    def _get_tf_activation_function(self,
+                                    activation_function_name
+                                    ):
+
+
+        activation_functions = {'tanh'    : tf.nn.tanh,
+                                'sigmoid' : tf.nn.sigmoid,
+                                'relu'    : tf.nn.relu,
+                                'elu'     : tf.nn.elu,
+                                'softplus': tf.nn.softplus
+                                }
+
+        if activation_function_name not in activation_functions.keys():
+            sys.exit('Choose activation function from ' + str.join(', ', activation_functions.keys()))
+
+        return activation_functions[activation_function_name]
+
+
+
+
+    def _get_tf_logits(self,
+                       tf_data,
+                       tf_weights,
+                       tf_biases,
+                       activation_function_name,
+                       dropout_keep_probability
+                       ):
+
+
+        tf_activation_function = self._get_tf_activation_function(activation_function_name)
+
+        tf_layers = list()
+        tf_layers.append( tf_activation_function(tf.add(tf.matmul(tf_data, tf_weights[0]), tf_biases[0])) )
+
+        for i in range(1, len(tf_weights)-1):
+            tf_layers.append( tf.nn.dropout(tf_activation_function(tf.add(tf.matmul(tf_layers[i-1], tf_weights[i]), tf_biases[i])), dropout_keep_probability) )
+
+        tf_logits = tf.add(tf.matmul(tf_layers[-1], tf_weights[-1]), tf_biases[-1])
+
+
+        return tf_logits
 
 
 

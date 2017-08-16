@@ -24,19 +24,19 @@ class SessionConfig(object):
 
 
 
-    def get_config(self):
+    def get_tf_config(self):
 
 
-        config = tf.ConfigProto()
+        tf_config = tf.ConfigProto()
 
         if self._visible_devices != 'all':
             os.environ['CUDA_VISIBLE_DEVICES'] = self._visible_devices
 
         if self._allow_growth:
-            config.gpu_options.allow_growth = True
+            tf_config.gpu_options.allow_growth = True
 
         if self._per_process_gpu_memory_fraction is not None:
-            config.gpu_options.per_process_gpu_memory_fraction = per_process_gpu_memory_fraction
+            tf_config.gpu_options.per_process_gpu_memory_fraction = per_process_gpu_memory_fraction
 
 
-        return config
+        return tf_config

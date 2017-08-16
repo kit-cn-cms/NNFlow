@@ -29,12 +29,12 @@ class ModelAnalyser(object):
             self._session_config = SessionConfig()
 
 
-        config = self._session_config.get_config()
-        graph = tf.Graph()
-        with tf.Session(config=config, graph=graph) as sess:
-            saver = tf.train.import_meta_graph(self._path_to_model + '.meta')
-            saver.restore(sess, self._path_to_model)
-            self._input_variables = graph.get_tensor_by_name("inputVariables:0").eval()
+        tf_config = self._session_config.get_tf_config()
+        tf_graph  = tf.Graph()
+        with tf.Session(config=tf_config, graph=tf_graph) as tf_session:
+            tf_saver = tf.train.import_meta_graph(self._path_to_model + '.meta')
+            tf_saver.restore(tf_session, self._path_to_model)
+            self._input_variables = tf_graph.get_tensor_by_name("inputVariables:0").eval()
 
 
         self._labels_network_output_event_weights = dict()
@@ -54,14 +54,14 @@ class ModelAnalyser(object):
         data_set = DataFrame(path_to_input_file)
 
 
-        config = self._session_config.get_config()
-        graph = tf.Graph()
-        with tf.Session(config=config, graph=graph) as sess:
-            saver = tf.train.import_meta_graph(self._path_to_model + '.meta')
-            saver.restore(sess, self._path_to_model)
+        tf_config = self._session_config.get_tf_config()
+        tf_graph  = tf.Graph()
+        with tf.Session(config=tf_config, graph=tf_graph) as tf_session:
+            tf_saver = tf.train.import_meta_graph(self._path_to_model + '.meta')
+            tf_saver.restore(tf_session, self._path_to_model)
 
-            input_data                = graph.get_tensor_by_name("input:0")
-            network_output_calculator = graph.get_tensor_by_name("output:0")
+            tf_input_data     = tf_graph.get_tensor_by_name("input:0")
+            tf_network_output = tf_graph.get_tensor_by_name("output:0")
 
 
             batch_network_output_list = list()
@@ -70,7 +70,7 @@ class ModelAnalyser(object):
                                                                                                                    sort_events_randomly       = False,
                                                                                                                    include_smaller_last_batch = True,
                                                                                                                    ):
-                batch_network_output = sess.run(network_output_calculator, {input_data : batch_data})
+                batch_network_output = tf_session.run(tf_network_output, {tf_input_data : batch_data})
 
                 batch_network_output_list.append(batch_network_output)
 
@@ -93,8 +93,7 @@ class ModelAnalyser(object):
                             ):
 
 
-        data_set = DataFrame(path_to_input_file = path_to_input_file,
-                             network_type       = self._network_type)
+        data_set = DataFrame(path_to_input_file = path_to_input_file)
 
         data = data_set.get_data()[0]
 
@@ -122,12 +121,12 @@ class ModelAnalyser(object):
                               ):
 
 
-        config = self._session_config.get_config()
-        graph = tf.Graph()
-        with tf.Session(config=config, graph=graph) as sess:
-             saver = tf.train.import_meta_graph(self._path_to_model + '.meta')
-             saver.restore(sess, self._path_to_model)
-             weights = graph.get_tensor_by_name("W_1:0").eval()
+        tf_config = self._session_config.get_tf_config()
+        tf_graph  = tf.Graph()
+        with tf.Session(config=tf_config, graph=tf_graph) as tf_session:
+             tf_saver = tf.train.import_meta_graph(self._path_to_model + '.meta')
+             tf_saver.restore(tf_session, self._path_to_model)
+             weights = tf_graph.get_tensor_by_name("W_1:0").eval()
 
         weight_abs = np.absolute(weights)
         weight_abs_mean = np.mean(weight_abs, axis=1)

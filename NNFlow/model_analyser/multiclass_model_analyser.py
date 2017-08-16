@@ -33,12 +33,12 @@ class MulticlassModelAnalyser(ModelAnalyser):
         self._network_type = 'multiclass'
 
 
-        config = self._session_config.get_config()
-        graph = tf.Graph()
-        with tf.Session(config=config, graph=graph) as sess:
-            saver = tf.train.import_meta_graph(self._path_to_model + '.meta')
-            saver.restore(sess, self._path_to_model)
-            self._output_labels = graph.get_tensor_by_name('outputLabels:0').eval()
+        tf_config = self._session_config.get_tf_config()
+        tf_graph = tf.Graph()
+        with tf.Session(config=tf_config, graph=tf_graph) as tf_session:
+            tf_saver = tf.train.import_meta_graph(self._path_to_model + '.meta')
+            tf_saver.restore(tf_session, self._path_to_model)
+            self._output_labels = tf_graph.get_tensor_by_name('outputLabels:0').eval()
 
 
         self._number_of_output_neurons = len(self._output_labels)
