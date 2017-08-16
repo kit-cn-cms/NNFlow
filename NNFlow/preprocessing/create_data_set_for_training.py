@@ -228,11 +228,24 @@ def create_data_set_for_training(save_path,
 
 
             del df_weight
+
             with pd.HDFStore(os.path.join(save_path, data_set+'_data_set.hdf')) as store_output:
                 store_output.put('data', df, format='fixed')
+
                 store_output.put('inputVariables', pd.Series([variable for variable in columns_to_save if variable not in processes]), format='fixed')
                 if not binary_classification:
                     store_output.put('outputLabels', pd.Series(processes), format='fixed')
+
+                if jet_btag_category != 'all':
+                    store.put('preselection', pd.Series([jet_btag_category_condition.replace('and', '&&').replace('or', '||')]), format='fixed')
+                else:
+                    store.put('preselection', pd.Series(['(true)']), format='fixed')
+
+                if binary_classification:
+                    store.put('network_type', pd.Series(['binary']), format='fixed')
+                else:
+                    store.put('network_type', pd.Series(['multiclass']), format='fixed')
+
             del df
 
 
