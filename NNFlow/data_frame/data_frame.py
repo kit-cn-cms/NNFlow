@@ -97,10 +97,26 @@ class DataFrame(object):
 
 
 
+    def get_input_variables(self):
+
+
+        return self._input_variables
+
+
+
+
     def get_labels_event_weights(self):
 
 
         return self._labels, self._event_weights
+
+
+
+
+    def get_network_type(self):
+
+
+        return self._network_type
 
 
 
@@ -129,7 +145,7 @@ class DataFrame(object):
 
 
 
-    def get_input_variables(self):
+    def get_preselection(self):
 
 
-        return self._input_variables
+        return self._preselection
