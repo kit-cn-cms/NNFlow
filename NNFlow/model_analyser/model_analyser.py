@@ -51,8 +51,7 @@ class ModelAnalyser(object):
             return self._labels_network_output_event_weights[path_to_input_file]
 
 
-        data_set = DataFrame(path_to_input_file = path_to_input_file,
-                             network_type       = self._network_type)
+        data_set = DataFrame(path_to_input_file)
 
 
         config = self._session_config.get_config()

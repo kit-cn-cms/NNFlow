@@ -77,8 +77,8 @@ class NeuralNetworkTrainer(object):
         #----------------------------------------------------------------------------------------------------
         # Load data.
  
-        training_data_set   = DataFrame(path_to_training_data_set,   network_type)
-        validation_data_set = DataFrame(path_to_validation_data_set, network_type)
+        training_data_set   = DataFrame(path_to_training_data_set)
+        validation_data_set = DataFrame(path_to_validation_data_set)
 
         number_of_input_neurons  = training_data_set.get_number_of_input_neurons()
         number_of_output_neurons = training_data_set.get_number_of_output_neurons()

@@ -9,22 +9,22 @@ class DataFrame(object):
 
     def __init__(self,
                  path_to_input_file,
-                 network_type,
                  ):
 
 
         with pd.HDFStore(path_to_input_file, mode='r') as store_input:
-            array           = store_input.select('data').values
-            self._variables = store_input.select('inputVariables').values
+            array              = store_input.select('data').values
+            self._network_type = store_input.select('network_type').iloc[0]
+            self._variables    = store_input.select('inputVariables').values
 
-            if network_type == 'multiclass':
+            if self._network_type == 'multiclass':
                 self._processes = store_input.select('outputLabels').values
 
         self._number_of_input_neurons = len(self._variables)
 
-        if network_type == 'multiclass':
+        if self._network_type == 'multiclass':
             self._number_of_output_neurons = len(self._processes)
-        elif network_type == 'binary':
+        elif self._network_type == 'binary':
             self._number_of_output_neurons = 1
 
 
