@@ -17,16 +17,10 @@ class DataFrame(object):
             self._network_type    = store_input.select('network_type').iloc[0]
             self._preselection    = store_input.select('preselection').iloc[0]
             self._input_variables = store_input.select('inputVariables').values
+            self._output_labels   = store_input.select('outputLabels').values
 
-            if self._network_type == 'multiclass':
-                self._output_labels = store_input.select('outputLabels').values
-
-        self._number_of_input_neurons = len(self._input_variables)
-
-        if self._network_type == 'multiclass':
-            self._number_of_output_neurons = len(self._output_labels)
-        elif self._network_type == 'binary':
-            self._number_of_output_neurons = 1
+        self._number_of_input_neurons  = len(self._input_variables)
+        self._number_of_output_neurons = len(self._output_labels)
 
 
         self._data          = array[:, self._number_of_output_neurons:-1]

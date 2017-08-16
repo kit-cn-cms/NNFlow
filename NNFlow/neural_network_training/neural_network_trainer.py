@@ -125,15 +125,10 @@ class NeuralNetworkTrainer(object):
 
 
             input_variables = tf.Variable(training_data_set.get_input_variables(), trainable=False, name='inputVariables')
-            if network_type == 'multiclass':
-                output_labels = tf.Variable(training_data_set.get_output_labels(), trainable=False, name='outputLabels')
+            output_labels   = tf.Variable(training_data_set.get_output_labels(),   trainable=False, name='outputLabels')
 
 
-            if network_type == 'binary':
-                saver = tf.train.Saver(weights + biases + [feature_scaling_mean, feature_scaling_std, input_variables])
-
-            elif network_type == 'multiclass':
-                saver = tf.train.Saver(weights + biases + [feature_scaling_mean, feature_scaling_std, input_variables, output_labels])
+            saver = tf.train.Saver(weights + biases + [feature_scaling_mean, feature_scaling_std, input_variables, output_labels])
  
 
         #----------------------------------------------------------------------------------------------------

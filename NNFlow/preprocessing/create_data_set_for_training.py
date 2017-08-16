@@ -235,6 +235,8 @@ def create_data_set_for_training(save_path,
                 store_output.put('inputVariables', pd.Series([variable for variable in columns_to_save if variable not in processes]), format='fixed')
                 if not binary_classification:
                     store_output.put('outputLabels', pd.Series(processes), format='fixed')
+                else:
+                    store_output.put('outputLabels', pd.Series([binary_classification_signal]), format='fixed')
 
                 if jet_btag_category != 'all':
                     store_output.put('preselection', pd.Series([jet_btag_category_condition.replace('and', '&&').replace('or', '||')]), format='fixed')
@@ -257,10 +259,12 @@ def create_data_set_for_training(save_path,
             if variable not in processes:
                 outputfile_variables.write(variable + '\n')
 
-    if not binary_classification:
-        with open(os.path.join(save_path, 'outputLabels.txt'), 'w') as outputfile_process_labels:
+    with open(os.path.join(save_path, 'outputLabels.txt'), 'w') as outputfile_process_labels:
+        if not binary_classification:
             for process in processes:
                 outputfile_process_labels.write(process + '\n')
+        else:
+            outputfile_process_labels.write(binary_classification_signal + '\n')
 
     with open(os.path.join(save_path, 'preselection.txt'), 'w') as outputfile_preselection:
         if jet_btag_category != 'all':
