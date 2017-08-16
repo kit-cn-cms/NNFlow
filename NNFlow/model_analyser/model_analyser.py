@@ -87,18 +87,6 @@ class ModelAnalyser(object):
 
 
 
-    def save_input_variables(self,
-                             save_dir,
-                             ):
-
-
-        with open(os.path.join(save_dir, 'inputVariables.txt'), 'w') as outputfile_variables:
-            for variable in self._input_variables:
-                outputfile_variables.write(variable + '\n')
-
-
-
-
     def save_unit_test_data(self,
                             path_to_input_file,
                             save_dir,

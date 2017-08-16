@@ -292,6 +292,20 @@ class NeuralNetworkTrainer(object):
         self._plot_training_development(directory_plots, network_type, training_roc_auc, validation_roc_auc, early_stopping)
 
 
+        with open(os.path.join(directory_model_properties, 'inputVariables.txt'), 'w') as outputfile_input_variables:
+            for variable in training_data_set.get_input_variables():
+                outputfile_input_variables.write(variable + '\n')
+
+
+        with open(os.path.join(directory_model_properties, 'outputLabels.txt'), 'w') as outputfile_output_labels:
+            for output_label in training_data_set.get_output_labels()
+                outputfile_output_labels.write(output_label + '\n')
+
+
+        with open(os.path.join(directory_model_properties, 'preselection.txt'), 'w') as outputfile_preselection:
+            outputfile_preselection.write(training_data_set.get_preselection() + '\n')
+
+
         print('\n' + '========')
         print(       'FINISHED')
         print(       '========' + '\n')
