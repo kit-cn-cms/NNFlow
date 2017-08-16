@@ -34,6 +34,7 @@ class NeuralNetworkTrainer(object):
     def train(self,
               save_path,
               model_name,
+              model_id,
               network_type,
               hidden_layers,
               activation_function_name,
@@ -266,7 +267,8 @@ class NeuralNetworkTrainer(object):
 
         #----------------------------------------------------------------------------------------------------
 
-        network_and_training_properties_string = self._get_network_and_training_properties_string(network_type                 = network_type,
+        network_and_training_properties_string = self._get_network_and_training_properties_string(model_id                     = model_id,
+                                                                                                  network_type                 = network_type,
                                                                                                   number_of_input_neurons      = number_of_input_neurons,
                                                                                                   hidden_layers                = hidden_layers,
                                                                                                   activation_function_name     = activation_function_name,
@@ -340,6 +342,7 @@ class NeuralNetworkTrainer(object):
 
 
     def _get_network_and_training_properties_string(self,
+                                                    model_id,
                                                     network_type,
                                                     number_of_input_neurons,
                                                     hidden_layers,
@@ -360,8 +363,7 @@ class NeuralNetworkTrainer(object):
         network_and_training_properties = str()
 
 
-        network_and_training_properties += '{:{width}} {}\n'.format('Date:', datetime.datetime.now().strftime("%Y-%m-%d"), width=column_width)
-        network_and_training_properties += '{:{width}} {}\n'.format('Time:', datetime.datetime.now().strftime("%H:%M:%S"), width=column_width)
+        network_and_training_properties += '{:{width}} {}\n'.format('Model ID:', model_id, width=column_width)
         network_and_training_properties += '\n'
 
 
