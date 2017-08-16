@@ -13,17 +13,18 @@ class DataFrame(object):
 
 
         with pd.HDFStore(path_to_input_file, mode='r') as store_input:
-            array              = store_input.select('data').values
-            self._network_type = store_input.select('network_type').iloc[0]
-            self._variables    = store_input.select('inputVariables').values
+            array                 = store_input.select('data').values
+            self._network_type    = store_input.select('network_type').iloc[0]
+            self._preselection    = store_input.select('preselection').iloc[0]
+            self._input_variables = store_input.select('inputVariables').values
 
             if self._network_type == 'multiclass':
-                self._processes = store_input.select('outputLabels').values
+                self._output_labels = store_input.select('outputLabels').values
 
-        self._number_of_input_neurons = len(self._variables)
+        self._number_of_input_neurons = len(self._input_variables)
 
         if self._network_type == 'multiclass':
-            self._number_of_output_neurons = len(self._processes)
+            self._number_of_output_neurons = len(self._output_labels)
         elif self._network_type == 'binary':
             self._number_of_output_neurons = 1
 
@@ -38,6 +39,22 @@ class DataFrame(object):
 
 
         self._number_of_events = self._data.shape[0]
+
+
+
+
+    def get_data(self):
+
+
+        return self._data
+
+
+
+
+    def get_data_labels_event_weights(self):
+
+
+        return self._data, self._labels, self._event_weights
 
 
 
@@ -80,22 +97,6 @@ class DataFrame(object):
 
 
 
-    def get_data(self):
-
-
-        return self._data
-
-
-
-
-    def get_data_labels_event_weights(self):
-
-
-        return self._data, self._labels, self._event_weights
-
-
-
-
     def get_labels_event_weights(self):
 
 
@@ -120,15 +121,15 @@ class DataFrame(object):
 
 
 
-    def get_processes(self):
+    def get_output_labels(self):
 
 
-        return self._processes
+        return self._output_labels
 
 
 
 
-    def get_variables(self):
+    def get_input_variables(self):
 
 
-        return self._variables
+        return self._input_variables

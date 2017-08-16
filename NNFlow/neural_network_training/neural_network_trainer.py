@@ -124,9 +124,9 @@ class NeuralNetworkTrainer(object):
             training_step             = tf_optimizer.minimize(loss, global_step=global_step)
 
 
-            input_variables = tf.Variable(training_data_set.get_variables(), trainable=False, name='inputVariables')
+            input_variables = tf.Variable(training_data_set.get_input_variables(), trainable=False, name='inputVariables')
             if network_type == 'multiclass':
-                output_labels = tf.Variable(training_data_set.get_processes(), trainable=False, name='outputLabels')
+                output_labels = tf.Variable(training_data_set.get_output_labels(), trainable=False, name='outputLabels')
 
 
             if network_type == 'binary':
