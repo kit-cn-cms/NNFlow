@@ -8,6 +8,7 @@ from .neural_network_trainer import NeuralNetworkTrainer
 
 def train_neural_network(save_path,
                          model_name,
+                         model_id,
                          network_type,
                          hidden_layers,
                          activation_function_name,
@@ -31,6 +32,7 @@ def train_neural_network(save_path,
 
     neural_network_trainer.train(save_path                   = save_path,
                                  model_name                  = model_name,
+                                 model_id                    = model_id,
                                  network_type                = network_type,
                                  hidden_layers               = hidden_layers,
                                  activation_function_name    = activation_function_name,
