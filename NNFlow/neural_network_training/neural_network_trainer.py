@@ -126,9 +126,11 @@ class NeuralNetworkTrainer(object):
 
             input_variables = tf.Variable(training_data_set.get_input_variables(), trainable=False, name='inputVariables')
             output_labels   = tf.Variable(training_data_set.get_output_labels(),   trainable=False, name='outputLabels')
+            tf_network_type = tf.Variable(training_data_set.get_network_type(),    trainable=False, name='network_type')
+            tf_preselection = tf.Variable(training_data_set.get_preselection(),    trainable=False, name='preselection')
 
 
-            saver = tf.train.Saver(weights + biases + [feature_scaling_mean, feature_scaling_std, input_variables, output_labels])
+            saver = tf.train.Saver(weights + biases + [feature_scaling_mean, feature_scaling_std, input_variables, output_labels, tf_network_type, tf_preselection])
  
 
         #----------------------------------------------------------------------------------------------------
