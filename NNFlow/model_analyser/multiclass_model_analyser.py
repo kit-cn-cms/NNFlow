@@ -150,12 +150,8 @@ class MulticlassModelAnalyser(ModelAnalyser):
         ax.set_xticks(np.arange((x.shape[0] - 1)) + 0.5, minor=False)
         ax.set_yticks(np.arange((y.shape[0] - 1)) + 0.5, minor=False)
 
-        if x_shape == y_shape:
-            ax.set_xticklabels(self._output_labels)
-            ax.set_yticklabels(self._output_labels)
-        else:
-            ax.set_xticklabels(list(self._output_labels) + ['0'])
-            ax.set_yticklabels(     self._output_labels)
+        ax.set_xticklabels(list(self._output_labels) + [str(i) for i in range(x_shape-y_shape)])
+        ax.set_yticklabels(     self._output_labels)
 
         plt.tight_layout()
 
