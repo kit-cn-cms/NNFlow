@@ -237,14 +237,14 @@ def create_data_set_for_training(save_path,
                     store_output.put('outputLabels', pd.Series(processes), format='fixed')
 
                 if jet_btag_category != 'all':
-                    store.put('preselection', pd.Series([jet_btag_category_condition.replace('and', '&&').replace('or', '||')]), format='fixed')
+                    store_output.put('preselection', pd.Series([jet_btag_category_condition.replace('and', '&&').replace('or', '||')]), format='fixed')
                 else:
-                    store.put('preselection', pd.Series(['(true)']), format='fixed')
+                    store_output.put('preselection', pd.Series(['(true)']), format='fixed')
 
                 if binary_classification:
-                    store.put('network_type', pd.Series(['binary']), format='fixed')
+                    store_output.put('network_type', pd.Series(['binary']), format='fixed')
                 else:
-                    store.put('network_type', pd.Series(['multiclass']), format='fixed')
+                    store_output.put('network_type', pd.Series(['multiclass']), format='fixed')
 
             del df
 
