@@ -8,7 +8,7 @@ import os
 import sys
 from collections import OrderedDict
 
-from NNFlow.preprocessing import merge_data_sets
+import NNFlow
 #----------------------------------------------------------------------------------------------------
 
 
@@ -41,4 +41,4 @@ if cutbased_event_selection:
     function_call_dict['columns_for_cutbased_event_selection'] = columns_for_cutbased_event_selection
 
 
-merge_data_sets(**function_call_dict)
+NNFlow.preprocessing.merge_data_sets(**function_call_dict)

@@ -7,7 +7,7 @@ from __future__ import absolute_import, division, print_function
 import os
 import sys
 
-from NNFlow.preprocessing import create_data_set_for_training
+import NNFlow
 from NNFlow.ttH_ttbb_definitions import definitions
 #----------------------------------------------------------------------------------------------------
 
@@ -94,4 +94,4 @@ if create_new_process_labels:
     function_call_dict['new_process_labels'] = new_process_labels
 
 
-create_data_set_for_training(**function_call_dict)
+NNFlow.preprocessing.create_data_set_for_training(**function_call_dict)

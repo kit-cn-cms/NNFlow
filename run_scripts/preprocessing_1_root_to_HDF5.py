@@ -7,7 +7,7 @@ from __future__ import absolute_import, division, print_function
 import os
 import sys
 
-from NNFlow.preprocessing import root_to_HDF5
+import NNFlow
 from NNFlow.ttH_ttbb_definitions import definitions
 from NNFlow.ttH_ttbb_definitions import excluded_variables
 from NNFlow.ttH_ttbb_definitions import vector_variables
@@ -85,4 +85,4 @@ if split_data_set:
     function_call_dict['conditions_for_splitting'] = conditions_for_splitting
 
 
-root_to_HDF5(**function_call_dict)
+NNFlow.preprocessing.root_to_HDF5(**function_call_dict)

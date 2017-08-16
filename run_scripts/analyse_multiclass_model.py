@@ -7,7 +7,7 @@ from __future__ import absolute_import, division, print_function
 import os
 import sys
 
-from NNFlow import MulticlassModelAnalyser
+import NNFlow
 #----------------------------------------------------------------------------------------------------
 
 
@@ -30,7 +30,7 @@ path_to_model = os.path.join(workdir_base, name_subdir, sys.argv[1], file_name_m
 
 
 #----------------------------------------------------------------------------------------------------
-model_analyser = MulticlassModelAnalyser(path_to_model)
+model_analyser = NNFlow.MulticlassModelAnalyser(path_to_model)
 
 
 model_analyser.save_variable_ranking(save_dir_model_properties)
