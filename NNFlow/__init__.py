@@ -16,10 +16,11 @@ except ImportError:
 
 if tensorflow_available:
     import NNFlow.optimizers
-    from .neural_network_training.interface_functions import train_neural_network
-    from .session_config.session_config import SessionConfig
-    from .model_analyser.binary_model_analyser import BinaryModelAnalyser
-    from .model_analyser.multiclass_model_analyser import MulticlassModelAnalyser
+    from NNFlow.session_config.session_config import SessionConfig
+
+    from NNFlow.neural_network_training.interface_functions import train_neural_network
+    from NNFlow.model_analyser.binary_model_analyser        import BinaryModelAnalyser
+    from NNFlow.model_analyser.multiclass_model_analyser    import MulticlassModelAnalyser
 
 
 del tensorflow_available

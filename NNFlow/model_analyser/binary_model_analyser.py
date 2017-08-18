@@ -8,13 +8,14 @@ import matplotlib.pyplot as plt
 
 import numpy as np
 import pandas as pd
-from sklearn.metrics import roc_auc_score
+import sklearn.metrics
 
-from .model_analyser import ModelAnalyser
+from NNFlow.model_analyser.model_analyser import ModelAnalyser as NNFlowModelAnalyser
 
 
 
-class BinaryModelAnalyser(ModelAnalyser):
+
+class BinaryModelAnalyser(NNFlowModelAnalyser):
 
 
     def __init__(self,
@@ -40,7 +41,7 @@ class BinaryModelAnalyser(ModelAnalyser):
 
         labels, network_output, event_weights = self.get_labels_network_output_event_weights(path_to_data)
 
-        roc_auc = roc_auc_score(y_true = labels, y_score = network_output, sample_weight = event_weights)
+        roc_auc = sklearn.metrics.roc_auc_score(y_true = labels, y_score = network_output, sample_weight = event_weights)
 
 
         return roc_auc

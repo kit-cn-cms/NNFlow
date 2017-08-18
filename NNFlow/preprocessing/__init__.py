@@ -13,14 +13,14 @@ except ImportError:
     root2array_available = False
 
 if root2array_available:
-    from .root_to_HDF5 import root_to_HDF5
-
-
-from .merge_data_sets              import merge_data_sets
-from .create_data_set_for_training import create_data_set_for_training
+    from NNFlow.preprocessing.root_to_HDF5 import root_to_HDF5
 
 
 del root2array_available
+
+
+from NNFlow.preprocessing.merge_data_sets              import merge_data_sets
+from NNFlow.preprocessing.create_data_set_for_training import create_data_set_for_training
 
 
 

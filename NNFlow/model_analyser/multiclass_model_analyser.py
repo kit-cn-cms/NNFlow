@@ -11,13 +11,13 @@ import matplotlib.colors as colors
 import numpy as np
 import tensorflow as tf
 
-from .model_analyser import ModelAnalyser
-from NNFlow.softmax_output_processor.softmax_output_processor import SoftmaxOutputProcessor
+from NNFlow.model_analyser.model_analyser                     import ModelAnalyser          as NNFlowModelAnalyser
+from NNFlow.softmax_output_processor.softmax_output_processor import SoftmaxOutputProcessor as NNFlowSoftmaxOutputProcessor
 
 
 
 
-class MulticlassModelAnalyser(ModelAnalyser):
+class MulticlassModelAnalyser(NNFlowModelAnalyser):
 
 
     def __init__(self,
@@ -44,7 +44,7 @@ class MulticlassModelAnalyser(ModelAnalyser):
         self._number_of_output_neurons = len(self._output_labels)
 
 
-        self.softmax_output_processor = SoftmaxOutputProcessor()
+        self.softmax_output_processor = NNFlowSoftmaxOutputProcessor()
 
 
 

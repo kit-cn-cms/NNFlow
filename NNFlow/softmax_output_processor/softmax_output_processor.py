@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, print_function
 
 import numpy as np
 
-from sklearn.metrics import roc_auc_score
+import sklearn.metrics
 
 
 
@@ -72,7 +72,7 @@ class SoftmaxOutputProcessor(object):
             y_true  = labels[:, j]
             y_score = network_output[:, j]
 
-            roc_auc = roc_auc_score(y_true=y_true, y_score=y_score, sample_weight=event_weights)
+            roc_auc = sklearn.metrics.roc_auc_score(y_true=y_true, y_score=y_score, sample_weight=event_weights)
 
             roc_auc_list.append(roc_auc)
 

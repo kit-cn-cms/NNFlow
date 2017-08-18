@@ -7,8 +7,10 @@ import pandas as pd
 
 import tensorflow as tf
 
-from NNFlow.data_frame.data_frame import DataFrame
-from NNFlow.session_config.session_config import SessionConfig
+from NNFlow.data_frame.data_frame         import DataFrame     as NNFlowDataFrame
+from NNFlow.session_config.session_config import SessionConfig as NNFlowSessionConfig
+
+
 
 
 class ModelAnalyser(object):
@@ -26,7 +28,7 @@ class ModelAnalyser(object):
         if session_config is not None:
             self._session_config = session_config
         else:
-            self._session_config = SessionConfig()
+            self._session_config = NNFlowSessionConfig()
 
 
         tf_config = self._session_config.get_tf_config()
@@ -51,7 +53,7 @@ class ModelAnalyser(object):
             return self._labels_network_output_event_weights[path_to_input_file]
 
 
-        data_set = DataFrame(path_to_input_file)
+        data_set = NNFlowDataFrame(path_to_input_file)
 
 
         tf_config = self._session_config.get_tf_config()
@@ -93,7 +95,7 @@ class ModelAnalyser(object):
                             ):
 
 
-        data_set = DataFrame(path_to_input_file = path_to_input_file)
+        data_set = NNFlowDataFrame(path_to_input_file = path_to_input_file)
 
         data = data_set.get_data()[0]
 

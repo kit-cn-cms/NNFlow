@@ -6,7 +6,7 @@ import sys
 import numpy as np
 import pandas as pd
 
-from root_numpy import root2array
+import root_numpy
 
 from NNFlow.ttH_ttbb_definitions import definitions
 
@@ -76,7 +76,7 @@ def root_to_HDF5(save_path,
     #----------------------------------------------------------------------------------------------------
     # Create list of generator level variables, weight variables, other always excluded variables and vector variables.
 
-    structured_array = root2array(os.path.join(path_to_inputfiles, filenames_inputfiles[0]), treenames[0])
+    structured_array = root_numpy.root2array(os.path.join(path_to_inputfiles, filenames_inputfiles[0]), treenames[0])
     df = pd.DataFrame(structured_array)
 
     generator_level_variables = [variable for variable in list_of_generator_level_variables       if variable in df.columns]
@@ -148,7 +148,7 @@ def root_to_HDF5(save_path,
     for filename in filenames_inputfiles:
         print('    ' + 'Processing ' + filename)
         for treename in treenames:
-            structured_array = root2array(os.path.join(path_to_inputfiles, filename), treename)
+            structured_array = root_numpy.root2array(os.path.join(path_to_inputfiles, filename), treename)
             df = pd.DataFrame(structured_array)
 
             #--------------------------------------------------------------------------------------------

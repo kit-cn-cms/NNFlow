@@ -13,8 +13,8 @@ import numpy as np
 import tensorflow as tf
 from sklearn.metrics import roc_auc_score
 
-from NNFlow.data_frame.data_frame import DataFrame
-from NNFlow.softmax_output_processor.softmax_output_processor import SoftmaxOutputProcessor
+from NNFlow.data_frame.data_frame                             import DataFrame              as NNFlowDataFrame
+from NNFlow.softmax_output_processor.softmax_output_processor import SoftmaxOutputProcessor as NNFlowSoftmaxOutputProcessor
 
 
 
@@ -25,7 +25,7 @@ class NeuralNetworkTrainer(object):
     def __init__(self):
 
 
-        self._softmax_output_processor = SoftmaxOutputProcessor()
+        self._softmax_output_processor = NNFlowSoftmaxOutputProcessor()
 
 
 
@@ -77,8 +77,8 @@ class NeuralNetworkTrainer(object):
         #----------------------------------------------------------------------------------------------------
         # Load data.
  
-        training_data_set   = DataFrame(path_to_training_data_set)
-        validation_data_set = DataFrame(path_to_validation_data_set)
+        training_data_set   = NNFlowDataFrame(path_to_training_data_set)
+        validation_data_set = NNFlowDataFrame(path_to_validation_data_set)
 
         number_of_input_neurons  = training_data_set.get_number_of_input_neurons()
         number_of_output_neurons = training_data_set.get_number_of_output_neurons()
