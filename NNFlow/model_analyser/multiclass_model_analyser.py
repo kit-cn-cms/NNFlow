@@ -122,6 +122,8 @@ class MulticlassModelAnalyser(NNFlowModelAnalyser):
         y_shape, x_shape = confusion_matrix.shape
 
 
+        plt.figure(figsize=(x_shape, y_shape))
+
         cmap = matplotlib.cm.RdYlBu_r
         cmap.set_bad(color='white')
 
