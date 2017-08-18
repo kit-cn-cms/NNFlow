@@ -27,7 +27,7 @@ class MulticlassModelAnalyser(NNFlowModelAnalyser):
                  ):
 
 
-        ModelAnalyser.__init__(self, path_to_model, batch_size_classification, session_config)
+        NNFlowModelAnalyser.__init__(self, path_to_model, batch_size_classification, session_config)
 
 
         self._network_type = 'multiclass'
