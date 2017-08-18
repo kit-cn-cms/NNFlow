@@ -300,7 +300,7 @@ class NeuralNetworkTrainer(object):
 
 
         with open(os.path.join(directory_model_properties, 'outputLabels.txt'), 'w') as outputfile_output_labels:
-            for output_label in training_data_set.get_output_labels()
+            for output_label in training_data_set.get_output_labels():
                 outputfile_output_labels.write(output_label + '\n')
 
 
