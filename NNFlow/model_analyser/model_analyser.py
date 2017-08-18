@@ -36,7 +36,7 @@ class ModelAnalyser(object):
         with tf.Session(config=tf_config, graph=tf_graph) as tf_session:
             tf_saver = tf.train.import_meta_graph(self._path_to_model + '.meta')
             tf_saver.restore(tf_session, self._path_to_model)
-            self._input_variables = tf_graph.get_tensor_by_name("inputVariables:0").eval()
+            self._input_variables = tf_graph.get_tensor_by_name("input_variables:0").eval()
 
 
         self._labels_network_output_event_weights = dict()

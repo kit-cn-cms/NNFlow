@@ -38,7 +38,7 @@ class MulticlassModelAnalyser(NNFlowModelAnalyser):
         with tf.Session(config=tf_config, graph=tf_graph) as tf_session:
             tf_saver = tf.train.import_meta_graph(self._path_to_model + '.meta')
             tf_saver.restore(tf_session, self._path_to_model)
-            self._output_labels = tf_graph.get_tensor_by_name('outputLabels:0').eval()
+            self._output_labels = tf_graph.get_tensor_by_name('output_labels:0').eval()
 
 
         self._number_of_output_neurons = len(self._output_labels)
