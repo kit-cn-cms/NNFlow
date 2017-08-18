@@ -153,6 +153,8 @@ class MulticlassModelAnalyser(NNFlowModelAnalyser):
         ax.set_xticklabels(list(self._output_labels) + [str(i) for i in range(x_shape-y_shape)])
         ax.set_yticklabels(     self._output_labels)
 
+        ax.set_aspect('equal')
+
         plt.tight_layout()
 
         plt.savefig(os.path.join(save_path, filename_outputfile + '.pdf'))
