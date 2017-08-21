@@ -18,8 +18,8 @@ class DataFrame(object):
             array                 = store_input.select('data').values
             self._network_type    = store_input.select('network_type').iloc[0]
             self._preselection    = store_input.select('preselection').iloc[0]
-            self._input_variables = store_input.select('inputVariables').values
-            self._output_labels   = store_input.select('outputLabels').values
+            self._input_variables = store_input.select('input_variables').values
+            self._output_labels   = store_input.select('output_labels').values
 
         self._number_of_input_neurons  = len(self._input_variables)
         self._number_of_output_neurons = len(self._output_labels)
