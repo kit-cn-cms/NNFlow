@@ -1,7 +1,11 @@
+# ==================================================================
+# IMPORTANT: Make a copy of this file before you insert your values!
+# ==================================================================
+ 
 from __future__ import absolute_import, division, print_function
 
 import os
-import sys
+import datetime
 
 import NNFlow
 #----------------------------------------------------------------------------------------------------
@@ -11,7 +15,7 @@ workdir_base =
 name_subdir  = 'binary_training'
 
 
-### Network type: 'binary' or 'one-hot'
+### Network type: 'binary' or 'multiclass'
 network_type = 'binary'
 
 
@@ -44,8 +48,11 @@ optimizer = NNFlow.optimizers.AdamOptimizer(learning_rate=1e-3)
 #----------------------------------------------------------------------------------------------------
 
 
-save_path  = os.path.join(workdir_base, name_subdir, 'model')
-model_name = name_subdir
+model_id = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
+
+
+save_path  = os.path.join(workdir_base, name_subdir, 'model_' + model_id)
+model_name = name_subdir + '_' + model_id
 
 
 path_to_training_data_set   = os.path.join(workdir_base, name_subdir, 'data_sets/training_data_set.hdf')
@@ -59,6 +66,7 @@ if not os.path.isdir(save_path):
 #----------------------------------------------------------------------------------------------------
 train_dict = {'save_path'                   : save_path,
               'model_name'                  : model_name,
+              'model_id'                    : model_id,
               'network_type'                : network_type,
               'hidden_layers'               : hidden_layers,
               'activation_function_name'    : activation_function_name,

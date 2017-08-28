@@ -1,9 +1,12 @@
+# ==================================================================
+# IMPORTANT: Make a copy of this file before you insert your values!
+# ==================================================================
+
 from __future__ import absolute_import, division, print_function
 
 import os
-import sys
 
-from NNFlow.preprocessing import create_data_set_for_training
+import NNFlow
 from NNFlow.ttH_ttbb_definitions import definitions
 #----------------------------------------------------------------------------------------------------
 
@@ -14,7 +17,7 @@ name_subdir  = 'multiclass_training'
 
 ### You can choose from categories defined in definitions.definitions.jet_btag_category
 ### To keep all events, specify "jet_btag_category = 'all'"
-jet_btag_category = 'j>=6b>=3'
+jet_btag_category = 'j>=6b>=2'
 
 
 ### If you don't want to keep all processes, specify the processes you want to keep.
@@ -90,4 +93,4 @@ if create_new_process_labels:
     function_call_dict['new_process_labels'] = new_process_labels
 
 
-create_data_set_for_training(**function_call_dict)
+NNFlow.preprocessing.create_data_set_for_training(**function_call_dict)

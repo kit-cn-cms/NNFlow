@@ -1,7 +1,11 @@
+# ==================================================================
+# IMPORTANT: Make a copy of this file before you insert your values!
+# ==================================================================
+ 
 from __future__ import absolute_import, division, print_function
 
 import os
-import sys
+import datetime
 
 import NNFlow
 #----------------------------------------------------------------------------------------------------
@@ -15,7 +19,7 @@ name_subdir  = 'multiclass_training'
 network_type = 'multiclass'
 
 
-number_of_hidden_layers     = 4
+number_of_hidden_layers     = 3
 number_of_neurons_per_layer = 250
 hidden_layers               = [number_of_neurons_per_layer for i in range(number_of_hidden_layers)]
 
@@ -24,18 +28,18 @@ hidden_layers               = [number_of_neurons_per_layer for i in range(number
 activation_function_name = 'elu'
 
 
-early_stopping_intervall = 100
+early_stopping_intervall = 20
 
 
 ### Parameter for dropout
-dropout_keep_probability = 0.8
+dropout_keep_probability = 0.9
 
 
 ### Parameter for L2 regularization
 l2_regularization_beta = 1e-11
 
 
-batch_size_training = 500
+batch_size_training = 300
 
 
 optimizer = NNFlow.optimizers.MomentumOptimizer(5, 0.9)
@@ -44,8 +48,11 @@ optimizer = NNFlow.optimizers.MomentumOptimizer(5, 0.9)
 #----------------------------------------------------------------------------------------------------
 
 
-save_path  = os.path.join(workdir_base, name_subdir, 'model')
-model_name = name_subdir
+model_id = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
+
+
+save_path  = os.path.join(workdir_base, name_subdir, 'model_' + model_id)
+model_name = name_subdir + '_' + model_id
 
 
 path_to_training_data_set   = os.path.join(workdir_base, name_subdir, 'data_sets/training_data_set.hdf')
@@ -59,6 +66,7 @@ if not os.path.isdir(save_path):
 #----------------------------------------------------------------------------------------------------
 train_dict = {'save_path'                   : save_path,
               'model_name'                  : model_name,
+              'model_id'                    : model_id,
               'network_type'                : network_type,
               'hidden_layers'               : hidden_layers,
               'activation_function_name'    : activation_function_name,
