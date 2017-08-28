@@ -11,22 +11,25 @@ import NNFlow
 #----------------------------------------------------------------------------------------------------
 
 
-workdir_base    =
-name_subdir     =
-file_name_model =
+workdir_base =
+name_subdir  =
 
 
 #----------------------------------------------------------------------------------------------------
 
 
+model_id        = sys.argv[1]
+file_name_model = name_subdir + '_' + model_id + '.ckpt'
+
+
 path_to_validation_data_set = os.path.join(workdir_base, name_subdir, 'data_sets/validation_data_set.hdf')
 
 
-save_dir_model_properties = os.path.join(workdir_base, name_subdir, sys.argv[1], 'model_properties')
-save_dir_plots            = os.path.join(workdir_base, name_subdir, sys.argv[1], 'plots')
+save_dir_model_properties = os.path.join(workdir_base, name_subdir, 'model_' + model_id, 'model_properties')
+save_dir_plots            = os.path.join(workdir_base, name_subdir, 'model_' + model_id, 'plots')
 
 
-path_to_model = os.path.join(workdir_base, name_subdir, sys.argv[1], file_name_model)
+path_to_model = os.path.join(workdir_base, name_subdir, 'model_' + model_id, file_name_model)
 
 
 #----------------------------------------------------------------------------------------------------

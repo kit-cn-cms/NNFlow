@@ -52,7 +52,7 @@ model_id = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
 
 
 save_path  = os.path.join(workdir_base, name_subdir, 'model_' + model_id)
-model_name = name_subdir
+model_name = name_subdir + '_' + model_id
 
 
 path_to_training_data_set   = os.path.join(workdir_base, name_subdir, 'data_sets/training_data_set.hdf')
