@@ -194,7 +194,7 @@ def create_data_set_for_training(save_path,
                     df[new_label] = df[new_process_labels[new_label]].sum(axis=1)
                     df.drop(new_process_labels[new_label], axis=1, inplace=True)
 
-                    df = df.reindex_axis(columns_to_save, axis=1)
+                df = df.reindex_axis(columns_to_save, axis=1)
 
 
             if binary_classification:
