@@ -28,6 +28,9 @@ def root_to_HDF5(save_path,
                  percentage_validation,
                  split_data_set,
                  conditions_for_splitting=None,
+                 memDatabasePath=None,
+                 memDatabaseSampleName = None,
+                 memDatabaseSampleIndexFile = None,
                  ):
 
 
@@ -141,6 +144,42 @@ def root_to_HDF5(save_path,
         print('\n', end='')
 
 
+    # Initialize MEM database
+    if memDatabasePath != None:
+      import ROOT
+      #load library
+      ROOT.gSystem.Load("libMEMDataBaseMEMDataBase.so")
+      
+      from jet_corrections import *
+      CvectorTString = getattr(ROOT, "std::vector<TString>")
+      mem_strings_vec = CvectorTString()
+      # list of the names for the mem values related to the jes/jer variations
+      mem_strings=["mem_p"]
+      mem_strings+=["mem_"+corr+ud+"_p" for corr in jet_corrections for ud in ["up","down"]]
+      mem_strings_vec = CvectorTString()
+      #print mem_strings
+      # fill the string in a vector to pass to the database
+      for mem_string in mem_strings:
+        mem_strings_vec.push_back(ROOT.TString(mem_string))
+
+      # initialize with path to database
+      memDataBase=ROOT.MEMDataBase(memDatabasePath, mem_strings_vec )
+
+      # load sample by identifier
+      # The second argument defaults to samplename_index.txt
+      # this text file simply holds a list of database files, nothing to concern you with
+      memDataBase.AddSample(memDatabaseSampleName, memDatabaseSampleIndexFile)
+      
+
+      #print structure of mem database
+      memDataBase.PrintStructure()
+      
+      # Define function to get MEM result
+      def getMEMResult(runID, lumiID, eventID):
+        result = memDataBase.GetMEMResult(memDatabaseSampleName, runID, lumiID, eventID)
+        print "MEM result for runID: ", runID, " lumiID: ", lumiID, " eventID: ", eventID, " result: ", result.p_vec[0]
+        return result.p_vec[0]
+
     #----------------------------------------------------------------------------------------------------
     # Load and convert data.
 
@@ -150,6 +189,11 @@ def root_to_HDF5(save_path,
         for treename in treenames:
             structured_array = root_numpy.root2array(os.path.join(path_to_inputfiles, filename), treename)
             df = pd.DataFrame(structured_array)
+            
+            # Assign MEM value if MEM database exists
+            if memDatabasePath != None:
+              df.assign(mem = lambda x: getMEMResult(x.Evt_Run, x.Evt_Lumi, x.Evt_ID))
+
 
             #--------------------------------------------------------------------------------------------
             # Remove excluded variables.
