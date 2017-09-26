@@ -148,7 +148,7 @@ def root_to_HDF5(save_path,
     if memDatabasePath != None:
       import ROOT
       #load library
-      ROOT.gSystem.Load("./libMEMDataBaseMEMDataBase.so")
+      ROOT.gSystem.Load("libMEMDataBaseMEMDataBase.so")
       
       from .jet_corrections import jet_corrections
       CvectorTString = getattr(ROOT, "std::vector<TString>")
@@ -192,7 +192,7 @@ def root_to_HDF5(save_path,
             
             # Assign MEM value if MEM database exists
             if memDatabasePath != None:
-              df.assign(mem = lambda x: getMEMResult(x.Evt_Run, x.Evt_Lumi, x.Evt_ID))
+              df['MEM'] = df.apply(lambda row: getMEMResult(row[Evt_Run], row[Evt_Lumi], row[Evt_ID]))
 
 
             #--------------------------------------------------------------------------------------------
