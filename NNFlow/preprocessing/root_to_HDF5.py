@@ -192,7 +192,7 @@ def root_to_HDF5(save_path,
             
             # Assign MEM value if MEM database exists
             if memDatabasePath != None:
-              df['MEM'] = df.apply(lambda row: getMEMResult(row[Evt_Run], row[Evt_Lumi], row[Evt_ID]))
+              df['MEM'] = df.apply(lambda row: getMEMResult(row[Evt_Run], row[Evt_Lumi], row[Evt_ID]), axis=1)
 
 
             #--------------------------------------------------------------------------------------------
