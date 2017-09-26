@@ -148,9 +148,9 @@ def root_to_HDF5(save_path,
     if memDatabasePath != None:
       import ROOT
       #load library
-      ROOT.gSystem.Load("libMEMDataBaseMEMDataBase.so")
+      ROOT.gSystem.Load("./libMEMDataBaseMEMDataBase.so")
       
-      from jet_corrections import jet_corrections
+      from .jet_corrections import jet_corrections
       CvectorTString = getattr(ROOT, "std::vector<TString>")
       mem_strings_vec = CvectorTString()
       # list of the names for the mem values related to the jes/jer variations
