@@ -150,7 +150,7 @@ def root_to_HDF5(save_path,
       #load library
       ROOT.gSystem.Load("libMEMDataBaseMEMDataBase.so")
       
-      from jet_corrections import *
+      from .jet_corrections import jet_corrections
       CvectorTString = getattr(ROOT, "std::vector<TString>")
       mem_strings_vec = CvectorTString()
       # list of the names for the mem values related to the jes/jer variations
@@ -177,7 +177,7 @@ def root_to_HDF5(save_path,
       # Define function to get MEM result
       def getMEMResult(runID, lumiID, eventID):
         result = memDataBase.GetMEMResult(memDatabaseSampleName, runID, lumiID, eventID)
-        print "MEM result for runID: ", runID, " lumiID: ", lumiID, " eventID: ", eventID, " result: ", result.p_vec[0]
+        print("MEM result for runID: ", runID, " lumiID: ", lumiID, " eventID: ", eventID, " result: ", result.p_vec[0])
         return result.p_vec[0]
 
     #----------------------------------------------------------------------------------------------------
@@ -192,7 +192,7 @@ def root_to_HDF5(save_path,
             
             # Assign MEM value if MEM database exists
             if memDatabasePath != None:
-              df.assign(mem = lambda x: getMEMResult(x.Evt_Run, x.Evt_Lumi, x.Evt_ID))
+              df['MEM'] = df.apply(lambda row: getMEMResult(row['Evt_Run'], row['Evt_Lumi'], row['Evt_ID']), axis=1)
 
 
             #--------------------------------------------------------------------------------------------
