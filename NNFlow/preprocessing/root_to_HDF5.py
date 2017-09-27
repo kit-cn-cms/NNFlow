@@ -151,6 +151,8 @@ def root_to_HDF5(save_path,
         import ROOT
         from NNFlow.ttH_ttbb_definitions.MEM_jet_corrections import jet_corrections
 
+        print("MEM database:")
+
         #load library
         mem_data_base_library_path = os.path.join(os.path.dirname(inspect.getfile(sys.modules['NNFlow'])), 'MEM_database/libMEMDataBaseMEMDataBase.so')
         ROOT.gSystem.Load(mem_data_base_library_path)
@@ -175,7 +177,6 @@ def root_to_HDF5(save_path,
         mem_data_base.AddSample(mem_database_sample_name, mem_database_sample_index_file)
 
         #print structure of mem database
-        print("MEM database:")
         mem_data_base.PrintStructure()
         print('\n', end='')
       
