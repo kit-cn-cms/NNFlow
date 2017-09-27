@@ -172,7 +172,7 @@ def root_to_HDF5(save_path,
         # load sample by identifier
         # The second argument defaults to samplename_index.txt
         # this text file simply holds a list of database files, nothing to concern you with
-        mem_data_base.AddSample(mem_database_sample_name, mem_database_iample_index_file)
+        mem_data_base.AddSample(mem_database_sample_name, mem_database_sample_index_file)
 
         #print structure of mem database
         print("MEM database:")
