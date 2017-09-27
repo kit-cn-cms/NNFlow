@@ -181,7 +181,7 @@ def root_to_HDF5(save_path,
       
         # Define function to get MEM result
         def get_MEM_result(run_ID, lumi_ID, event_ID):
-            result = mem_data_base.GetMEMResult(mem_database_nample_name, run_ID, lumi_ID, event_ID)
+            result = mem_data_base.GetMEMResult(mem_database_sample_name, run_ID, lumi_ID, event_ID)
             return result.p_vec[0]
 
 
