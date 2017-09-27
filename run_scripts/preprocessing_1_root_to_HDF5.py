@@ -38,9 +38,9 @@ split_data_set = False
 
 
 ### MEM
-memDatabasePath            = None
-memDatabaseSampleName      = None
-memDatabaseSampleIndexFile = None
+mem_database_path              = None
+mem_database_sample_name       = None
+mem_database_sample_index_file = None
 
 
 #----------------------------------------------------------------------------------------------------
@@ -83,9 +83,9 @@ function_call_dict = {'filename_outputfile'                     : filename_outpu
                       'number_of_saved_jets'                    : number_of_saved_jets,
                       'number_of_saved_leptons'                 : number_of_saved_leptons,
                       'percentage_validation'                   : percentage_validation,
-                      'memDatabasePath'                         : memDatabasePath,
-                      'memDatabaseSampleName'                   : memDatabaseSampleName,
-                      'memDatabaseSampleIndexFile'              : memDatabaseSampleIndexFile,
+                      'mem_database_path'                       : mem_database_path,
+                      'mem_database_sample_name'                : mem_database_sample_name,
+                      'mem_database_sample_index_file'          : mem_database_sample_index_file,
                       }
 
 
