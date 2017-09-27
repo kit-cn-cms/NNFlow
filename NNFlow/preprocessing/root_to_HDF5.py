@@ -167,7 +167,7 @@ def root_to_HDF5(save_path,
             mem_strings_vec.push_back(ROOT.TString(mem_string))
 
         # initialize with path to database
-        mem_data_base=ROOT.MEMDataBase(memDatabasePath, mem_strings_vec )
+        mem_data_base=ROOT.MEMDataBase(mem_database_path, mem_strings_vec )
 
         # load sample by identifier
         # The second argument defaults to samplename_index.txt
