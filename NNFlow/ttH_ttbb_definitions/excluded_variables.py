@@ -194,6 +194,7 @@ def other_always_excluded_variables():
                                             'BDT_common5_input_fourth_jet_pt',
                                             'BDT_common5_output',
                                             'Evt_Dr_TaggedJetsAverage',
+                                            'Evt_M_MinDeltaRLeptonTaggedJet'
                                             'Evt_Aplanarity',
                                             'Evt_Sphericity']
 
