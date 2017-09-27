@@ -37,6 +37,12 @@ split_data_set = False
 #conditions_for_splitting = definitions.ttbar_processes()
 
 
+### MEM
+memDatabasePath            = None
+memDatabaseSampleName      = None
+memDatabaseSampleIndexFile = None
+
+
 #----------------------------------------------------------------------------------------------------
 
 
@@ -76,7 +82,10 @@ function_call_dict = {'filename_outputfile'                     : filename_outpu
                       'weights_to_keep'                         : weights_to_keep,
                       'number_of_saved_jets'                    : number_of_saved_jets,
                       'number_of_saved_leptons'                 : number_of_saved_leptons,
-                      'percentage_validation'                   : percentage_validation
+                      'percentage_validation'                   : percentage_validation,
+                      'memDatabasePath'                         : memDatabasePath,
+                      'memDatabaseSampleName'                   : memDatabaseSampleName,
+                      'memDatabaseSampleIndexFile'              : memDatabaseSampleIndexFile,
                       }
 
 
