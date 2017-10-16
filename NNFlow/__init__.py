@@ -11,7 +11,7 @@ try:
     tensorflow_available = True
 
 except ImportError:
-    print('\n    Warning: You can only perform the preprocessing because TensorFlow is not installed on your machine.\n')
+    print('\n    Warning: TensorFlow is not installed on your machine. You can only use functions that do not depend on TensorFlow.\n')
     tensorflow_available = False
 
 if tensorflow_available:
