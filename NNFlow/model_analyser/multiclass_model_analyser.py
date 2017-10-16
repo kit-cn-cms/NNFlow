@@ -148,14 +148,14 @@ class MulticlassModelAnalyser(NNFlowModelAnalyser):
             for xit in range(confusion_matrix.shape[1]):
                 plt.text(xit + 0.5, yit + 0.5, '{:.1f}'.format(confusion_matrix[yit, xit]), horizontalalignment='center', verticalalignment='center')
 
-        ax = plt.gca()
-        ax.set_xticks(np.arange((x.shape[0] - 1)) + 0.5, minor=False)
-        ax.set_yticks(np.arange((y.shape[0] - 1)) + 0.5, minor=False)
+        plt_axis = plt.gca()
+        plt_axis.set_xticks(np.arange((x.shape[0] - 1)) + 0.5, minor=False)
+        plt_axis.set_yticks(np.arange((y.shape[0] - 1)) + 0.5, minor=False)
 
-        ax.set_xticklabels(list(self._output_labels) + [str(i) for i in range(x_shape-y_shape)])
-        ax.set_yticklabels(     self._output_labels)
+        plt_axis.set_xticklabels(list(self._output_labels) + [str(i) for i in range(x_shape-y_shape)])
+        plt_axis.set_yticklabels(     self._output_labels)
 
-        ax.set_aspect('equal')
+        plt_axis.set_aspect('equal')
 
         plt.tight_layout()
 
