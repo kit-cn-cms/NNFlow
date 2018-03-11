@@ -80,6 +80,20 @@ class MulticlassModelAnalyser(NNFlowModelAnalyser):
 
 
 
+    def get_one_vs_others_roc_aucs(self,
+                                   path_to_data,
+                                   ):
+
+
+        labels, network_output, event_weights = self.get_labels_network_output_event_weights(path_to_data)
+
+        roc_auc_list = self.softmax_output_processor.get_one_vs_others_roc_aucs(labels, network_output, event_weights)
+
+        return roc_auc_list
+
+
+
+
     def get_signal_over_background(self,
                                    path_to_data,
                                    cross_sections,

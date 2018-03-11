@@ -85,6 +85,31 @@ class SoftmaxOutputProcessor(object):
 
 
 
+    def get_one_vs_others_roc_aucs(self,
+                                   labels,
+                                   network_output,
+                                   event_weights
+                                   ):
+
+
+        number_of_output_neurons = labels.shape[1]
+
+        roc_auc_list = list()
+
+        for j in range(number_of_output_neurons):
+            y_true  = labels[:, j]
+            y_score = network_output[:, j]
+
+            roc_auc = sklearn.metrics.roc_auc_score(y_true=y_true, y_score=y_score, sample_weight=event_weights)
+
+            roc_auc_list.append(roc_auc)
+
+
+        return roc_auc_list
+
+
+
+
     def set_mode_max_output(self):
 
         self._mode = 'max_output'
