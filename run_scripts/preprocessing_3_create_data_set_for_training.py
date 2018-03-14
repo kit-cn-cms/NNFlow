@@ -11,42 +11,52 @@ from NNFlow.ttH_ttbb_definitions import definitions
 #----------------------------------------------------------------------------------------------------
 
 
+### Path to the directory where your project is located.
 workdir_base =
+
+### Each neural network configuration gets a separate directory.
+### Specify the name for the subdirectory of this neural network configuration here.
 name_subdir  =
 
 
-### You can choose from categories defined in definitions.definitions.jet_btag_category
+### You can choose from categories defined in ttH_ttbb_definitions.definitions.py
 ### To keep all events, specify "jet_btag_category = 'all'"
 jet_btag_category =
 
 
-### If you don't want to keep all processes, specify the processes you want to keep.
+### If you don't want to keep all processes, specify the processes you want to keep as a list.
 ### To keep all processes, specify "selected_processes = 'all'"
 selected_processes =
 
 
-### Binary or multinomial classification (binary_classification = True/False).
-### If you want to do a binary classification, specify the process which should be treated as signal.
+### Binary or multiclass classification (binary_classification = True/False).
+### If you want to do a binary classification, specify the process that should be treated as signal.
 binary_classification        =
 #binary_classification_signal =
 
 
 # If desired, only a subset of the available variables is saved in the data set for the training.
 # Option 0: All variables are kept (select_variables = False).
-# Option 1: Provide a list with variables you want to keep (select_variables = 'include').
-# Option 2: Provide a list with variables you want to drop (select_variables = 'exclude').
+# Option 1: Provide a list with variables you want to keep as a text file (select_variables = 'include').
+# Option 2: Provide a list with variables you want to drop as a text file (select_variables = 'exclude').
 select_variables =
 #path_to_variable_list =
 
 
+### If you want to select events with cuts on certain variables, specify "cutbased_event_selection = True".
+### The condition has to be given as a string (e.g. for cuts on the variables A and B: 'A > 5 and B <= 3').
 cutbased_event_selection =
 #cutbased_event_selection_condition =
 
 
+### If you want to merge several processes for the training, you can create new process labels for the merged processes here (specify "create_new_process_labels = True" in this case).
+### The variable "new_process_labels" has to be a dictionary, e.g. new_process_labels = {'ttHF':['ttbb', 'tt2b', 'ttb']}.
 create_new_process_labels =
 #new_process_labels =
 
 
+### Specify if you want to drop events with negative weights for the training.
+### Note: If you don't drop events with negative weights, the training may become unstable.
 drop_events_negative_weights = True
 
 
@@ -59,6 +69,9 @@ save_path = os.path.join(workdir_base, name_subdir, 'data_sets')
 path_to_merged_data_set = os.path.join(workdir_base, 'HDF5_files/data_set_merged.hdf')
 
 
+### Specify the MC weights that will be applied in the training.
+### The weights you want to use here have to be included in the "weights_to_keep" list in preprocessing_1_root_to_HDF5.py
+### The weights will be normalized so that the sum of weights is equal for each process.
 weights_to_be_applied = definitions.default_weight_list()
 
 
