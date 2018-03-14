@@ -86,4 +86,6 @@ source $NNFLOWINSTALLDIR/bin/activate
 
 
 ## Test the framework
+To apply the framework, use the scripts in the directory "run_scripts". Firstly, you have to perform preprocessing_1, preprocessing_2 and preprocessing_3. Secondly, you have to use "train_neural_network.py". Thirdly, you can use the suitable analyse_model script. Further explanations are given as comments in the scripts.
+
 You can test the framework with the scripts in the folder "example_run_scripts". All you have to do is to add the pathes to the data sets and to your working directory. To get example data sets, please contact the authors.
