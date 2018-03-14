@@ -11,6 +11,14 @@ import NNFlow
 #----------------------------------------------------------------------------------------------------
 
 
+if len(sys.argv) != 2:
+    sys.exit("You have to run the script with the model ID as command line argument.")
+
+
+#----------------------------------------------------------------------------------------------------
+
+
+### Path to the directory where your project is located and name of the subdirectory of this neural network configuration.
 workdir_base =
 name_subdir  =
 
