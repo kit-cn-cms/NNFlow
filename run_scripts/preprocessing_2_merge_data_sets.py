@@ -11,6 +11,7 @@ import NNFlow
 #----------------------------------------------------------------------------------------------------
 
 
+### Path to the directory where your project is located.
 workdir_base =
 
 
@@ -19,6 +20,8 @@ workdir_base =
 input_data_sets =
 
 
+### If you want to select your training events with cuts on certrain variables, you have to specify the variables that will be used to make cuts here.
+### The selection of events with the variables "N_Jets" and "N_BTagsM" is handled in a different way, these variables don't have to be added to this list.
 cutbased_event_selection = False
 #columns_for_cutbased_event_selection =
 
