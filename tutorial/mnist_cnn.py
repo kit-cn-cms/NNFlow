@@ -146,7 +146,7 @@ def main(unused_argv):
       shuffle=True)
   mnist_classifier.train(
       input_fn=train_input_fn,
-      steps=1000,
+      steps=20000,
       hooks=[logging_hook])
  
   print("done training")
@@ -158,7 +158,7 @@ def main(unused_argv):
       shuffle=False)
   eval_results = mnist_classifier.evaluate(input_fn=eval_input_fn)
   print(eval_results)
-  print("Final ROC integral on evaluation data")
+  print("Final accuracy on evaluation data")
   print(eval_results['accuracy'])
 
 if __name__ == "__main__":

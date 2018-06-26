@@ -58,7 +58,7 @@ def main(_):
   y_ = tf.placeholder(tf.int64, [None]) # placeholder vector for true labels of pictures
 
   # As loss function we will use the cross-entropy
-  # We also add a softmax laxer at the output of the NN. With this we get a 1 at the output node with the highest node value and 0 at the other nodes. Why?
+  # We also add a softmax laxer at the output of the NN. With this we get the outputs of each node in the interval [0,1] and all nodes sum to 1. The node with the highest output value should correspond to the most probable class.
   # But the raw formulation of cross-entropy,
   #
   #   tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(tf.nn.softmax(y)),
@@ -95,7 +95,7 @@ def main(_):
   correct_prediction = tf.equal(tf.argmax(y, 1), y_)
   accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
-  print("Final ROC integral on evaluation data")
+  print("Final accuracy on evaluation data")
   # run the defined accuracy operation with the given input tensors
   print(sess.run(
       accuracy, feed_dict={
