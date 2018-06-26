@@ -318,13 +318,13 @@ class OneHotMLP:
                 train_pre = sess.run(yy_, {x:train_data.x})
                 train_corr, train_mistag, train_cross, train_cat = self._validate_epoch( 
                         train_pre, train_data.y, train_data.w, epoch)
-                print('train: {}'.format((train_corr, train_mistag)))
+                #print('train: {}'.format((train_corr, train_mistag)))
                 train_accuracy.append(train_corr / (train_corr + train_mistag))
                 
                 val_pre = sess.run(yy_, {x:val_data.x})
                 val_corr, val_mistag, val_cross, val_cat = self._validate_epoch(val_pre,
                         val_data.y, val_data.w, epoch)
-                print('validation: {}'.format((val_corr, val_mistag)))
+                #print('validation: {}'.format((val_corr, val_mistag)))
                 val_accuracy.append(val_corr / (val_corr + val_mistag))
                 
                 
@@ -694,9 +694,9 @@ class OneHotMLP:
 #                    arr_val_w_weights[i][j] = 1.0 * arr_val[i][j] * self.bg_weight
         if (early == 'yes'):
             epoch += 1
-        print(arr_train)
-        print('-----------------')
-        print(arr_val)
+        #print(arr_train)
+        #print('-----------------')
+        #print(arr_val)
         x = np.linspace(0, self.out_size, self.out_size + 1)
         y = np.linspace(0, self.out_size, self.out_size + 1)
         xn, yn = np.meshgrid(x,y)
