@@ -376,8 +376,8 @@ class OneHotMLP:
                                     early_stopping['epoch']+1))
                         best_epoch = early_stopping['epoch']
                         app = '_{}'.format(best_epoch+1)
-                        self._plot_weight_matrices(weights_list[best_epoch],
-                                best_epoch, early='yes')
+                        #self._plot_weight_matrices(weights_list[best_epoch],
+                                #best_epoch, early='yes')
                         self._plot_cross(cross_train_list[best_epoch],
                                 cross_val_list[best_epoch], best_epoch,
                                 early='yes')
@@ -385,10 +385,10 @@ class OneHotMLP:
                                 best_train_true, best_val_true, best_epoch+1)
                         self._find_most_important_weights(weights_list[best_epoch],
                                 n=30)
-                        self._write_list(best_train_pred, 'train_pred' + app)
-                        self._write_list(best_train_true, 'train_true' + app)
-                        self._write_list(best_val_pred, 'val_pred' + app)
-                        self._write_list(best_val_true, 'val_true' + app)
+                        #self._write_list(best_train_pred, 'train_pred' + app)
+                        #self._write_list(best_train_true, 'train_true' + app)
+                        #self._write_list(best_val_pred, 'val_pred' + app)
+                        #self._write_list(best_val_true, 'val_true' + app)
                         t1 = time.time()
                         times_list.append(t1 - t0)
                         break
@@ -405,21 +405,21 @@ class OneHotMLP:
             self._plot_loss(train_losses)
             self._write_parameters(epochs, batch_size, keep_prob, beta,
                     dtime, early_stopping, val_accuracy[-1])
-            self._plot_weight_matrices(weights, epoch)
+            #self._plot_weight_matrices(weights, epoch)
             self._plot_cross(train_cross, val_cross, epoch + 1)
             self._plot_hists(train_pre, val_pre, train_data.y, val_data.y,
                     epoch+1)
             self._plot_cross_dev(cross_train_list, cross_val_list, epoch+1)
-            self._write_list(cross_train_list, 'train_cross')
-            self._write_list(cross_val_list, 'val_cross')
-            self._write_list(train_losses, 'train_losses')
-            self._write_list(train_accuracy, 'train_accuracy')
-            self._write_list(val_accuracy, 'val_accuracy')
+            #self._write_list(cross_train_list, 'train_cross')
+            #self._write_list(cross_val_list, 'val_cross')
+            #self._write_list(train_losses, 'train_losses')
+            #self._write_list(train_accuracy, 'train_accuracy')
+            #self._write_list(val_accuracy, 'val_accuracy')
             app = '_{}'.format(epoch+1)
-            self._write_list(train_pre, 'train_pred' + app)
-            self._write_list(train_data.y, 'train_true' + app)
-            self._write_list(val_pre, 'val_pred' + app)
-            self._write_list(val_data.y, 'val_true' + app)
+            #self._write_list(train_pre, 'train_pred' + app)
+            #self._write_list(train_data.y, 'train_true' + app)
+            #self._write_list(val_pre, 'val_pred' + app)
+            #self._write_list(val_data.y, 'val_true' + app)
             if not (self.enable_early == 'yes'):
                 self._find_most_important_weights(weights)
             self.trained = True
