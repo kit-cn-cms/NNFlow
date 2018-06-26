@@ -36,7 +36,7 @@ config.gpu_options.allow_growth = True
 
 def main(_):
   # Import data
-  mnist = input_data.read_data_sets(FLAGS.data_dir)
+#  mnist = input_data.read_data_sets(FLAGS.data_dir)
   mnist = input_data.read_data_sets("/local/scratch/NNWorkshop/datasets/MNIST_data/")
 
   # Create the model
