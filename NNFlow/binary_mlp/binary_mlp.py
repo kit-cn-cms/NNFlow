@@ -241,6 +241,7 @@ class BinaryMLP:
         self._optimizer = optimizer
         self._momentum = momentum
         self._lr_decay = lr_decay
+        self._gpu_usage = gpu_usage
         
         train_graph = tf.Graph()
         with train_graph.as_default():

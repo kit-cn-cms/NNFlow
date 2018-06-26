@@ -215,6 +215,7 @@ class OneHotMLP:
         self.decay_learning_rate_options = dlrate_options
         self.batch_decay = batch_decay
         self.batch_decay_options = batch_decay_options
+        self._gpu_usage = gpu_usage
 
         if (self.batch_decay == 'yes'):
             try:
