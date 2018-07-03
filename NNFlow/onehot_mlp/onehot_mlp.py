@@ -359,7 +359,8 @@ class OneHotMLP:
                 if (self.enable_early=='yes'):
                     # Check for early stopping.
                     if (val_accuracy[-1] > early_stopping['val_acc']):
-                        save_path = saver.save(sess, self.model_loc)
+#                        save_path = saver.save(sess, self.model_loc)
+                        save_path = saver.save(sess, self.model_loc.replace(".ckpt","_"+str(epoch)+".ckpt"))
                         print("saved model at epoch "+str(epoch))
                         best_train_pred = train_pre
                         best_train_true = train_data.y
