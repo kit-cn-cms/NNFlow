@@ -360,6 +360,7 @@ class OneHotMLP:
                     # Check for early stopping.
                     if (val_accuracy[-1] > early_stopping['val_acc']):
                         save_path = saver.save(sess, self.model_loc)
+                        print "saved model at epoch ", epoch
                         best_train_pred = train_pre
                         best_train_true = train_data.y
                         best_val_pred = val_pre
@@ -394,7 +395,7 @@ class OneHotMLP:
                         break
                 else:
                     save_path = saver.save(sess, self.model_loc)
-
+                    print "saved model at epoch ", epoch
 
             print(110*'-')
             train_end=time.time()
