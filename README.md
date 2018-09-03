@@ -26,18 +26,33 @@ pip install --upgrade root_numpy       # In this case, you can not perform step 
 pip install --upgrade tensorflow       # Use this, if CUDA is not installed on your machine.
 pip install --upgrade tensorflow-gpu   # Use this, if CUDA is installed on your machine.
 
-pip install git+http://github.com/kit-cn-cms/NNFlow.git#egg=NNFlow
+pip install --upgrade git+http://github.com/kit-cn-cms/NNFlow.git#egg=NNFlow
 
-export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/cuda-7.5-cudNNV5.1/lib64:/usr/local/cuda-7.5-cudNNV5.1/extras/CUPTI/lib64"
-export CUDA_HOME=/usr/local/cuda-7.5-cudNNV5.1
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/cuda-8.0/lib64:/usr/local/cuda-8.0/extras/CUPTI/lib64"
+export CUDA_HOME=/usr/local/cuda-8.0
+```
+
+
+### Use NNFlow from other directory
+If you want to use a NNFlow version from a different directory you can export the following environment variable.
+This can be useful if you are developing code in the NNFlow package.
+For example
+```
+cd MYWORKDIR
+git clone https://github.com/kit-cn-cms/NNFlow.git
+export PYTHONPATH=MYWORKDIR/NNFlow
 ```
 
 Activate environment in a new shell:
 ```
 export NNFLOWINSTALLDIR=/path/to/NNFlow_venv
 source $NNFLOWINSTALLDIR/bin/activate
-export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/cuda-7.5-cudNNV5.1/lib64:/usr/local/cuda-7.5-cudNNV5.1/extras/CUPTI/lib64"
-export CUDA_HOME=/usr/local/cuda-7.5-cudNNV5.1
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/cuda-8.0/lib64:/usr/local/cuda-8.0/extras/CUPTI/lib64"
+export CUDA_HOME=/usr/local/cuda-8.0
+```
+If you want to use NNFlow from a different directory also export this
+```
+export PYTHONPATH=MYWORKDIR/NNFlow
 ```
 
 
@@ -69,7 +84,7 @@ source $NNFLOWINSTALLDIR/bin/activate
 pip install --upgrade rootpy
 pip install --upgrade root_numpy
 
-pip install git+http://github.com/kit-cn-cms/NNFlow.git#egg=NNFlow
+pip install --upgrade git+http://github.com/kit-cn-cms/NNFlow.git#egg=NNFlow
 ```
 
 Activate environment in a new shell:
