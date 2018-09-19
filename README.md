@@ -55,6 +55,31 @@ If you want to use NNFlow from a different directory also export this
 export PYTHONPATH=MYWORKDIR/NNFlow
 ```
 
+### Installation with reduced site-package dependency
+When using NNFlow (or simply tensorflow) on our ekp infrastructure it can happen that the import of tensorflow is really slow.
+The reason is that several packages are loaded from network storage.
+To circumvent this you can install tensorflow (and NNFlow) on the local scratch of your machine and force local reinstallation of needed packages. 
+This will need about 700MB of disk space!
+So check that there is plenty of space left!
+
+!But remember that local scratch has no backup -> Not safe for important code etc.!
+```
+cd /local/scratch
+mkdir $USER
+cd $USER
+export NNFLOWINSTALLDIR=$PWD"/NNFlow_venv"
+virtualenv --system-site-packages $NNFLOWINSTALLDIR
+source $NNFLOWINSTALLDIR/bin/activate
+
+pip install --force-reinstall --upgrade-strategy eager -I --cache-dir pipcache numpy
+pip install --force-reinstall --upgrade-strategy eager -I --cache-dir pipcache rootpy
+pip install --force-reinstall --upgrade-strategy eager -I --cache-dir pipcache root_numpy
+pip install --force-reinstall --upgrade-strategy eager -I --cache-dir pipcache matplotlib
+pip install --force-reinstall --upgrade-strategy eager -I --cache-dir pipcache scipy
+pip install --force-reinstall --upgrade-strategy eager -I --cache-dir pipcache pandas
+pip install --force-reinstall --upgrade-strategy eager -I --cache-dir pipcache tensorflow
+rm -r pipcache
+```
 
 ### Installation in a CMSSW environment
 If PyROOT is not installed on your machine, you can use a CMSSW environment to perform the preprocessing. It is not possible to perform the training in this environment.
