@@ -77,7 +77,9 @@ pip install --force-reinstall --upgrade-strategy eager -I --cache-dir pipcache r
 pip install --force-reinstall --upgrade-strategy eager -I --cache-dir pipcache matplotlib
 pip install --force-reinstall --upgrade-strategy eager -I --cache-dir pipcache scipy
 pip install --force-reinstall --upgrade-strategy eager -I --cache-dir pipcache pandas
-pip install --force-reinstall --upgrade-strategy eager -I --cache-dir pipcache tensorflow
+#pip install --force-reinstall --upgrade-strategy eager -I --cache-dir pipcache tensorflow
+#or
+pip install --force-reinstall --upgrade-strategy eager -I --cache-dir pipcache tensorflow-gpu
 rm -r pipcache
 ```
 
