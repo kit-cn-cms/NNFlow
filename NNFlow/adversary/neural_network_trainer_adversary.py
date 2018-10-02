@@ -9,6 +9,8 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
+import ROOT
+ROOT.gROOT.SetBatch(1)
 
 import tensorflow as tf
 from tensorflow import keras
@@ -19,12 +21,13 @@ from NNFlow.data_frame.data_frame import DataFrame              as NNFlowDataFra
 
 
 class NeuralNetworkTrainer(object):
-    def __init__(self):
+    def __init__(self, param):
 
         # Limit gpu usage
         config = tf.ConfigProto()
         config.gpu_options.allow_growth = True
         set_session(tf.Session(config=config))
+        self.lambda_param = param
 
     def train(self,
               save_path,
@@ -70,10 +73,6 @@ class NeuralNetworkTrainer(object):
 
         # Drop the given parameter in the dataset
 
-        training_data_set.drop_nuisance_parameter('Evt_M_MinDeltaRTaggedJets')
-        validation_data_set.drop_nuisance_parameter('Evt_M_MinDeltaRTaggedJets')
-        test_data_set.drop_nuisance_parameter('Evt_M_MinDeltaRTaggedJets')
-
         number_of_input_neurons = training_data_set.get_number_of_input_neurons()
         number_of_output_neurons = training_data_set.get_number_of_output_neurons()
 
@@ -82,14 +81,24 @@ class NeuralNetworkTrainer(object):
         vali_label_class, vali_weights = validation_data_set.get_labels_event_weights()
         test_label_class, test_weights = test_data_set.get_labels_event_weights()
 
-        train_label=training_data_set.get_adversary_labels()
-        vali_label =validation_data_set.get_adversary_labels()
-        test_label =test_data_set.get_adversary_labels()
+
+        train_label=training_data_set.get_adversary_labels(param='Evt_blr_ETH')
+        vali_label =validation_data_set.get_adversary_labels(param='Evt_blr_ETH')
+        test_label =test_data_set.get_adversary_labels(param='Evt_blr_ETH')
+
 
         # Get scaled data. data is scaled between 0 and 1
         train_data = training_data_set.get_scaled_data()
         vali_data = validation_data_set.get_scaled_data()
         test_data = test_data_set.get_scaled_data()
+
+
+        '''for i, ii in enumerate(train_data):
+            for j, _ in enumerate(ii):
+                train_data[i][j]= np.random.random()
+                #vali_data[i][j]=np.random.random()
+        '''
+
 
         # Build the model with the given parameters
         Inputs= keras.layers.Input(shape=(number_of_input_neurons,))
@@ -112,10 +121,10 @@ class NeuralNetworkTrainer(object):
         class_model = keras.models.Model(inputs=[Inputs], outputs=[X])
 
         adv_layers = class_model(Inputs)
-        adv_layers = keras.layers.Dense(50,
+        adv_layers = keras.layers.Dense(20,
                                 activation=activation_function_name,
                                 kernel_regularizer=keras.regularizers.l2(l2_regularization_beta))(adv_layers)
-        adv_layers = keras.layers.Dense(50,
+        adv_layers = keras.layers.Dense(20,
                                 activation=activation_function_name,
                                 kernel_regularizer=keras.regularizers.l2(l2_regularization_beta))(adv_layers)
         adv_layers = keras.layers.Dense(1,
@@ -127,12 +136,12 @@ class NeuralNetworkTrainer(object):
 
         def make_loss_Class(c):
             def loss_Class(y_true, y_pred):
-                return c*keras.losses.binary_crossentropy(y_pred,y_true)
+                return c*keras.losses.binary_crossentropy(y_true,y_pred)
             return loss_Class
 
         def make_loss_Adv(c):
             def loss_Adv(z_true, z_pred):
-                return c * keras.losses.mean_squared_error(z_pred,z_true)
+                return c * keras.losses.mean_squared_error(z_true,z_pred)
 
             return loss_Adv
 
@@ -146,14 +155,14 @@ class NeuralNetworkTrainer(object):
         adv_model.trainable = False
         class_model.trainable = True
         class_adv_model = keras.models.Model(inputs=[Inputs], outputs=[class_model(Inputs),adv_model(Inputs)])
-        class_adv_model.compile(loss=[make_loss_Class(c=1.0),make_loss_Adv(c=-0.0001)],
+        class_adv_model.compile(loss=[make_loss_Class(c=1.0),make_loss_Adv(c=-0.005)],
                       optimizer=optimizer)
 
         class_adv_model.summary()
         adv_model.trainable = True
         class_model.trainable = False
         adv_class_model =keras.models.Model(inputs=[Inputs], outputs=[adv_model(Inputs)])
-        adv_class_model.compile(loss =[make_loss_Adv(c=1)], optimizer=optimizer)
+        adv_class_model.compile(loss =[make_loss_Adv(c=1.)], optimizer=optimizer)
 
         adv_class_model.summary()
         # Define earlystopping to reduce overfitting
@@ -166,6 +175,8 @@ class NeuralNetworkTrainer(object):
         nEpochs = 200
         # Train the NN
         #Pretrain networks
+        ival = IntervalEvaluation(validation_data=(vali_data, vali_label), interval=1)
+        
         adv_model.trainable = False
         class_model.trainable = True
         class_model.fit(x=train_data,
@@ -173,30 +184,120 @@ class NeuralNetworkTrainer(object):
                         verbose=1,
                         epochs=10,
                         batch_size=500,
-                        validation_data=(vali_data, vali_label_class, vali_weights),
+                        validation_data=(vali_data, vali_label, vali_weights),
                         sample_weight=train_weights)
+        
+
+
         y_pred = class_model.predict(train_data, verbose=1)
         score = roc_auc_score(train_label_class, y_pred)
         print('##############################################################################')
         print(score)
         print('##############################################################################')
-
+        
         adv_model.trainable = True
         class_model.trainable = False
         adv_class_model.fit(x=train_data,
                             y=train_label,
                             verbose=1,
-                            epochs=10,
+                            epochs=100,
+                            callbacks=[earlyStopping],
                             batch_size = 500,
                             validation_data=(vali_data, vali_label, vali_weights),
                             sample_weight=train_weights)
-        ival = IntervalEvaluation(validation_data=(vali_data, vali_label), interval=1)
+        
 
+        loss_list = ['loss', 'model_1_loss', 'val_model_1_loss', 'val_model_loss', 'model_loss', 'val_loss']
+        loss_dict = {}
+        adv_loss = {}
+
+        adv_predict_train = adv_class_model.predict(train_data,batch_size=500,verbose=1)
+        adv_predict_val = adv_class_model.predict(vali_data,batch_size=500,verbose=1)
+        class_predict_train = class_model.predict(train_data,batch_size=500,verbose=1)
+        class_predict_val = class_model.predict(vali_data,batch_size=500,verbose=1)
+        maxX = -1000
+        minX = 1000
+        some_dict={}
+        maxX = max(maxX,max(adv_predict_train))
+        minX = min(minX,min(adv_predict_train))
+        maxX = max(maxX,max(adv_predict_val))
+        minX = min(minX,min(adv_predict_val))
+        maxX = max(maxX,max(train_label))
+        minX = min(minX,min(train_label))
+        value_dict = {'adversary_prediction_training': adv_predict_train,
+                      'adversary_prediction_valiadation':adv_predict_val,
+        }
+
+        h2= ROOT.TH1F("hist_label",'bla',20,minX,maxX)
+        h2.SetLineColor(2)
+        for entry in train_label:
+            h2.Fill(entry)
+        for key, entry in value_dict.iteritems():
+            h1 = ROOT.TH1F("hist"+key,key,20,minX,maxX)
+            for j in entry:
+                h1.Fill(j)
+            canvas=ROOT.TCanvas("canvas"+key,"canvas"+key,800,900)
+            h1.SetLineColor(1)
+            h1.Draw("HIST")
+            h2.Draw("HISTSAME")
+            canvas.SaveAs('/usr/users/jschindler/Data_adversary/ROOT_Plot_Epoch_True_before_'+str(1)+"_"+key+".png")
+        h3 = ROOT.TH1F('class','class_output',20,-0.01,1.01)
+        for i in class_predict_train:
+            h3.Fill(i)
+        canvas = ROOT.TCanvas("canvas","canvas",800,900)
+        h3.Draw("Hist")
+        canvas.SaveAs('/usr/users/jschindler/Data_adversary/ROOT_Plot_Class_output_before_adv'+".png")
+
+        h1_2D = ROOT.TH2F('h1', 'Input_class_vs_outpu_class', 1000,min(train_label),max(train_label),1000,min(y_pred),max(y_pred))
+        for i in range(len(train_label)):
+            h1_2D.Fill(train_label[i],y_pred[i])
+        print("\n")
+        print('Input_class_vs_outpu_class')
+        print(h1_2D.GetCorrelationFactor())
+
+        h2_2D = ROOT.TH2F('h2', 'Input_class_vs_adv_output', 1000,min(train_label),max(train_label),1000,min(adv_predict_train),max(adv_predict_train))
+        
+        for i in range(len(train_label)):
+            h2_2D.Fill(train_label[i],adv_predict_train[i])
+        print("\n")
+        print('Input_class_vs_adv_output')
+        print(h2_2D.GetCorrelationFactor())
+
+        h3_2D = ROOT.TH2F('h2', 'output_class_vs_adv_output', 1000,min(y_pred),max(y_pred),1000,min(adv_predict_train),max(adv_predict_train))
+        
+        for i in range(len(train_label)):
+            h3_2D.Fill(y_pred[i],adv_predict_train[i])
+        print("\n")
+        print('output_class_vs_adv_output')
+        print(h3_2D.GetCorrelationFactor())
+
+        print("\n")
+        print("\n")
+        canvas=ROOT.TCanvas("canvas1","canvas1",800,900)
+        h1_2D.Draw('COLZ')  
+        canvas.SaveAs('/usr/users/jschindler/Data_adversary/ROOT_Plot_Epoch_True_2D_before'+str(1)+"_"+".png")
+
+        canvas=ROOT.TCanvas("canvas2","canvas2",800,900)
+        h2_2D.Draw('COLZ')  
+        canvas.SaveAs('/usr/users/jschindler/Data_adversary/ROOT_Plot_Epoch_True_2D_before'+str(2)+"_"+".png") 
+
+        canvas=ROOT.TCanvas("canvas3","canvas3",800,900)
+        h3_2D.Draw('COLZ')  
+        canvas.SaveAs('/usr/users/jschindler/Data_adversary/ROOT_Plot_Epoch_True_2D_before'+str(3)+"_"+".png") 
+        some_dict['Evt_blr_ETH']= [h1_2D.GetCorrelationFactor(),h2_2D.GetCorrelationFactor(),h3_2D.GetCorrelationFactor()]
+        print(some_dict)
+
+
+        for entry in loss_list:
+            loss_dict[entry]=[]
+
+        for entry in ['loss','val_loss']:
+            adv_loss[entry]= []
 
         for i in range(20):
             adv_model.trainable = False
             class_model.trainable = True
-            class_adv_model.fit(x= train_data,
+            history =class_adv_model.fit(x= train_data,
                                 y=[train_label_class,train_label],
                                 verbose=1,
                                 epochs=1,
@@ -205,9 +306,11 @@ class NeuralNetworkTrainer(object):
                                 validation_data=(vali_data, [vali_label_class,vali_label],[vali_weights,vali_weights]),
                                 sample_weight=[train_weights,train_weights]
                                 )
+            for entry in loss_list:
+                loss_dict[entry].append(history.history[entry])
             adv_model.trainable = True
             class_model.trainable = False
-            adv_class_model.fit(x=train_data,
+            history = adv_class_model.fit(x=train_data,
                                 y=train_label,
                                 verbose=1,
                                 epochs=1,
@@ -216,9 +319,89 @@ class NeuralNetworkTrainer(object):
                                 validation_data=(vali_data, vali_label, vali_weights),
                                 sample_weight=train_weights)
 
+            for key in adv_loss:
+                adv_loss[key].append(history.history[key])
+        adv_predict_train = adv_class_model.predict(train_data,batch_size=500,verbose=1)
+        adv_predict_val = adv_class_model.predict(vali_data,batch_size=500,verbose=1)
+        class_predict_train = class_model.predict(train_data,batch_size=500,verbose=1)
+        class_predict_val = class_model.predict(vali_data,batch_size=500,verbose=1)
+        maxX = -1000
+        minX = 1000
+        some_dict={}
+        maxX = max(maxX,max(adv_predict_train))
+        minX = min(minX,min(adv_predict_train))
+        maxX = max(maxX,max(adv_predict_val))
+        minX = min(minX,min(adv_predict_val))
+        maxX = max(maxX,max(train_label))
+        minX = min(minX,min(train_label))
+        value_dict = {'adversary_prediction_training': adv_predict_train,
+                      'adversary_prediction_valiadation':adv_predict_val,
+        }
+
+        h2= ROOT.TH1F("hist_label",'bla',20,minX,maxX)
+        h2.SetLineColor(2)
+        for entry in train_label:
+            h2.Fill(entry)
+        for key, entry in value_dict.iteritems():
+            h1 = ROOT.TH1F("hist"+key,key,20,minX,maxX)
+            for j in entry:
+                h1.Fill(j)
+            canvas=ROOT.TCanvas("canvas"+key,"canvas"+key,800,900)
+            h1.SetLineColor(1)
+            h1.Draw("HIST")
+            h2.Draw("HISTSAME")
+            canvas.SaveAs('/usr/users/jschindler/Data_adversary/ROOT_Plot_Epoch_True_'+str(1)+"_"+key+".png")
+        h3 = ROOT.TH1F('class','class_output',20,-0.01,1.01)
+        for i in class_predict_train:
+            h3.Fill(i)
+        canvas = ROOT.TCanvas("canvas","canvas",800,900)
+        h3.Draw("Hist")
+        canvas.SaveAs('/usr/users/jschindler/Data_adversary/ROOT_Plot_Class_output_'+".png")
+
+        h1_2D = ROOT.TH2F('h1', 'Input_class_vs_output_class', 100,min(train_label),max(train_label),100,min(class_predict_train),max(class_predict_train))
+        for i in range(len(train_label)):
+            h1_2D.Fill(train_label[i],class_predict_train[i])
+        print("\n")
+        print('Input_class_vs_outpu_class')
+        print(h1_2D.GetCorrelationFactor())
+
+        h2_2D = ROOT.TH2F('h2', 'Input_class_vs_adv_output', 100,min(train_label),max(train_label),100,min(adv_predict_train),max(adv_predict_train))
+        
+        for i in range(len(train_label)):
+            h2_2D.Fill(train_label[i],adv_predict_train[i])
+        print("\n")
+        print('Input_class_vs_adv_output')
+        print(h2_2D.GetCorrelationFactor())
+
+        h3_2D = ROOT.TH2F('h2', 'output_class_vs_adv_output', 100,min(class_predict_train),max(class_predict_train),100,min(adv_predict_train),max(adv_predict_train))
+        
+        for i in range(len(train_label)):
+            h3_2D.Fill(class_predict_train[i],adv_predict_train[i])
+        print("\n")
+        print('output_class_vs_adv_output')
+        print(h3_2D.GetCorrelationFactor())
+
+        print("\n")
+        print("\n")
+        canvas=ROOT.TCanvas("canvas1","canvas1",800,900)
+        h1_2D.Draw('COLZ')  
+        canvas.SaveAs('/usr/users/jschindler/Data_adversary/ROOT_Plot_Epoch_True_2D_after_adv'+str(1)+"_"+".png")
+
+        canvas=ROOT.TCanvas("canvas2","canvas2",800,900)
+        h2_2D.Draw('COLZ')  
+        canvas.SaveAs('/usr/users/jschindler/Data_adversary/ROOT_Plot_Epoch_True_2D_after_adv'+str(2)+"_"+".png") 
+
+        canvas=ROOT.TCanvas("canvas3","canvas3",800,900)
+        h3_2D.Draw('COLZ')  
+        canvas.SaveAs('/usr/users/jschindler/Data_adversary/ROOT_Plot_Epoch_True_2D_after_adv'+str(3)+"_"+".png") 
+        some_dict['Evt_blr_ETH']= [h1_2D.GetCorrelationFactor(),h2_2D.GetCorrelationFactor(),h3_2D.GetCorrelationFactor()]
+        print(some_dict)
+
+
         # Get the time spend per epoch
         times = time_callback.times
-
+        np.save("Data_adversary/"+str(self.lambda_param)+"_loss_dict.npy",loss_dict )
+        np.save("Data_adversary/"+str(self.lambda_param)+'.npy',adv_loss)
         # Determine the number of epochs the NN trained
         if earlyStopping.stopped_epoch == 0:
             Epoch_end = nEpochs
@@ -232,6 +415,7 @@ class NeuralNetworkTrainer(object):
         print('\n')
         # Evaluate the trained model on the test data sample
         y_pred = class_model.predict(train_data, verbose=1)
+
         score = roc_auc_score(train_label_class, y_pred)
         print('##############################################################################')
 
@@ -457,7 +641,6 @@ l2_regularization_beta = 0
 batch_size_training = 500
 optimizer = None
 
-parameter = 'Evt_blr_ETH'
 # ----------------------------------------------------------------------------------------------------
 
 
@@ -466,9 +649,9 @@ model_id = datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')
 save_path = os.path.join(workdir_base, name_subdir, 'tth/model_' + model_id)
 model_name = name_subdir + '_' + model_id
 
-path_to_training_data_set = os.path.join(workdir_base, 'data_sets_2/training_data_set.hdf')
-path_to_validation_data_set = os.path.join(workdir_base, 'data_sets_2/validation_data_set.hdf')
-path_to_test_data_set = os.path.join(workdir_base, 'data_sets_2/test_data_set.hdf')
+path_to_training_data_set = '/storage/9/jschindler/NNFlow_Marco/ttbb_analysis/neural_network_v6/binary_ge6ge2/data_sets/training_data_set.hdf'
+path_to_validation_data_set = '/storage/9/jschindler/NNFlow_Marco/ttbb_analysis/neural_network_v6/binary_ge6ge2/data_sets/validation_data_set.hdf'
+path_to_test_data_set =  '/storage/9/jschindler/NNFlow_Marco/ttbb_analysis/neural_network_v6/binary_ge6ge2/data_sets/test_data_set.hdf'
 # ----------------------------------------------------------------------------------------------------
 if not os.path.isdir(save_path):
     if os.path.isdir(os.path.dirname(save_path)):
@@ -487,5 +670,8 @@ train_dict = {'save_path': save_path,
               'batch_size_training': batch_size_training,
               }
 
-t = NeuralNetworkTrainer()
+
+t = NeuralNetworkTrainer(500)
 t.train(**train_dict)
+
+
