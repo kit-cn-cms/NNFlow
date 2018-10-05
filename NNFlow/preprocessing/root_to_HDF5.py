@@ -38,8 +38,12 @@ def root_to_HDF5(save_path,
     print('\n' + '================================')
     print(       'CONVERT ROOT FILES TO HDF5 FILES')
     print(       '================================' + '\n')
-
-
+    
+    
+    store = pd.HDFStore('fuck.hdf',"a") # TODO:Helpful comment
+    store.close()
+    
+    
     if isinstance(filenames_inputfiles, basestring):
         filenames_inputfiles = [filenames_inputfiles]
 
@@ -51,7 +55,6 @@ def root_to_HDF5(save_path,
 
     if conditions_for_splitting is None:
         conditions_for_splitting={'variables': list()}
-
 
     if not os.path.isdir(save_path):
         sys.exit("Directory '" + save_path + "' doesn't exist." + "\n")
@@ -67,7 +70,6 @@ def root_to_HDF5(save_path,
 
     #----------------------------------------------------------------------------------------------------
     # Remove old output files.
-
     if not split_data_set:
         if os.path.isfile(os.path.join(save_path, filename_outputfile + '.hdf')):
             os.remove(os.path.join(save_path, filename_outputfile + '.hdf'))
@@ -240,11 +242,12 @@ def root_to_HDF5(save_path,
                 df_training.drop(variables_for_splitting, axis=1, inplace=True)
                 df_validation.drop(variables_for_splitting, axis=1, inplace=True)
                 df_test.drop(variables_for_splitting, axis=1, inplace=True)
-               
                 with pd.HDFStore(os.path.join(save_path, filename_outputfile + '.hdf')) as store:
+
                     store.append('df_training',   df_training,   format = 'table', append=True)
                     store.append('df_validation', df_validation, format = 'table', append=True)
                     store.append('df_test',       df_test,       format = 'table', append=True)
+
 
             else:
                 for process in conditions_for_splitting['conditions'].keys():
@@ -260,7 +263,6 @@ def root_to_HDF5(save_path,
                         store.append('df_training',   df_training_process,   format = 'table', append=True)
                         store.append('df_validation', df_validation_process, format = 'table', append=True)
                         store.append('df_test',       df_test_process,       format = 'table', append=True)
-
 
     #----------------------------------------------------------------------------------------------------
     # Save a list of saved weights.

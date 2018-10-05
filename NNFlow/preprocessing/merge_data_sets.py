@@ -72,9 +72,14 @@ def merge_data_sets(path_to_inputfiles,
                 print('Processing ' + input_file)
                 with pd.HDFStore(os.path.join(path_to_inputfiles, input_file), mode='r') as store_input:
                     for data_set in ['df_training', 'df_validation', 'df_test']:
-                        for df_input in store_input.select(data_set, chunksize=10000):
+                        size=10000
+                        for df_input in store_input.select(data_set, chunksize=size):
+                            print(size)
                             df = df_input.copy()
-
+                            # Check for int32; cannot merge int32 with int64
+                            for entry, name in zip(df.dtypes,df):
+                                if entry==np.int32:
+                                    df[[name]]=df[[name]].astype(np.int64)
                             if len(variables_to_drop[input_file]) != 0:
                                 df.drop(variables_to_drop[input_file], axis=1, inplace=True)
  
@@ -82,6 +87,7 @@ def merge_data_sets(path_to_inputfiles,
                                 df[process_label] = 1 if process_label == process else 0
 
                             store_output.append(data_set, df, format = 'table', append=True, data_columns=data_columns, index=False)
+                            size+=10000
 
         print('\n', end='')
         
